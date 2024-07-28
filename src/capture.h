@@ -26,7 +26,7 @@ public:
 
     void captureFrame();
 
-    void render();
+    void render(cv::Mat& out);
 
     ~Capture() = default;
 };
