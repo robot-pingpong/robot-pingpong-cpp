@@ -92,7 +92,7 @@ void Capture::getTableArea(const std::string& windowName)
         {
             cv::circle(screen, *it, 5, cv::Scalar(0, 0, 255), -1);
             cv::putText(screen, "P" + std::to_string(std::distance(points.begin(), it) + 1), *it,
-                        cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 255), 2);
+                        cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 0, 255));
         }
         cv::imshow(windowName, screen);
         const int key = cv::waitKey(1);
