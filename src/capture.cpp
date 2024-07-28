@@ -32,7 +32,7 @@ void Capture::setGlobalMask(const std::string& windowName)
 
     cv::namedWindow(windowName, cv::WINDOW_AUTOSIZE);
     cv::moveWindow(windowName, 0, 0);
-    cv::setMouseCallback(windowName, [](int event, int x, int y, int flags, void* userdata)
+    cv::setMouseCallback(windowName, [](const int event, int x, int y, int flags, void* userdata)
     {
         if (event == cv::EVENT_LBUTTONDOWN)
         {
@@ -44,7 +44,7 @@ void Capture::setGlobalMask(const std::string& windowName)
     while (true)
     {
         capture >> screen;
-        for (auto it = points.begin(); it != points.end(); it++)
+        for (auto it = points.begin(); it != points.end(); ++it)
         {
             cv::circle(screen, *it, 5, cv::Scalar(0, 0, 255), -1);
             cv::line(
@@ -61,7 +61,7 @@ void Capture::setGlobalMask(const std::string& windowName)
             cv::addWeighted(screen, 1, overlay, 0.5, 0, screen);
         }
         cv::imshow(windowName, screen);
-        int key = cv::waitKey(1);
+        const int key = cv::waitKey(1);
         if (key == 27) break;
         if (key == 8 || key == 127) points.pop_back();
     }
@@ -95,7 +95,7 @@ void Capture::getTableArea(const std::string& windowName)
                         cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 255), 2);
         }
         cv::imshow(windowName, screen);
-        int key = cv::waitKey(1);
+        const int key = cv::waitKey(1);
         if (key == 27) break;
         if (key == 8 || key == 127) points.pop_back();
     }
