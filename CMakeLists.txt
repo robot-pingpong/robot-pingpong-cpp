@@ -9,6 +9,8 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 add_executable(robot_pingpong_cpp src/main.cpp
         src/capture.cpp
         src/capture.h
-        src/constants.h)
+        src/constants.h
+        src/tracker.cpp
+        src/tracker.h)
 
 target_link_libraries(robot_pingpong_cpp ${OpenCV_LIBS})

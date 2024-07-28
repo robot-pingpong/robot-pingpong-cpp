@@ -1,16 +1,17 @@
 #include "capture.h"
+#include "tracker.h"
 
 int main()
 {
-    Capture c(0);
-    c.setGlobalMask();
     cv::Mat screen;
+    Tracker t(screen);
+    t.setMask();
+    t.setTableArea();
 
     auto prev = std::chrono::steady_clock::now();
     while (true)
     {
-        c.captureFrame();
-        c.render(screen);
+        t.render(screen);
 
         auto curr = std::chrono::steady_clock::now();
         const auto elapsed = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(curr - prev).

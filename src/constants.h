@@ -8,4 +8,7 @@
 #define CIRCULARITY_THRESHOLD 0.3
 #define RATIO_THRESHOLD 2.0
 
+#define X_TABLE_SIZE 1.525
+#define Y_TABLE_SIZE 2.74
+
 #endif

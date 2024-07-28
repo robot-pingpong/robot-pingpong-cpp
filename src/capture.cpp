@@ -68,10 +68,10 @@ void Capture::setGlobalMask(const std::string& windowName)
     cv::destroyWindow(windowName);
 }
 
-void Capture::getTableArea(const std::string& windowName)
+std::vector<cv::Point2f> Capture::getTableArea(const std::string& windowName)
 {
     cv::Mat screen;
-    std::vector<cv::Point> points;
+    std::vector<cv::Point2f> points;
 
     cv::namedWindow(windowName, cv::WINDOW_AUTOSIZE);
     cv::moveWindow(windowName, 0, 0);
@@ -79,8 +79,8 @@ void Capture::getTableArea(const std::string& windowName)
     {
         if (event == cv::EVENT_LBUTTONDOWN)
         {
-            auto* ps = static_cast<std::vector<cv::Point>*>(userdata);
-            ps->emplace_back(x, y);
+            auto* ps = static_cast<std::vector<cv::Point2f>*>(userdata);
+            ps->emplace_back(static_cast<float>(x), static_cast<float>(y));
         }
     }, &points);
 
@@ -104,6 +104,7 @@ void Capture::getTableArea(const std::string& windowName)
         exit(1);
     }
     cv::destroyWindow(windowName);
+    return points;
 }
 
 void Capture::captureFrame()
@@ -111,9 +112,9 @@ void Capture::captureFrame()
     capture >> frame;
 }
 
-void Capture::render(cv::Mat& out)
+bool Capture::render(cv::Mat& out, int& x, int& y)
 {
-    auto copy = frame.clone();
+    frame.copyTo(copy);
     out = cv::Scalar(0, 0, 0);
     cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
     cv::inRange(hsv, cv::Scalar(8, 120, 140), cv::Scalar(20, 255, 255), grayMask);
@@ -176,12 +177,11 @@ void Capture::render(cv::Mat& out)
         grayMask = cv::Scalar(0);
         cv::drawContours(grayMask, contours, maxContourIndex, cv::Scalar(255), -1);
         cv::moments(grayMask, false);
-        const int x = static_cast<int>(cv::moments(grayMask).m10 / cv::moments(grayMask).m00);
-        const int y = static_cast<int>(cv::moments(grayMask).m01 / cv::moments(grayMask).m00);
+        x = static_cast<int>(cv::moments(grayMask).m10 / cv::moments(grayMask).m00);
+        y = static_cast<int>(cv::moments(grayMask).m01 / cv::moments(grayMask).m00);
         cv::line(out, cv::Point(0, y), cv::Point(out.size().width, y), cv::Scalar(0, 0, 255), 2);
         cv::line(out, cv::Point(x, 0), cv::Point(x, out.size().height), cv::Scalar(0, 0, 255), 2);
-        cv::putText(out, std::to_string(minColorSimilarity), cv::Point(10, 70),
-                    cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 0, 255)
-        );
+        return true;
     }
+    return false;
 }

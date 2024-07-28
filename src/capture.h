@@ -10,6 +10,7 @@ class Capture
     cv::Ptr<cv::BackgroundSubtractorMOG2> bgSubtractor;
     cv::Mat globalMask;
     cv::Mat frame;
+    cv::Mat copy;
     cv::Mat mat;
     cv::Mat hsv;
     cv::Mat grayMask;
@@ -22,11 +23,11 @@ public:
 
     void setGlobalMask(const std::string& windowName = "Global Mask");
 
-    void getTableArea(const std::string& windowName = "Table Area");
+    std::vector<cv::Point2f> getTableArea(const std::string& windowName = "Table Area");
 
     void captureFrame();
 
-    void render(cv::Mat& out);
+    bool render(cv::Mat& out, int& x, int& y);
 
     ~Capture() = default;
 };
