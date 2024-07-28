@@ -1,8 +1,12 @@
+#include <iostream>
+
 #include "capture.h"
 #include "constants.h"
 
-Capture::Capture(int deviceId, int apiPreference) : capture(deviceId, apiPreference) {
-    if (!capture.isOpened()) {
+Capture::Capture(const int deviceId, const int apiPreference) : capture(deviceId, apiPreference)
+{
+    if (!capture.isOpened())
+    {
         std::cerr << "Error: Could not open camera." << std::endl;
         exit(1);
     }
@@ -21,30 +25,36 @@ Capture::Capture(int deviceId, int apiPreference) : capture(deviceId, apiPrefere
     hsvUpper = cv::Mat(img.size(), CV_8UC3, cv::Scalar(20, 255, 255));
 }
 
-void Capture::setGlobalMask(const std::string windowName) {
+void Capture::setGlobalMask(const std::string& windowName)
+{
     cv::Mat screen;
     std::vector<cv::Point> points;
 
     cv::namedWindow(windowName, cv::WINDOW_AUTOSIZE);
     cv::moveWindow(windowName, 0, 0);
-    cv::setMouseCallback(windowName, [](int event, int x, int y, int flags, void *userdata) {
-        if (event == cv::EVENT_LBUTTONDOWN) {
-            std::vector<cv::Point> *points = (std::vector<cv::Point> *) userdata;
-            points->push_back(cv::Point(x, y));
+    cv::setMouseCallback(windowName, [](int event, int x, int y, int flags, void* userdata)
+    {
+        if (event == cv::EVENT_LBUTTONDOWN)
+        {
+            auto* ps = static_cast<std::vector<cv::Point>*>(userdata);
+            ps->emplace_back(x, y);
         }
     }, &points);
 
-    while (true) {
+    while (true)
+    {
         capture >> screen;
-        for (auto it = points.begin(); it != points.end(); it++) {
+        for (auto it = points.begin(); it != points.end(); it++)
+        {
             cv::circle(screen, *it, 5, cv::Scalar(0, 0, 255), -1);
             cv::line(
-                    screen, *it,
-                    std::next(it) == points.end() ? *points.begin() : *std::next(it),
-                    cv::Scalar(0, 0, 255), 2
+                screen, *it,
+                std::next(it) == points.end() ? *points.begin() : *std::next(it),
+                cv::Scalar(0, 0, 255), 2
             );
         }
-        if (points.size() > 2) {
+        if (points.size() > 2)
+        {
             cv::Mat overlay = cv::Mat::zeros(screen.size(), screen.type());
 
             cv::fillPoly(overlay, {points}, cv::Scalar(255));
@@ -59,22 +69,27 @@ void Capture::setGlobalMask(const std::string windowName) {
     cv::fillPoly(globalMask, {points}, cv::Scalar(255));
 }
 
-void Capture::getTableArea(const std::string windowName) const {
+void Capture::getTableArea(const std::string& windowName)
+{
     cv::Mat screen;
     std::vector<cv::Point> points;
 
     cv::namedWindow(windowName, cv::WINDOW_AUTOSIZE);
     cv::moveWindow(windowName, 0, 0);
-    cv::setMouseCallback(windowName, [](int event, int x, int y, int flags, void *userdata) {
-        if (event == cv::EVENT_LBUTTONDOWN) {
-            std::vector<cv::Point> *points = (std::vector<cv::Point> *) userdata;
-            points->push_back(cv::Point(x, y));
+    cv::setMouseCallback(windowName, [](const int event, const int x, const int y, int flags, void* userdata)
+    {
+        if (event == cv::EVENT_LBUTTONDOWN)
+        {
+            auto* ps = static_cast<std::vector<cv::Point>*>(userdata);
+            ps->emplace_back(x, y);
         }
     }, &points);
 
-    while (true) {
+    while (true)
+    {
         capture >> screen;
-        for (auto it = points.begin(); it != points.end(); it++) {
+        for (auto it = points.begin(); it != points.end(); ++it)
+        {
             cv::circle(screen, *it, 5, cv::Scalar(0, 0, 255), -1);
             cv::putText(screen, "P" + std::to_string(std::distance(points.begin(), it) + 1), *it,
                         cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 0, 255), 2);
@@ -84,22 +99,21 @@ void Capture::getTableArea(const std::string windowName) const {
         if (key == 27) break;
         if (key == 8 || key == 127) points.pop_back();
     }
-    if (points.size() != 6) {
+    if (points.size() != 6)
+    {
         std::cerr << "Error: Table area must have 6 points." << std::endl;
         exit(1);
     }
 }
 
-void Capture::captureFrame() {
+void Capture::captureFrame()
+{
     capture >> frame;
 }
 
-void Capture::render() {
+void Capture::render()
+{
     cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
     cv::inRange(hsv, hsvLower, hsvUpper, grayMask);
     cv::bitwise_and(grayMask, globalMask, colorMask);
-}
-
-Capture::~Capture() {
-    capture.release();
 }

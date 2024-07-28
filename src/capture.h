@@ -1,10 +1,11 @@
 #ifndef ROBOT_PINGPONG_CPP_CAPTURE_H
 #define ROBOT_PINGPONG_CPP_CAPTURE_H
 
+#include <string>
 #include <opencv2/opencv.hpp>
 
-class Capture {
-private:
+class Capture
+{
     cv::VideoCapture capture;
     cv::Ptr<cv::BackgroundSubtractorMOG2> bgSubtractor;
     cv::Mat globalMask;
@@ -15,18 +16,19 @@ private:
     cv::Mat colorMask;
     cv::Mat hsvLower;
     cv::Mat hsvUpper;
+
 public:
-    Capture(int deviceId, int apiPreference = cv::CAP_ANY);
+    explicit Capture(int deviceId, int apiPreference = cv::CAP_ANY);
 
-    void setGlobalMask(const std::string windowName = "Global Mask");
+    void setGlobalMask(const std::string& windowName = "Global Mask");
 
-    void getTableArea(const std::string windowName = "Table Area") const;
+    void getTableArea(const std::string& windowName = "Table Area");
 
     void captureFrame();
 
     void render();
 
-    ~Capture();
+    ~Capture() = default;
 };
 
 
