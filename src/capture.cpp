@@ -17,6 +17,8 @@ Capture::Capture(int deviceId, int apiPreference) : capture(deviceId, apiPrefere
     bgSubtractor = cv::createBackgroundSubtractorMOG2();
     capture >> img;
     globalMask = cv::Mat::zeros(img.size(), CV_8UC1);
+    hsvLower = cv::Mat(img.size(), CV_8UC3, cv::Scalar(8, 120, 140));
+    hsvUpper = cv::Mat(img.size(), CV_8UC3, cv::Scalar(20, 255, 255));
 }
 
 void Capture::setGlobalMask(const std::string windowName) {
@@ -57,7 +59,7 @@ void Capture::setGlobalMask(const std::string windowName) {
     cv::fillPoly(globalMask, {points}, cv::Scalar(255));
 }
 
-void Capture::getTableArea(const std::string windowName) {
+void Capture::getTableArea(const std::string windowName) const {
     cv::Mat screen;
     std::vector<cv::Point> points;
 
@@ -86,6 +88,16 @@ void Capture::getTableArea(const std::string windowName) {
         std::cerr << "Error: Table area must have 6 points." << std::endl;
         exit(1);
     }
+}
+
+void Capture::captureFrame() {
+    capture >> frame;
+}
+
+void Capture::render() {
+    cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
+    cv::inRange(hsv, hsvLower, hsvUpper, grayMask);
+    cv::bitwise_and(grayMask, globalMask, colorMask);
 }
 
 Capture::~Capture() {
