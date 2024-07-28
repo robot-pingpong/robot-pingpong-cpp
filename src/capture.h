@@ -13,6 +13,8 @@ public:
 
     void setGlobalMask(const std::string windowName = "Global Mask");
 
+    void getTableArea(const std::string windowName = "Table Area");
+
     ~Capture();
 };
 
