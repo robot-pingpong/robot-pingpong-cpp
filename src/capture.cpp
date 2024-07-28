@@ -21,8 +21,6 @@ Capture::Capture(const int deviceId, const int apiPreference) : capture(deviceId
     bgSubtractor = cv::createBackgroundSubtractorMOG2();
     capture >> img;
     globalMask = cv::Mat::zeros(img.size(), CV_8UC1);
-    hsvLower = cv::Mat(img.size(), CV_8UC3, cv::Scalar(8, 120, 140));
-    hsvUpper = cv::Mat(img.size(), CV_8UC3, cv::Scalar(20, 255, 255));
 }
 
 void Capture::setGlobalMask(const std::string& windowName)
@@ -115,12 +113,75 @@ void Capture::captureFrame()
 
 void Capture::render(cv::Mat& out)
 {
+    auto copy = frame.clone();
     out = cv::Scalar(0, 0, 0);
     cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
     cv::inRange(hsv, cv::Scalar(8, 120, 140), cv::Scalar(20, 255, 255), grayMask);
     cv::bitwise_and(grayMask, globalMask, grayMask);
     cv::bitwise_and(hsv, hsv, out, grayMask);
+    out.copyTo(hsv);
     cv::cvtColor(out, out, cv::COLOR_HSV2BGR);
 
-    bgSubtractor->apply(out, grayMask);
+    out.copyTo(copy);
+    out = cv::Scalar(0, 0, 0);
+    bgSubtractor->apply(copy, grayMask);
+    cv::morphologyEx(grayMask, grayMask, cv::MORPH_CLOSE, morphKernel, cv::Point(-1, -1), 3);
+    cv::bitwise_and(grayMask, globalMask, grayMask);
+    cv::bitwise_and(copy, copy, out, grayMask);
+
+    out.copyTo(copy);
+    out = cv::Scalar(0, 0, 0);
+    cv::Canny(copy, grayMask, CANNY_THRESHOLD, CANNY_THRESHOLD);
+    cv::morphologyEx(grayMask, grayMask, cv::MORPH_CLOSE, morphKernel, cv::Point(-1, -1), 3);
+    cv::morphologyEx(grayMask, grayMask, cv::MORPH_OPEN, morphKernel);
+
+    std::vector<std::vector<cv::Point>> contours;
+    cv::findContours(grayMask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+
+    auto minColorSimilarity = MIN_COLOR_SIMILARITY;
+    int maxContourIndex = -1;
+
+    for (int i = 0; i < contours.size(); ++i)
+    {
+        const auto area = cv::contourArea(contours.at(i));
+        const auto perimeter = cv::arcLength(contours.at(i), true);
+        if (
+            const auto circularity = 4 * M_PI * area / (perimeter * perimeter);
+            circularity < CIRCULARITY_THRESHOLD
+        )
+            continue;
+
+        const auto rect = cv::boundingRect(contours.at(i));
+        if (
+            const auto ratio = static_cast<double>(rect.width) / rect.height;
+            ratio > RATIO_THRESHOLD || ratio < 1 / RATIO_THRESHOLD
+        )
+            continue;
+
+        grayMask = cv::Scalar(0);
+        cv::drawContours(grayMask, contours, i, cv::Scalar(255), cv::FILLED);
+        auto meanColor = cv::mean(hsv, grayMask);
+        if (const auto diff = cv::norm(meanColor, orange, cv::NORM_L2); diff < minColorSimilarity)
+        {
+            minColorSimilarity = diff;
+            maxContourIndex = i;
+        }
+    }
+
+    cv::addWeighted(frame, 0.1, copy, 0.9, 0, out);
+
+    if (maxContourIndex != -1)
+    {
+        cv::drawContours(out, contours, maxContourIndex, cv::Scalar(0, 0, 255), 2);
+        grayMask = cv::Scalar(0);
+        cv::drawContours(grayMask, contours, maxContourIndex, cv::Scalar(255), -1);
+        cv::moments(grayMask, false);
+        const int x = static_cast<int>(cv::moments(grayMask).m10 / cv::moments(grayMask).m00);
+        const int y = static_cast<int>(cv::moments(grayMask).m01 / cv::moments(grayMask).m00);
+        cv::line(out, cv::Point(0, y), cv::Point(out.size().width, y), cv::Scalar(0, 0, 255), 2);
+        cv::line(out, cv::Point(x, 0), cv::Point(x, out.size().height), cv::Scalar(0, 0, 255), 2);
+        cv::putText(out, std::to_string(minColorSimilarity), cv::Point(10, 70),
+                    cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 0, 255)
+        );
+    }
 }

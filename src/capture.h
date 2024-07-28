@@ -14,8 +14,8 @@ class Capture
     cv::Mat hsv;
     cv::Mat grayMask;
     cv::Mat colorMask;
-    cv::Mat hsvLower;
-    cv::Mat hsvUpper;
+    const cv::Mat morphKernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5));
+    const cv::Scalar orange = cv::Scalar(8, 150, 155);
 
 public:
     explicit Capture(int deviceId, int apiPreference = cv::CAP_ANY);
