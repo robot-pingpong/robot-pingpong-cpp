@@ -1,0 +1,7 @@
+#ifndef CONSTANTS_H
+#define CONSTANTS_H
+
+#define CAPTURE_WIDTH 1280
+#define CAPTURE_HEIGHT 720
+
+#endif
