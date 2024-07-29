@@ -109,7 +109,7 @@ bool Capture::render(cv::Mat &out, cv::Point2f &point) {
   frame.copyTo(copy);
   out = cv::Scalar(0, 0, 0);
   cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
-  cv::inRange(hsv, ORANGE_LOWER, ORANGE_UPPER, grayMask);
+  cv::inRange(hsv, ORANGE_HSV_LOWER, ORANGE_HSV_UPPER, grayMask);
   cv::bitwise_and(grayMask, globalMask, grayMask);
   cv::bitwise_and(hsv, hsv, out, grayMask);
   out.copyTo(hsv);
@@ -152,9 +152,9 @@ bool Capture::render(cv::Mat &out, cv::Point2f &point) {
 
     grayMask = cv::Scalar(0);
     cv::drawContours(grayMask, contours, i, cv::Scalar(255), cv::FILLED);
-    cv::drawContours(copy, contours, i, cv::Scalar(0, 255, 0), 2);
+    cv::drawContours(copy, contours, i, GREEN, 2);
     auto meanColor = cv::mean(hsv, grayMask);
-    if (const auto diff = cv::norm(meanColor, ORANGE, cv::NORM_L2);
+    if (const auto diff = cv::norm(meanColor, ORANGE_HSV, cv::NORM_L2);
         diff < minColorSimilarity) {
       minColorSimilarity = diff;
       maxContourIndex = i;
@@ -164,7 +164,7 @@ bool Capture::render(cv::Mat &out, cv::Point2f &point) {
   cv::addWeighted(frame, 0.1, copy, 0.9, 0, out);
 
   if (maxContourIndex != -1) {
-    cv::drawContours(out, contours, maxContourIndex, cv::Scalar(0, 0, 255), 2);
+    cv::drawContours(out, contours, maxContourIndex, RED, 2);
     grayMask = cv::Scalar(0);
     cv::drawContours(grayMask, contours, maxContourIndex, cv::Scalar(255), -1);
     cv::moments(grayMask, false);
