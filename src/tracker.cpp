@@ -21,6 +21,7 @@ Tracker::Tracker(cv::Mat &screen, cv::viz::Viz3d &visualizer)
   visualizer.showWidget("net", net);
   visualizer.setViewerPose(cv::viz::makeCameraPose(
       cv::Point3d(3, -10, 5), cv::Point3d(0, 0, 0), cv::Point3d(0, 0, -1)));
+  visualizer.showWidget("ball", ball);
 }
 
 void Tracker::setMask() {
@@ -96,7 +97,7 @@ void Tracker::capture(const bool render) {
   }
 }
 
-void Tracker::render(const cv::Mat &screen, const cv::viz::Viz3d &visualizer) {
+void Tracker::render(const cv::Mat &screen, cv::viz::Viz3d &visualizer) {
   capture();
   std::vector<cv::Point2f> firstPoint(1);
   std::vector<cv::Point2f> secondPoint(1);
@@ -142,9 +143,14 @@ void Tracker::render(const cv::Mat &screen, const cv::viz::Viz3d &visualizer) {
   point3dNormalized = point3dNormalized.t();
 
   std::stringstream ss;
-  ss << "X: " << point3dNormalized.at<float>(0, 0)
-     << ", Y: " << point3dNormalized.at<float>(0, 1)
-     << ", Z: " << point3dNormalized.at<float>(0, 2);
-  cv::putText(screen, ss.str(), cv::Point(10, 80), cv::FONT_HERSHEY_SIMPLEX,
-              0.5, cv::Scalar(255, 255, 255));
+  ss << "X: " << point3dNormalized.at<float>(0)
+     << ", Y: " << point3dNormalized.at<float>(1)
+     << ", Z: " << point3dNormalized.at<float>(2);
+  cv::putText(screen, ss.str(), cv::Point(10, 80), cv::FONT_HERSHEY_SIMPLEX, 1,
+              cv::Scalar(255, 255, 255));
+
+  visualizer.setWidgetPose(
+      "ball", cv::Affine3d(cv::Vec3d(point3dNormalized.at<float>(0),
+                                     point3dNormalized.at<float>(1),
+                                     point3dNormalized.at<float>(2))));
 }

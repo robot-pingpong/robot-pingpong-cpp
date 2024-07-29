@@ -16,6 +16,8 @@ class Tracker {
 
   void capture(bool render = false);
 
+  cv::viz::WSphere ball = cv::viz::WSphere(cv::Point3f(0, 0, 0), 0.1);
+
 public:
   explicit Tracker(cv::Mat &screen, cv::viz::Viz3d &visualizer);
 
@@ -23,7 +25,7 @@ public:
 
   void setTableArea();
 
-  void render(const cv::Mat &screen, const cv::viz::Viz3d &visualizer);
+  void render(const cv::Mat &screen, cv::viz::Viz3d &visualizer);
 };
 
 #endif // TRACKER_H

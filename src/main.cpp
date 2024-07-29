@@ -15,7 +15,7 @@ int main() {
   cv::VideoWriter writer(fileName.str(),
                          cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30,
                          cv::Size(1280, 720));
-  while (true) {
+  while (!visualizer.wasStopped()) {
     t.render(screen, visualizer);
 
     auto curr = std::chrono::steady_clock::now();
@@ -28,10 +28,11 @@ int main() {
     cv::putText(screen, "FPS: " + std::to_string(fps), cv::Point(10, 30),
                 cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 0, 255));
 
-    cv::imshow("screen", screen);
+    // cv::imshow("screen", screen);
     writer.write(screen);
-    if (cv::waitKey(1) == 27)
-      break;
+    visualizer.spinOnce(1, true);
+    // if (cv::waitKey(1) == 27)
+    //   break;
   }
   writer.release();
   return 0;
