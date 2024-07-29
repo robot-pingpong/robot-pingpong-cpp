@@ -1,24 +1,30 @@
 #include "tracker.h"
 #include "constants.h"
+#include "dlt.h"
+
 #include <sstream>
 
 Tracker::Tracker(cv::Mat &screen, cv::viz::Viz3d &visualizer)
     : first(0), second(1) {
   capture(true);
-  halfSize = cv::Size(firstFrame.cols / 2, firstFrame.rows);
+  halfSize = cv::Size(firstFrame.cols / 2, firstFrame.rows / 2);
   firstFrame.copyTo(screen);
 
   visualizer.showWidget("Coordinate Widget", cv::viz::WCoordinateSystem());
   auto table = cv::viz::WPlane(cv::Size2d(X_TABLE_SIZE, Y_TABLE_SIZE));
   table.setRenderingProperty(cv::viz::REPRESENTATION,
                              cv::viz::REPRESENTATION_WIREFRAME);
-  visualizer.showWidget("table", table);
-  auto net = cv::viz::WPlane(cv::Point3d(0, 0, 0.07625), cv::Point3d(0, -1, 0),
-                             cv::Point3d(0, 0, 1),
-                             cv::Size2d(X_TABLE_SIZE + 0.305, 0.1525));
+  visualizer.showWidget(
+      "table", table,
+      cv::Affine3d(cv::Vec3d(0, 0, M_PI / 2),
+                   cv::Vec3d(Y_TABLE_SIZE / 2, X_TABLE_SIZE / 2, 0.0)));
+  auto net = cv::viz::WPlane(cv::Size2d(Y_TABLE_SIZE + 0.305, 0.1525));
   net.setRenderingProperty(cv::viz::REPRESENTATION,
                            cv::viz::REPRESENTATION_WIREFRAME);
-  visualizer.showWidget("net", net);
+  visualizer.showWidget(
+      "net", net,
+      cv::Affine3d(cv::Vec3d(M_PI / 2, 0, 0),
+                   cv::Vec3d(Y_TABLE_SIZE / 2, X_TABLE_SIZE / 2, 0.1525 / 2)));
   visualizer.setViewerPose(cv::viz::makeCameraPose(
       cv::Point3d(3, -10, 5), cv::Point3d(0, 0, 0), cv::Point3d(0, 0, -1)));
   visualizer.showWidget("ball", ball);
@@ -55,7 +61,7 @@ void Tracker::setTableArea(cv::viz::Viz3d &visualizer) {
   data << "second" << secondPoints;
   data.release();
 
-  std::vector<std::vector<cv::Point3f>> objectPoints = {
+  const std::vector<std::vector<cv::Point3d>> objectPoints = {
       {{0, Y_TABLE_SIZE, 0},
        {X_TABLE_SIZE, Y_TABLE_SIZE, 0},
        {X_TABLE_SIZE, 0, 0},
@@ -63,90 +69,41 @@ void Tracker::setTableArea(cv::viz::Viz3d &visualizer) {
        {X_TABLE_SIZE / 2, -0.1525, 0.15},
        {X_TABLE_SIZE / 2, Y_TABLE_SIZE + 0.1525, 0.15}}};
 
-  std::vector<std::vector<cv::Point2f>> screenPoints[] = {
+  const std::vector<std::vector<cv::Point2d>> screenPoints[] = {
       {{
-          {firstPoints[0].x, firstPoints[0].y},
-          {firstPoints[1].x, firstPoints[1].y},
-          {firstPoints[2].x, firstPoints[2].y},
-          {firstPoints[3].x, firstPoints[3].y},
-          {firstPoints[4].x, firstPoints[4].y},
-          {firstPoints[5].x, firstPoints[5].y},
+          firstPoints[0],
+          firstPoints[1],
+          firstPoints[2],
+          firstPoints[3],
+          firstPoints[4],
+          firstPoints[5],
       }},
       {{
-          {secondPoints[2].x, secondPoints[2].y},
-          {secondPoints[3].x, secondPoints[3].y},
-          {secondPoints[0].x, secondPoints[0].y},
-          {secondPoints[1].x, secondPoints[1].y},
-          {secondPoints[5].x, secondPoints[5].y},
-          {secondPoints[4].x, secondPoints[4].y},
+          secondPoints[2],
+          secondPoints[3],
+          secondPoints[0],
+          secondPoints[1],
+          secondPoints[5],
+          secondPoints[4],
       }}};
 
-  cv::Mat rVect[2], tVect[2], distCoeffs[2];
-  cv::Size size = firstFrame.size();
-  cameraMatrix[0] = cameraMatrix[1] =
-      cv::initCameraMatrix2D(objectPoints, screenPoints[0], size);
+  cv::Mat distCoeffs[2], R[2];
+  cv::Mat rVecs[2], tVecs[2];
   for (int i = 0; i < 2; ++i) {
-    double rms = cv::calibrateCamera(
-        objectPoints, screenPoints[i], size, cameraMatrix[i], distCoeffs[i],
-        rVect[i], tVect[i],
-        cv::CALIB_USE_INTRINSIC_GUESS | cv::CALIB_FIX_ASPECT_RATIO |
-            cv::CALIB_ZERO_TANGENT_DIST | cv::CALIB_FIX_S1_S2_S3_S4 |
-            cv::CALIB_FIX_K1 | cv::CALIB_FIX_K2 | cv::CALIB_FIX_K3 |
-            cv::CALIB_FIX_K4 | cv::CALIB_FIX_K5 | cv::CALIB_FIX_K6,
-        cv::TermCriteria(cv::TermCriteria::COUNT + cv::TermCriteria::EPS, 500,
-                         1e-5));
-    std::cout << rms << std::endl;
+    DLT::pose(objectPoints[0], screenPoints[i][0], cameraMatrix[i], R[i],
+              tVecs[i], projectionMatrix[i]);
+    cv::Mat position = (R[i].inv() * tVecs[i]);
+    auto camera = cv::viz::WCameraPosition(cv::Matx33d(cameraMatrix[i]), 1,
+                                           i == 0 ? cv::viz::Color::blue()
+                                                  : cv::viz::Color::red());
+    visualizer.showWidget("camera" + std::to_string(i), camera,
+                          cv::Affine3d(R[i], position));
   }
-
-  cv::Mat R, T, E, F;
-  double rms = cv::stereoCalibrate(
-      objectPoints, screenPoints[0], screenPoints[1], cameraMatrix[0],
-      distCoeffs[0], cameraMatrix[1], distCoeffs[1], size, R, T, E, F);
-  std::cout << rms << std::endl;
-
-  cv::Mat R1, R2, Q;
-  cv::Rect validRoi[2];
-  cv::stereoRectify(cameraMatrix[0], distCoeffs[0], cameraMatrix[1],
-                    distCoeffs[1], size, R, T, R1, R2, projectionMatrix[0],
-                    projectionMatrix[1], Q, cv::CALIB_ZERO_DISPARITY, 1, size,
-                    &validRoi[0], &validRoi[1]);
-
-  cv::Mat firstProjectionMatrix = cameraMatrix[0] * projectionMatrix[0];
-  cv::Mat secondProjectionMatrix = cameraMatrix[1] * projectionMatrix[1];
-
-  cv::Mat firstCameraPosition =
-      -(firstProjectionMatrix.colRange(0, 3).rowRange(0, 3).inv() *
-        firstProjectionMatrix.col(3));
-  cv::Mat secondCameraPosition =
-      -(secondProjectionMatrix.colRange(0, 3).rowRange(0, 3).inv() *
-        secondProjectionMatrix.col(3));
-  auto firstCamera = cv::viz::WCameraPosition(cv::Matx33d(cameraMatrix[0]), 1,
-                                              cv::viz::Color::blue());
-  auto secondCamera = cv::viz::WCameraPosition(cv::Matx33d(cameraMatrix[1]), 1,
-                                               cv::viz::Color::red());
-  firstCamera.setPose(cv::Affine3d(cv::Vec3d(), firstCameraPosition));
-  secondCamera.setPose(cv::Affine3d(cv::Vec3d(), secondCameraPosition));
-
-  visualizer.showWidget("first camera", firstCamera);
-  visualizer.showWidget("second camera", secondCamera);
-
-  cv::initUndistortRectifyMap(cameraMatrix[0], distCoeffs[0], R1,
-                              projectionMatrix[0], size, CV_16SC2, rmap[0][0],
-                              rmap[0][1]);
-  cv::initUndistortRectifyMap(cameraMatrix[1], distCoeffs[1], R2,
-                              projectionMatrix[1], size, CV_16SC2, rmap[1][0],
-                              rmap[1][1]);
 }
 
 void Tracker::capture(const bool render) {
   first.captureFrame();
   second.captureFrame();
-  // if (!rmap[0][0].empty()) {
-  //   cv::remap(first.frame, first.frame, rmap[0][0], rmap[0][1],
-  //             cv::INTER_LINEAR);
-  //   cv::remap(second.frame, second.frame, rmap[1][0], rmap[1][1],
-  //             cv::INTER_LINEAR);
-  // }
   if (render) {
     cv::Point2f p1, p2;
     first.render(firstFrame, p1);
@@ -198,7 +155,6 @@ void Tracker::render(const cv::Mat &screen, cv::viz::Viz3d &visualizer) {
   cv::Mat point3dNormalized;
   cv::convertPointsFromHomogeneous(point3d.t(), point3dNormalized);
   point3dNormalized = point3dNormalized.t();
-  // point3dNormalized = point3d;
 
   std::stringstream ss;
   ss << "X: " << point3dNormalized.at<float>(0)
@@ -209,7 +165,7 @@ void Tracker::render(const cv::Mat &screen, cv::viz::Viz3d &visualizer) {
 
   visualizer.setWidgetPose(
       "ball",
-      cv::Affine3d(cv::Vec3d(), cv::Vec3d(point3dNormalized.at<float>(0),
-                                          point3dNormalized.at<float>(1),
+      cv::Affine3d(cv::Vec3d(), cv::Vec3d(point3dNormalized.at<float>(1),
+                                          point3dNormalized.at<float>(0),
                                           point3dNormalized.at<float>(2))));
 }

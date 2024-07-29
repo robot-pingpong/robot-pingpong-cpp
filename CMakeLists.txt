@@ -14,7 +14,10 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/capture.h
         src/constants.h
         src/tracker.cpp
-        src/tracker.h)
+        src/tracker.h
+        src/dlt.cpp
+        src/dlt.h
+)
 
 target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS} ${LinearMotor_LIBRARIES})
 

@@ -7,6 +7,7 @@ int main() {
   cv::Mat screen;
   cv::viz::Viz3d visualizer("visualizer");
   Tracker t(screen, visualizer);
+  visualizer.setWindowSize(cv::Size(1280, 360));
   t.setMask();
   t.setTableArea(visualizer);
 
@@ -30,9 +31,10 @@ int main() {
     cv::putText(screen, "FPS: " + std::to_string(fps), cv::Point(10, 30),
                 cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 0, 255));
 
+    visualizer.spinOnce();
+    visualizer.getScreenshot().copyTo(screen(cv::Rect(0, 360, 1280, 360)));
     cv::imshow("screen", screen);
     writer.write(screen);
-    visualizer.spinOnce(1, true);
   }
   writer.release();
   return 0;
