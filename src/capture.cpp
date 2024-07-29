@@ -19,7 +19,7 @@ Capture::Capture(const int deviceId, const int apiPreference)
   cv::Mat img;
   bgSubtractor = cv::createBackgroundSubtractorMOG2();
   capture >> img;
-  globalMask = cv::Mat::zeros(img.size(), CV_8UC1);
+  globalMask = cv::Mat(img.size(), CV_8UC1, cv::Scalar(255));
 }
 
 void Capture::setGlobalMask(const std::string &windowName) {
@@ -59,7 +59,7 @@ void Capture::setGlobalMask(const std::string &windowName) {
     if (key == 8 || key == 127)
       points.pop_back();
   }
-  globalMask = cv::Mat::zeros(screen.size(), CV_8UC1);
+  globalMask = cv::Scalar(0);
   cv::fillPoly(globalMask, {points}, cv::Scalar(255));
   cv::destroyWindow(windowName);
 }

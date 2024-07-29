@@ -115,6 +115,9 @@ void Tracker::render(const cv::Mat &screen) {
   if (!firstSuccess || !secondSuccess) {
     return;
   }
+  if (firstProjectionMatrix.empty() || secondProjectionMatrix.empty()) {
+    return;
+  }
   cv::Mat point3d;
   cv::triangulatePoints(firstProjectionMatrix, secondProjectionMatrix,
                         firstPoint, secondPoint, point3d);
