@@ -25,13 +25,33 @@ Tracker::Tracker(cv::Mat &screen, cv::viz::Viz3d &visualizer)
 }
 
 void Tracker::setMask() {
-  first.setGlobalMask("first mask");
-  second.setGlobalMask("second mask");
+  auto data = cv::FileStorage("mask.yml", cv::FileStorage::READ);
+  std::vector<cv::Point> firstMask, secondMask;
+  if (data.isOpened()) {
+    data["first"] >> firstMask;
+    data["second"] >> secondMask;
+    data.release();
+  }
+  data.open("mask.yml", cv::FileStorage::WRITE);
+  cv::write(data, "first", first.setGlobalMask("first mask", firstMask));
+  cv::write(data, "second", second.setGlobalMask("second mask", secondMask));
+  data.release();
 }
 
 void Tracker::setTableArea() {
-  auto firstPoints = first.getTableArea();
-  auto secondPoints = second.getTableArea();
+  auto data = cv::FileStorage("points.yml", cv::FileStorage::READ);
+  std::vector<cv::Point2f> firstPoints, secondPoints;
+  if (data.isOpened()) {
+    data["first"] >> firstPoints;
+    data["second"] >> secondPoints;
+    data.release();
+  }
+  data.open("points.yml", cv::FileStorage::WRITE);
+  firstPoints = first.getTableArea("first area", firstPoints);
+  secondPoints = second.getTableArea("second area", secondPoints);
+  cv::write(data, "first", firstPoints);
+  cv::write(data, "second", secondPoints);
+  data.release();
 
   std::vector<std::vector<cv::Point3f>> objectPoints = {
       {{0, Y_TABLE_SIZE, 0},
@@ -150,7 +170,7 @@ void Tracker::render(const cv::Mat &screen, cv::viz::Viz3d &visualizer) {
               cv::Scalar(255, 255, 255));
 
   visualizer.setWidgetPose(
-      "ball", cv::Affine3d(cv::Vec3d(point3dNormalized.at<float>(0),
-                                     point3dNormalized.at<float>(1),
-                                     point3dNormalized.at<float>(2))));
+      "ball", cv::Affine3d(cv::Vec3d(),
+                           cv::Vec3d(point3d.at<float>(0), point3d.at<float>(1),
+                                     point3d.at<float>(2))));
 }

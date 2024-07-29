@@ -51,9 +51,11 @@ Capture::Capture(const int deviceId, const int apiPreference)
   }
 }
 
-void Capture::setGlobalMask(const std::string &windowName) {
+std::vector<cv::Point>
+Capture::setGlobalMask(const std::string &windowName,
+                       const std::vector<cv::Point> &initialPoints) {
   cv::Mat screen;
-  std::vector<cv::Point> points;
+  std::vector points(initialPoints);
 
   cv::namedWindow(windowName, cv::WINDOW_AUTOSIZE);
   cv::moveWindow(windowName, 0, 0);
@@ -91,11 +93,14 @@ void Capture::setGlobalMask(const std::string &windowName) {
   globalMask = cv::Scalar(0);
   cv::fillPoly(globalMask, {points}, cv::Scalar(255));
   cv::destroyWindow(windowName);
+  return points;
 }
 
-std::vector<cv::Point2f> Capture::getTableArea(const std::string &windowName) {
+std::vector<cv::Point2f>
+Capture::getTableArea(const std::string &windowName,
+                      const std::vector<cv::Point2f> &initialPoints) {
   cv::Mat screen;
-  std::vector<cv::Point2f> points;
+  std::vector points(initialPoints);
 
   cv::namedWindow(windowName, cv::WINDOW_AUTOSIZE);
   cv::moveWindow(windowName, 0, 0);
