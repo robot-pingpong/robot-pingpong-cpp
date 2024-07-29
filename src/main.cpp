@@ -8,6 +8,11 @@ int main() {
   t.setTableArea();
 
   auto prev = std::chrono::steady_clock::now();
+  std::stringstream fileName;
+  fileName << "output" << std::time(nullptr) << ".avi";
+  cv::VideoWriter writer(fileName.str(),
+                         cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30,
+                         cv::Size(1280, 720));
   while (true) {
     t.render(screen);
 
@@ -22,6 +27,7 @@ int main() {
                 cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 0, 255));
 
     cv::imshow("screen", screen);
+    writer.write(screen);
     if (cv::waitKey(1) == 27)
       break;
   }
