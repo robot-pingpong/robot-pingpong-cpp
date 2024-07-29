@@ -94,19 +94,19 @@ void Tracker::render(const cv::Mat &screen) {
   if (firstSuccess) {
     cv::line(firstFrame, cv::Point(0, static_cast<int>(firstPoint[0].y)),
              cv::Point(firstFrame.cols, static_cast<int>(firstPoint[0].y)),
-             cv::Scalar(0, 255, 0), 5);
+             cv::Scalar(0, 255, 0), 2);
     cv::line(firstFrame, cv::Point(static_cast<int>(firstPoint[0].x / 2), 0),
              cv::Point(static_cast<int>(firstPoint[0].x / 2), firstFrame.rows),
-             cv::Scalar(0, 255, 0), 5);
+             cv::Scalar(0, 255, 0), 2);
   }
   if (secondSuccess) {
     cv::line(secondFrame, cv::Point(0, static_cast<int>(secondPoint[0].y)),
              cv::Point(secondFrame.cols, static_cast<int>(secondPoint[0].y)),
-             cv::Scalar(0, 255, 0), 5);
+             cv::Scalar(0, 255, 0), 2);
     cv::line(
         secondFrame, cv::Point(static_cast<int>(secondPoint[0].x / 2), 0),
         cv::Point(static_cast<int>(secondPoint[0].x / 2), secondFrame.rows),
-        cv::Scalar(0, 255, 0), 5);
+        cv::Scalar(0, 255, 0), 2);
   }
   firstFrame.copyTo(screen(cv::Rect(0, 0, halfSize.width, halfSize.height)));
   secondFrame.copyTo(
