@@ -3,7 +3,9 @@
 
 int main() {
   cv::Mat screen;
-  Tracker t(screen);
+  cv::viz::Viz3d visualizer("visualizer");
+  visualizer.spinOnce();
+  Tracker t(screen, visualizer);
   t.setMask();
   t.setTableArea();
 
@@ -14,7 +16,7 @@ int main() {
                          cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30,
                          cv::Size(1280, 720));
   while (true) {
-    t.render(screen);
+    t.render(screen, visualizer);
 
     auto curr = std::chrono::steady_clock::now();
     const auto elapsed = static_cast<double>(

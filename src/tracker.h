@@ -3,6 +3,8 @@
 
 #include "capture.h"
 
+#include <opencv2/viz.hpp>
+
 class Tracker {
   Capture first;
   Capture second;
@@ -15,13 +17,13 @@ class Tracker {
   void capture(bool render = false);
 
 public:
-  explicit Tracker(cv::Mat &screen);
+  explicit Tracker(cv::Mat &screen, cv::viz::Viz3d &visualizer);
 
   void setMask();
 
   void setTableArea();
 
-  void render(const cv::Mat &screen);
+  void render(const cv::Mat &screen, const cv::viz::Viz3d &visualizer);
 };
 
 #endif // TRACKER_H

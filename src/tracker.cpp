@@ -2,10 +2,25 @@
 #include "constants.h"
 #include <sstream>
 
-Tracker::Tracker(cv::Mat &screen) : first(0), second(1) {
+Tracker::Tracker(cv::Mat &screen, cv::viz::Viz3d &visualizer)
+    : first(0), second(1) {
   capture(true);
   halfSize = cv::Size(firstFrame.cols / 2, firstFrame.rows);
   firstFrame.copyTo(screen);
+
+  visualizer.showWidget("Coordinate Widget", cv::viz::WCoordinateSystem());
+  auto table = cv::viz::WPlane(cv::Size2d(X_TABLE_SIZE, Y_TABLE_SIZE));
+  table.setRenderingProperty(cv::viz::REPRESENTATION,
+                             cv::viz::REPRESENTATION_WIREFRAME);
+  visualizer.showWidget("table", table);
+  auto net = cv::viz::WPlane(cv::Point3d(0, 0, 0.07625), cv::Point3d(0, -1, 0),
+                             cv::Point3d(0, 0, 1),
+                             cv::Size2d(X_TABLE_SIZE + 0.305, 0.1525));
+  net.setRenderingProperty(cv::viz::REPRESENTATION,
+                           cv::viz::REPRESENTATION_WIREFRAME);
+  visualizer.showWidget("net", net);
+  visualizer.setViewerPose(cv::viz::makeCameraPose(
+      cv::Point3d(3, -10, 5), cv::Point3d(0, 0, 0), cv::Point3d(0, 0, -1)));
 }
 
 void Tracker::setMask() {
@@ -44,7 +59,7 @@ void Tracker::setTableArea() {
   auto fCameraMatrix =
       cv::initCameraMatrix2D(objectPoints, fs, firstFrame.size());
   cv::Mat fDistCoeffs, fRVect, fTVect;
-  auto fRms = cv::calibrateCamera(
+  double fRms = cv::calibrateCamera(
       objectPoints, fs, firstFrame.size(), fCameraMatrix, fDistCoeffs, fRVect,
       fTVect,
       cv::CALIB_USE_INTRINSIC_GUESS | cv::CALIB_FIX_FOCAL_LENGTH |
@@ -53,7 +68,7 @@ void Tracker::setTableArea() {
   auto sCameraMatrix =
       cv::initCameraMatrix2D(objectPoints, ss, secondFrame.size());
   cv::Mat sDistCoeffs, sRVect, sTVect;
-  auto sRms = cv::calibrateCamera(
+  double sRms = cv::calibrateCamera(
       objectPoints, ss, secondFrame.size(), sCameraMatrix, sDistCoeffs, sRVect,
       sTVect,
       cv::CALIB_USE_INTRINSIC_GUESS | cv::CALIB_FIX_FOCAL_LENGTH |
@@ -81,7 +96,7 @@ void Tracker::capture(const bool render) {
   }
 }
 
-void Tracker::render(const cv::Mat &screen) {
+void Tracker::render(const cv::Mat &screen, const cv::viz::Viz3d &visualizer) {
   capture();
   std::vector<cv::Point2f> firstPoint(1);
   std::vector<cv::Point2f> secondPoint(1);
