@@ -126,14 +126,6 @@ bool Capture::render(cv::Mat &out, cv::Point2f &point) {
 
   out.copyTo(copy);
   out = cv::Scalar(0, 0, 0);
-  // cv::GaussianBlur(copy, copy, cv::Size(5, 5), 0);
-  // cv::Canny(copy, grayMask, CANNY_THRESHOLD, CANNY_THRESHOLD);
-  // cv::morphologyEx(grayMask, grayMask, cv::MORPH_CLOSE, morphKernel,
-  //                  cv::Point(-1, -1), 3);
-  // cv::morphologyEx(grayMask, grayMask, cv::MORPH_OPEN, morphKernel,
-  //                  cv::Point(-1, -1), 2);
-  // cv::morphologyEx(grayMask, grayMask, cv::MORPH_DILATE, morphKernel,
-  //                  cv::Point(-1, -1), 2);
 
   std::vector<std::vector<cv::Point>> contours;
   cv::findContours(grayMask, contours, cv::RETR_EXTERNAL,
@@ -170,6 +162,7 @@ bool Capture::render(cv::Mat &out, cv::Point2f &point) {
   }
 
   cv::addWeighted(frame, 0.1, copy, 0.9, 0, out);
+  // cv::copyTo(frame, out, grayMask);
 
   if (maxContourIndex != -1) {
     cv::drawContours(out, contours, maxContourIndex, RED, 2);
