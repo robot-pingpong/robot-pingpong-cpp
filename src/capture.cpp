@@ -17,9 +17,38 @@ Capture::Capture(const int deviceId, const int apiPreference)
   capture.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
 
   cv::Mat img;
-  bgSubtractor = cv::createBackgroundSubtractorKNN();
+  bgSubtractor = cv::createBackgroundSubtractorMOG2(500, 32, false);
   capture >> img;
   globalMask = cv::Mat(img.size(), CV_8UC1, cv::Scalar(255));
+  {
+    cv::SimpleBlobDetector::Params p;
+    // p.filterByArea = true;
+    p.minArea = 100;
+    p.maxArea = 1000;
+
+    // p.filterByCircularity = true;
+    p.minCircularity = 0.8;
+    p.maxCircularity = 1;
+
+    p.filterByColor = true;
+    p.blobColor = 255;
+
+    // p.filterByConvexity = true;
+    p.minConvexity = 0.8;
+    p.maxConvexity = 1;
+
+    // p.filterByInertia = true;
+    p.minInertiaRatio = 0.1;
+    p.maxInertiaRatio = 1;
+
+    // p.minDistBetweenBlobs = 10;
+    // p.minRepeatability = 1;
+    // p.thresholdStep = 10;
+    // p.minThreshold = 50;
+    // p.maxThreshold = 220;
+
+    detector = cv::SimpleBlobDetector::create(p);
+  }
 }
 
 void Capture::setGlobalMask(const std::string &windowName) {
@@ -113,19 +142,37 @@ bool Capture::render(cv::Mat &out, cv::Point2f &point) {
   cv::bitwise_and(grayMask, globalMask, grayMask);
   cv::bitwise_and(hsv, hsv, out, grayMask);
   out.copyTo(hsv);
+  // cv::Mat channels[3];
+  // cv::split(hsv, channels);
+  // channels[1].copyTo(out);
   cv::cvtColor(out, out, cv::COLOR_HSV2BGR);
+  // cv::cvtColor(out, out, cv::COLOR_GRAY2BGR);
 
   out.copyTo(copy);
   out = cv::Scalar(0, 0, 0);
-  cv::GaussianBlur(copy, copy, cv::Size(5, 5), 0);
-  bgSubtractor->apply(copy, grayMask);
+  // cv::cvtColor(copy, grayMask, cv::COLOR_BGR2GRAY);
+  // cv::GaussianBlur(copy, copy, cv::Size(9, 9), 0);
+  // cv::threshold(grayMask, grayMask, 0, 255,
+  //               cv::THRESH_BINARY | cv::THRESH_OTSU);
+  bgSubtractor->apply(grayMask, grayMask);
   cv::morphologyEx(grayMask, grayMask, cv::MORPH_OPEN, morphKernel,
-                   cv::Point(-1, -1), 2);
+                   cv::Point(-1, -1), 3);
   cv::bitwise_and(grayMask, globalMask, grayMask);
   cv::bitwise_and(copy, copy, out, grayMask);
-
+  //
   out.copyTo(copy);
-  out = cv::Scalar(0, 0, 0);
+  // cv::cvtColor(copy, grayMask, cv::COLOR_BGR2GRAY);
+  // cv::cvtColor(grayMask, out, cv::COLOR_GRAY2BGR);
+  // cv::adaptiveThreshold(grayMask, out, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C,
+  //                       cv::THRESH_BINARY, 11, 2);
+  // std::vector<cv::KeyPoint> points;
+  // detector->detect(copy, points, grayMask);
+
+  // for (const auto &p : points) {
+  //   cv::circle(copy, p.pt, static_cast<int>(p.size), RED, -1);
+  //   // cv::drawKeypoints(copy, points, copy, RED,
+  //   //                   cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+  // }
 
   std::vector<std::vector<cv::Point>> contours;
   cv::findContours(grayMask, contours, cv::RETR_EXTERNAL,
@@ -136,6 +183,10 @@ bool Capture::render(cv::Mat &out, cv::Point2f &point) {
 
   for (int i = 0; i < contours.size(); ++i) {
     const auto area = cv::contourArea(contours.at(i));
+    if (area < MIN_AREA) {
+      cv::drawContours(copy, contours, i, PURPLE, 2);
+      continue;
+    }
     const auto perimeter = cv::arcLength(contours.at(i), true);
     if (const auto circularity = 4 * M_PI * area / (perimeter * perimeter);
         circularity < CIRCULARITY_THRESHOLD) {
