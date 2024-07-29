@@ -17,7 +17,7 @@ Capture::Capture(const int deviceId, const int apiPreference)
   capture.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'));
 
   cv::Mat img;
-  bgSubtractor = cv::createBackgroundSubtractorMOG2();
+  bgSubtractor = cv::createBackgroundSubtractorKNN();
   capture >> img;
   globalMask = cv::Mat(img.size(), CV_8UC1, cv::Scalar(255));
 }
@@ -117,8 +117,9 @@ bool Capture::render(cv::Mat &out, cv::Point2f &point) {
 
   out.copyTo(copy);
   out = cv::Scalar(0, 0, 0);
+  cv::GaussianBlur(copy, copy, cv::Size(5, 5), 0);
   bgSubtractor->apply(copy, grayMask);
-  cv::morphologyEx(grayMask, grayMask, cv::MORPH_CLOSE, morphKernel,
+  cv::morphologyEx(grayMask, grayMask, cv::MORPH_OPEN, morphKernel,
                    cv::Point(-1, -1), 3);
   cv::bitwise_and(grayMask, globalMask, grayMask);
   cv::bitwise_and(copy, copy, out, grayMask);
@@ -151,6 +152,7 @@ bool Capture::render(cv::Mat &out, cv::Point2f &point) {
 
     grayMask = cv::Scalar(0);
     cv::drawContours(grayMask, contours, i, cv::Scalar(255), cv::FILLED);
+    cv::drawContours(copy, contours, i, cv::Scalar(0, 255, 0), 2);
     auto meanColor = cv::mean(hsv, grayMask);
     if (const auto diff = cv::norm(meanColor, ORANGE, cv::NORM_L2);
         diff < minColorSimilarity) {

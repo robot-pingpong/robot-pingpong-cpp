@@ -6,7 +6,7 @@
 
 class Capture {
   cv::VideoCapture capture;
-  cv::Ptr<cv::BackgroundSubtractorMOG2> bgSubtractor;
+  cv::Ptr<cv::BackgroundSubtractor> bgSubtractor;
   cv::Mat globalMask;
   cv::Mat frame;
   cv::Mat copy;
