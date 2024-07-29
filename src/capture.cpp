@@ -3,7 +3,8 @@
 #include "capture.h"
 #include "constants.h"
 
-Capture::Capture(const int deviceId, const int apiPreference) : capture(deviceId, apiPreference) {
+Capture::Capture(const int deviceId, const int apiPreference)
+    : capture(deviceId, apiPreference) {
   if (!capture.isOpened()) {
     std::cerr << "Error: Could not open camera." << std::endl;
     exit(1);
@@ -27,22 +28,23 @@ void Capture::setGlobalMask(const std::string &windowName) {
 
   cv::namedWindow(windowName, cv::WINDOW_AUTOSIZE);
   cv::moveWindow(windowName, 0, 0);
-  cv::setMouseCallback(windowName, [](const int event, int x, int y, int flags, void *userdata) {
-    if (event == cv::EVENT_LBUTTONDOWN) {
-      auto *ps = static_cast<std::vector<cv::Point> *>(userdata);
-      ps->emplace_back(x, y);
-    }
-  }, &points);
+  cv::setMouseCallback(
+      windowName,
+      [](const int event, int x, int y, int flags, void *userdata) {
+        if (event == cv::EVENT_LBUTTONDOWN) {
+          auto *ps = static_cast<std::vector<cv::Point> *>(userdata);
+          ps->emplace_back(x, y);
+        }
+      },
+      &points);
 
   while (true) {
     capture >> screen;
     for (auto it = points.begin(); it != points.end(); ++it) {
       cv::circle(screen, *it, 5, cv::Scalar(0, 0, 255), -1);
-      cv::line(
-              screen, *it,
-              std::next(it) == points.end() ? *points.begin() : *std::next(it),
-              cv::Scalar(0, 0, 255), 2
-      );
+      cv::line(screen, *it,
+               std::next(it) == points.end() ? *points.begin() : *std::next(it),
+               cv::Scalar(0, 0, 255), 2);
     }
     if (points.size() > 2) {
       cv::Mat overlay = cv::Mat::zeros(screen.size(), screen.type());
@@ -52,8 +54,10 @@ void Capture::setGlobalMask(const std::string &windowName) {
     }
     cv::imshow(windowName, screen);
     const int key = cv::waitKey(1);
-    if (key == 27) break;
-    if (key == 8 || key == 127) points.pop_back();
+    if (key == 27)
+      break;
+    if (key == 8 || key == 127)
+      points.pop_back();
   }
   globalMask = cv::Mat::zeros(screen.size(), CV_8UC1);
   cv::fillPoly(globalMask, {points}, cv::Scalar(255));
@@ -66,24 +70,30 @@ std::vector<cv::Point2f> Capture::getTableArea(const std::string &windowName) {
 
   cv::namedWindow(windowName, cv::WINDOW_AUTOSIZE);
   cv::moveWindow(windowName, 0, 0);
-  cv::setMouseCallback(windowName, [](const int event, const int x, const int y, int flags, void *userdata) {
-    if (event == cv::EVENT_LBUTTONDOWN) {
-      auto *ps = static_cast<std::vector<cv::Point2f> *>(userdata);
-      ps->emplace_back(static_cast<float>(x), static_cast<float>(y));
-    }
-  }, &points);
+  cv::setMouseCallback(
+      windowName,
+      [](const int event, const int x, const int y, int flags, void *userdata) {
+        if (event == cv::EVENT_LBUTTONDOWN) {
+          auto *ps = static_cast<std::vector<cv::Point2f> *>(userdata);
+          ps->emplace_back(static_cast<float>(x), static_cast<float>(y));
+        }
+      },
+      &points);
 
   while (true) {
     capture >> screen;
     for (auto it = points.begin(); it != points.end(); ++it) {
       cv::circle(screen, *it, 5, cv::Scalar(0, 0, 255), -1);
-      cv::putText(screen, "P" + std::to_string(std::distance(points.begin(), it) + 1), *it,
-                  cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 0, 255));
+      cv::putText(screen,
+                  "P" + std::to_string(std::distance(points.begin(), it) + 1),
+                  *it, cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 0, 255));
     }
     cv::imshow(windowName, screen);
     const int key = cv::waitKey(1);
-    if (key == 27) break;
-    if (key == 8 || key == 127) points.pop_back();
+    if (key == 27)
+      break;
+    if (key == 8 || key == 127)
+      points.pop_back();
   }
   if (points.size() != 6) {
     std::cerr << "Error: Table area must have 6 points." << std::endl;
@@ -93,9 +103,7 @@ std::vector<cv::Point2f> Capture::getTableArea(const std::string &windowName) {
   return points;
 }
 
-void Capture::captureFrame() {
-  capture >> frame;
-}
+void Capture::captureFrame() { capture >> frame; }
 
 bool Capture::render(cv::Mat &out, cv::Point2f &point) {
   frame.copyTo(copy);
@@ -110,18 +118,21 @@ bool Capture::render(cv::Mat &out, cv::Point2f &point) {
   out.copyTo(copy);
   out = cv::Scalar(0, 0, 0);
   bgSubtractor->apply(copy, grayMask);
-  cv::morphologyEx(grayMask, grayMask, cv::MORPH_CLOSE, morphKernel, cv::Point(-1, -1), 3);
+  cv::morphologyEx(grayMask, grayMask, cv::MORPH_CLOSE, morphKernel,
+                   cv::Point(-1, -1), 3);
   cv::bitwise_and(grayMask, globalMask, grayMask);
   cv::bitwise_and(copy, copy, out, grayMask);
 
   out.copyTo(copy);
   out = cv::Scalar(0, 0, 0);
   cv::Canny(copy, grayMask, CANNY_THRESHOLD, CANNY_THRESHOLD);
-  cv::morphologyEx(grayMask, grayMask, cv::MORPH_CLOSE, morphKernel, cv::Point(-1, -1), 3);
+  cv::morphologyEx(grayMask, grayMask, cv::MORPH_CLOSE, morphKernel,
+                   cv::Point(-1, -1), 3);
   cv::morphologyEx(grayMask, grayMask, cv::MORPH_OPEN, morphKernel);
 
   std::vector<std::vector<cv::Point>> contours;
-  cv::findContours(grayMask, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+  cv::findContours(grayMask, contours, cv::RETR_EXTERNAL,
+                   cv::CHAIN_APPROX_SIMPLE);
 
   auto minColorSimilarity = MIN_COLOR_SIMILARITY;
   int maxContourIndex = -1;
@@ -129,23 +140,20 @@ bool Capture::render(cv::Mat &out, cv::Point2f &point) {
   for (int i = 0; i < contours.size(); ++i) {
     const auto area = cv::contourArea(contours.at(i));
     const auto perimeter = cv::arcLength(contours.at(i), true);
-    if (
-      const auto circularity = 4 * M_PI * area / (perimeter * perimeter);
-            circularity < CIRCULARITY_THRESHOLD
-            )
+    if (const auto circularity = 4 * M_PI * area / (perimeter * perimeter);
+        circularity < CIRCULARITY_THRESHOLD)
       continue;
 
     const auto rect = cv::boundingRect(contours.at(i));
-    if (
-      const auto ratio = static_cast<double>(rect.width) / rect.height;
-            ratio > RATIO_THRESHOLD || ratio < 1 / RATIO_THRESHOLD
-            )
+    if (const auto ratio = static_cast<double>(rect.width) / rect.height;
+        ratio > RATIO_THRESHOLD || ratio < 1 / RATIO_THRESHOLD)
       continue;
 
     grayMask = cv::Scalar(0);
     cv::drawContours(grayMask, contours, i, cv::Scalar(255), cv::FILLED);
     auto meanColor = cv::mean(hsv, grayMask);
-    if (const auto diff = cv::norm(meanColor, orange, cv::NORM_L2); diff < minColorSimilarity) {
+    if (const auto diff = cv::norm(meanColor, orange, cv::NORM_L2);
+        diff < minColorSimilarity) {
       minColorSimilarity = diff;
       maxContourIndex = i;
     }
@@ -158,8 +166,10 @@ bool Capture::render(cv::Mat &out, cv::Point2f &point) {
     grayMask = cv::Scalar(0);
     cv::drawContours(grayMask, contours, maxContourIndex, cv::Scalar(255), -1);
     cv::moments(grayMask, false);
-    point.x = static_cast<float>(cv::moments(grayMask).m10 / cv::moments(grayMask).m00);
-    point.y = static_cast<float>(cv::moments(grayMask).m01 / cv::moments(grayMask).m00);
+    point.x = static_cast<float>(cv::moments(grayMask).m10 /
+                                 cv::moments(grayMask).m00);
+    point.y = static_cast<float>(cv::moments(grayMask).m01 /
+                                 cv::moments(grayMask).m00);
     return true;
   }
   return false;

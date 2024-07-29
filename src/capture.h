@@ -1,8 +1,8 @@
 #ifndef ROBOT_PINGPONG_CPP_CAPTURE_H
 #define ROBOT_PINGPONG_CPP_CAPTURE_H
 
-#include <string>
 #include <opencv2/opencv.hpp>
+#include <string>
 
 class Capture {
   cv::VideoCapture capture;
@@ -14,7 +14,8 @@ class Capture {
   cv::Mat hsv;
   cv::Mat grayMask;
   cv::Mat colorMask;
-  const cv::Mat morphKernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5));
+  const cv::Mat morphKernel =
+      cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5));
   const cv::Scalar orange = cv::Scalar(8, 150, 155);
 
 public:
@@ -22,7 +23,8 @@ public:
 
   void setGlobalMask(const std::string &windowName = "Global Mask");
 
-  std::vector<cv::Point2f> getTableArea(const std::string &windowName = "Table Area");
+  std::vector<cv::Point2f>
+  getTableArea(const std::string &windowName = "Table Area");
 
   void captureFrame();
 
@@ -31,5 +33,4 @@ public:
   ~Capture() = default;
 };
 
-
-#endif //ROBOT_PINGPONG_CPP_CAPTURE_H
+#endif // ROBOT_PINGPONG_CPP_CAPTURE_H

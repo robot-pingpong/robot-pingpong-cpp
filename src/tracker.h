@@ -24,5 +24,4 @@ public:
   void render(const cv::Mat &screen);
 };
 
-
-#endif //TRACKER_H
+#endif // TRACKER_H
