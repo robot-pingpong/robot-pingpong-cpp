@@ -4,7 +4,7 @@
 
 Tracker::Tracker(cv::Mat &screen) : first(0), second(1) {
   capture(true);
-  halfSize = cv::Size(firstFrame.cols / 2, firstFrame.rows / 2);
+  halfSize = cv::Size(firstFrame.cols / 2, firstFrame.rows);
   firstFrame.copyTo(screen);
 }
 
@@ -93,21 +93,22 @@ void Tracker::capture(const bool render) {
 
 void Tracker::render(const cv::Mat &screen) {
   capture();
-  int x1, y1, x2, y2;
-  const auto firstSuccess = first.render(firstFrame, x1, y1);
-  const auto secondSuccess = second.render(secondFrame, x2, y2);
+  std::vector<cv::Point2f> firstPoint(1);
+  std::vector<cv::Point2f> secondPoint(1);
+  const auto firstSuccess = first.render(firstFrame, firstPoint[0]);
+  const auto secondSuccess = second.render(secondFrame, secondPoint[0]);
 
   cv::resize(firstFrame, firstFrame, halfSize);
   cv::resize(secondFrame, secondFrame, halfSize);
 
+//  cv::line(firstFrame, firstPoint[0]., firstPoint[0], cv::Scalar(0, 255, 0), 5);
+//  cv::line(secondFrame, secondPoint[0], secondPoint[0], cv::Scalar(0, 255, 0), 5);
   firstFrame.copyTo(screen(cv::Rect(0, 0, halfSize.width, halfSize.height)));
   secondFrame.copyTo(screen(cv::Rect(halfSize.width, 0, halfSize.width, halfSize.height)));
 
   if (!firstSuccess || !secondSuccess) {
     return;
   }
-  const std::vector firstPoint = {cv::Point2f(static_cast<float>(x1), static_cast<float>(y1))};
-  const std::vector secondPoint = {cv::Point2f(static_cast<float>(x2), static_cast<float>(y2))};
   cv::Mat point3d;
   cv::triangulatePoints(
           firstProjectionMatrix, secondProjectionMatrix,

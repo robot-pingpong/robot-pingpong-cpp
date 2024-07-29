@@ -97,7 +97,7 @@ void Capture::captureFrame() {
   capture >> frame;
 }
 
-bool Capture::render(cv::Mat &out, int &x, int &y) {
+bool Capture::render(cv::Mat &out, cv::Point2f &point) {
   frame.copyTo(copy);
   out = cv::Scalar(0, 0, 0);
   cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
@@ -158,10 +158,8 @@ bool Capture::render(cv::Mat &out, int &x, int &y) {
     grayMask = cv::Scalar(0);
     cv::drawContours(grayMask, contours, maxContourIndex, cv::Scalar(255), -1);
     cv::moments(grayMask, false);
-    x = static_cast<int>(cv::moments(grayMask).m10 / cv::moments(grayMask).m00);
-    y = static_cast<int>(cv::moments(grayMask).m01 / cv::moments(grayMask).m00);
-    cv::line(out, cv::Point(0, y), cv::Point(out.size().width, y), cv::Scalar(0, 0, 255), 2);
-    cv::line(out, cv::Point(x, 0), cv::Point(x, out.size().height), cv::Scalar(0, 0, 255), 2);
+    point.x = static_cast<float>(cv::moments(grayMask).m10 / cv::moments(grayMask).m00);
+    point.y = static_cast<float>(cv::moments(grayMask).m01 / cv::moments(grayMask).m00);
     return true;
   }
   return false;

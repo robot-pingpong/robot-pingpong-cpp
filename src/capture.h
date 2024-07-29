@@ -26,7 +26,7 @@ public:
 
   void captureFrame();
 
-  bool render(cv::Mat &out, int &x, int &y);
+  bool render(cv::Mat &out, cv::Point2f &point);
 
   ~Capture() = default;
 };
