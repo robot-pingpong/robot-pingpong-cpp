@@ -4,7 +4,6 @@
 int main() {
   cv::Mat screen;
   cv::viz::Viz3d visualizer("visualizer");
-  visualizer.spinOnce();
   Tracker t(screen, visualizer);
   t.setMask();
   t.setTableArea();
@@ -15,6 +14,7 @@ int main() {
   cv::VideoWriter writer(fileName.str(),
                          cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30,
                          cv::Size(1280, 720));
+  visualizer.spinOnce();
   while (!visualizer.wasStopped()) {
     t.render(screen, visualizer);
 
