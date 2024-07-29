@@ -142,37 +142,16 @@ bool Capture::render(cv::Mat &out, cv::Point2f &point) {
   cv::bitwise_and(grayMask, globalMask, grayMask);
   cv::bitwise_and(hsv, hsv, out, grayMask);
   out.copyTo(hsv);
-  // cv::Mat channels[3];
-  // cv::split(hsv, channels);
-  // channels[1].copyTo(out);
   cv::cvtColor(out, out, cv::COLOR_HSV2BGR);
-  // cv::cvtColor(out, out, cv::COLOR_GRAY2BGR);
 
   out.copyTo(copy);
   out = cv::Scalar(0, 0, 0);
-  // cv::cvtColor(copy, grayMask, cv::COLOR_BGR2GRAY);
-  // cv::GaussianBlur(copy, copy, cv::Size(9, 9), 0);
-  // cv::threshold(grayMask, grayMask, 0, 255,
-  //               cv::THRESH_BINARY | cv::THRESH_OTSU);
   bgSubtractor->apply(grayMask, grayMask);
   cv::morphologyEx(grayMask, grayMask, cv::MORPH_OPEN, morphKernel,
                    cv::Point(-1, -1), 3);
   cv::bitwise_and(grayMask, globalMask, grayMask);
   cv::bitwise_and(copy, copy, out, grayMask);
-  //
   out.copyTo(copy);
-  // cv::cvtColor(copy, grayMask, cv::COLOR_BGR2GRAY);
-  // cv::cvtColor(grayMask, out, cv::COLOR_GRAY2BGR);
-  // cv::adaptiveThreshold(grayMask, out, 255, cv::ADAPTIVE_THRESH_GAUSSIAN_C,
-  //                       cv::THRESH_BINARY, 11, 2);
-  // std::vector<cv::KeyPoint> points;
-  // detector->detect(copy, points, grayMask);
-
-  // for (const auto &p : points) {
-  //   cv::circle(copy, p.pt, static_cast<int>(p.size), RED, -1);
-  //   // cv::drawKeypoints(copy, points, copy, RED,
-  //   //                   cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
-  // }
 
   std::vector<std::vector<cv::Point>> contours;
   cv::findContours(grayMask, contours, cv::RETR_EXTERNAL,
@@ -213,7 +192,6 @@ bool Capture::render(cv::Mat &out, cv::Point2f &point) {
   }
 
   cv::addWeighted(frame, 0.1, copy, 0.9, 0, out);
-  // cv::copyTo(frame, out, grayMask);
 
   if (maxContourIndex != -1) {
     cv::drawContours(out, contours, maxContourIndex, RED, 2);
