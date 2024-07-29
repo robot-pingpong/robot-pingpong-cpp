@@ -2,11 +2,13 @@
 #include "tracker.h"
 
 int main() {
+  // AxlOpen(7);
+  // AxlClose();
   cv::Mat screen;
   cv::viz::Viz3d visualizer("visualizer");
   Tracker t(screen, visualizer);
   t.setMask();
-  t.setTableArea();
+  t.setTableArea(visualizer);
 
   auto prev = std::chrono::steady_clock::now();
   std::stringstream fileName;
@@ -28,11 +30,9 @@ int main() {
     cv::putText(screen, "FPS: " + std::to_string(fps), cv::Point(10, 30),
                 cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 0, 255));
 
-    // cv::imshow("screen", screen);
+    cv::imshow("screen", screen);
     writer.write(screen);
     visualizer.spinOnce(1, true);
-    // if (cv::waitKey(1) == 27)
-    //   break;
   }
   writer.release();
   return 0;

@@ -9,7 +9,6 @@ class Capture {
   cv::Ptr<cv::BackgroundSubtractor> bgSubtractor;
   cv::Ptr<cv::SimpleBlobDetector> detector;
   cv::Mat globalMask;
-  cv::Mat frame;
   cv::Mat copy;
   cv::Mat mat;
   cv::Mat hsv;
@@ -19,6 +18,7 @@ class Capture {
       cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3));
 
 public:
+  cv::Mat frame;
   explicit Capture(int deviceId, int apiPreference = cv::CAP_ANY);
 
   std::vector<cv::Point>

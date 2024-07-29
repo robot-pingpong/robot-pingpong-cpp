@@ -11,8 +11,9 @@ class Tracker {
   cv::Mat firstFrame;
   cv::Mat secondFrame;
   cv::Size halfSize;
-  cv::Mat firstProjectionMatrix;
-  cv::Mat secondProjectionMatrix;
+  cv::Mat cameraMatrix[2];
+  cv::Mat projectionMatrix[2];
+  cv::Mat rmap[2][2];
 
   void capture(bool render = false);
 
@@ -23,7 +24,7 @@ public:
 
   void setMask();
 
-  void setTableArea();
+  void setTableArea(cv::viz::Viz3d &visualizer);
 
   void render(const cv::Mat &screen, cv::viz::Viz3d &visualizer);
 };
