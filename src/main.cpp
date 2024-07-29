@@ -31,5 +31,6 @@ int main() {
     if (cv::waitKey(1) == 27)
       break;
   }
+  writer.release();
   return 0;
 }
