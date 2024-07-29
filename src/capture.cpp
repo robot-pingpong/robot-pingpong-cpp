@@ -120,7 +120,7 @@ bool Capture::render(cv::Mat &out, cv::Point2f &point) {
   cv::GaussianBlur(copy, copy, cv::Size(5, 5), 0);
   bgSubtractor->apply(copy, grayMask);
   cv::morphologyEx(grayMask, grayMask, cv::MORPH_OPEN, morphKernel,
-                   cv::Point(-1, -1), 3);
+                   cv::Point(-1, -1), 2);
   cv::bitwise_and(grayMask, globalMask, grayMask);
   cv::bitwise_and(copy, copy, out, grayMask);
 
@@ -142,13 +142,17 @@ bool Capture::render(cv::Mat &out, cv::Point2f &point) {
     const auto area = cv::contourArea(contours.at(i));
     const auto perimeter = cv::arcLength(contours.at(i), true);
     if (const auto circularity = 4 * M_PI * area / (perimeter * perimeter);
-        circularity < CIRCULARITY_THRESHOLD)
+        circularity < CIRCULARITY_THRESHOLD) {
+      cv::drawContours(copy, contours, i, YELLOW, 2);
       continue;
+    }
 
     const auto rect = cv::boundingRect(contours.at(i));
     if (const auto ratio = static_cast<double>(rect.width) / rect.height;
-        ratio > RATIO_THRESHOLD || ratio < 1 / RATIO_THRESHOLD)
+        ratio > RATIO_THRESHOLD || ratio < 1 / RATIO_THRESHOLD) {
+      cv::drawContours(copy, contours, i, CYAN, 2);
       continue;
+    }
 
     grayMask = cv::Scalar(0);
     cv::drawContours(grayMask, contours, i, cv::Scalar(255), cv::FILLED);
