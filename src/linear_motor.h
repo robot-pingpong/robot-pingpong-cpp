@@ -13,6 +13,7 @@ public:
   [[nodiscard]] bool hasLimit() const;
   [[nodiscard]] double map(double value, double min, double max) const;
   [[nodiscard]] double getPosition() const;
+  [[nodiscard]] double getMappedPosition(double min, double max) const;
   void setPosition(double position, bool wait = true) const;
   [[nodiscard]] bool hasAlarm() const;
   void resetAlarm() const;

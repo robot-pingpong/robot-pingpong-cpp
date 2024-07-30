@@ -1,6 +1,7 @@
 #include "capture.h"
 #include "constants.h"
 #include "linear_motor.h"
+#include "timer.h"
 #include "tracker.h"
 #include "visualizer.h"
 
@@ -35,6 +36,7 @@ int main() {
       lm.setPosition(lm.map(t.pos[1], Y_TABLE_SIZE, 0), false);
       visualizer.setBallPosition(t.pos);
     }
+    visualizer.setMachinePosition(lm.getMappedPosition(Y_TABLE_SIZE, 0));
 
     visualizer.render();
     visualizer.getScreenshot().copyTo(screen(cv::Rect(0, 360, 1280, 360)));

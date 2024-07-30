@@ -16,6 +16,11 @@ double LinearMotor::getPosition() const {
   AxmStatusGetActPos(axisNo, &position);
   return position;
 }
+double LinearMotor::getMappedPosition(const double min,
+                                      const double max) const {
+  return (getPosition() - this->min) / (this->max - this->min) * (max - min) +
+         min;
+}
 
 void LinearMotor::setPosition(const double position, const bool wait) const {
   if (wait) {
@@ -97,7 +102,6 @@ bool LinearMotor::hasLimit() const { return min != 0 && max != 0; }
 
 double LinearMotor::map(const double value, const double min,
                         const double max) const {
-
   return (value - min) / (max - min) * (this->max - this->min) + this->min;
 }
 

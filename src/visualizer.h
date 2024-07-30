@@ -7,6 +7,8 @@
 class Visualizer {
   cv::viz::Viz3d visualizer = cv::viz::Viz3d("visualizer");
   cv::viz::WSphere ball = cv::viz::WSphere(cv::Point3f(0, 0, 0), 0.1);
+  cv::viz::WCube machine = cv::viz::WCube(cv::Point3f(-0.2, -0.1, 0),
+                                          cv::Point3f(0.2, 0.1, 0.5), true);
 
 public:
   Visualizer();
@@ -16,6 +18,7 @@ public:
   [[nodiscard]] bool stopped() const;
   void setBallPosition(const cv::Vec3d &vec);
   cv::Mat getScreenshot() const;
+  void setMachinePosition(double y);
 };
 
 #endif // VISUALIZER_H

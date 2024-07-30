@@ -29,6 +29,9 @@ Visualizer::Visualizer() {
       cv::Point3d(X_TABLE_SIZE / 2, Y_TABLE_SIZE / 2, 0),
       cv::Point3d(0, 0, -1)));
   visualizer.showWidget("ball", ball);
+  visualizer.showWidget(
+      "machine", machine,
+      cv::Affine3d(cv::Vec3d(), cv::Vec3d(X_TABLE_SIZE, Y_TABLE_SIZE / 2, 0)));
 }
 
 void Visualizer::addCamera(const int index, const cv::Matx33d &matrix,
@@ -46,3 +49,8 @@ void Visualizer::setBallPosition(const cv::Vec3d &vec) {
   visualizer.setWidgetPose("ball", cv::Affine3d(cv::Vec3d(), vec));
 }
 cv::Mat Visualizer::getScreenshot() const { return visualizer.getScreenshot(); }
+
+void Visualizer::setMachinePosition(const double y) {
+  visualizer.setWidgetPose(
+      "machine", cv::Affine3d(cv::Vec3d(), cv::Vec3d(X_TABLE_SIZE, y, 0)));
+}
