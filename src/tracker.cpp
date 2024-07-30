@@ -1,47 +1,12 @@
 #include "tracker.h"
 #include "constants.h"
 #include "dlt.h"
+#include "visualizer.h"
 
-#include <sstream>
-
-static const std::vector<std::vector<cv::Point3d>> objectPoints = {
-    {{0, Y_TABLE_SIZE, 0},
-     {X_TABLE_SIZE, Y_TABLE_SIZE, 0},
-     {X_TABLE_SIZE, 0, 0},
-     {0, 0, 0},
-     {X_TABLE_SIZE / 2, -0.1525, 0.15},
-     {X_TABLE_SIZE / 2, Y_TABLE_SIZE + 0.1525, 0.15}}};
-
-Tracker::Tracker(cv::Mat &screen, cv::viz::Viz3d &visualizer)
-    : first(0), second(1) {
+Tracker::Tracker(cv::Mat &screen) : first(0), second(1) {
   capture(true);
   halfSize = cv::Size(firstFrame.cols / 2, firstFrame.rows / 2);
   firstFrame.copyTo(screen);
-
-  visualizer.showWidget("Coordinate Widget", cv::viz::WCoordinateSystem());
-  auto table = cv::viz::WPlane(cv::Size2d(X_TABLE_SIZE, Y_TABLE_SIZE));
-
-  for (int i = 0; i < 4; ++i) {
-    auto tableLine = cv::viz::WLine(cv::Point3d(objectPoints[0][i]),
-                                    cv::Point3d(objectPoints[0][(i + 1) % 4]));
-    tableLine.setRenderingProperty(cv::viz::LINE_WIDTH, 2);
-    visualizer.showWidget("table line" + std::to_string(i), tableLine);
-  }
-
-  auto net = cv::viz::WPlane(cv::Size2d(Y_TABLE_SIZE + 0.305, 0.1525));
-  net.setRenderingProperty(cv::viz::REPRESENTATION,
-                           cv::viz::REPRESENTATION_WIREFRAME);
-  visualizer.showWidget(
-      "net", net,
-      cv::Affine3d(cv::Vec3d(), cv::Vec3d())
-          .rotate(cv::Vec3d(M_PI / 2))
-          .rotate(cv::Vec3d(0, 0, M_PI / 2))
-          .translate(cv::Vec3d(X_TABLE_SIZE / 2, Y_TABLE_SIZE / 2, 0.07625)));
-  visualizer.setViewerPose(cv::viz::makeCameraPose(
-      cv::Point3d(6, -0.5, 1.5),
-      cv::Point3d(X_TABLE_SIZE / 2, Y_TABLE_SIZE / 2, 0),
-      cv::Point3d(0, 0, -1)));
-  visualizer.showWidget("ball", ball);
 }
 
 void Tracker::setMask() {
@@ -60,7 +25,7 @@ void Tracker::setMask() {
   data.release();
 }
 
-void Tracker::setTableArea(cv::viz::Viz3d &visualizer) {
+void Tracker::setTableArea(Visualizer &visualizer) {
   auto data = cv::FileStorage("points.yml", cv::FileStorage::READ);
   std::vector<cv::Point2f> firstPoints, secondPoints;
   if (data.isOpened()) {
@@ -74,6 +39,8 @@ void Tracker::setTableArea(cv::viz::Viz3d &visualizer) {
   data << "first" << firstPoints;
   data << "second" << secondPoints;
   data.release();
+
+  const std::vector<std::vector<cv::Point3d>> objectPoints = {OBJECT_POINTS};
 
   const std::vector<std::vector<cv::Point2d>> screenPoints[] = {
       {{
@@ -99,11 +66,7 @@ void Tracker::setTableArea(cv::viz::Viz3d &visualizer) {
     DLT::pose(objectPoints[0], screenPoints[i][0], cameraMatrix[i], R[i],
               tVecs[i], projectionMatrix[i]);
     cv::Mat position = (R[i].inv() * tVecs[i]);
-    auto camera = cv::viz::WCameraPosition(cv::Matx33d(cameraMatrix[i]), 1,
-                                           i == 0 ? cv::viz::Color::blue()
-                                                  : cv::viz::Color::red());
-    visualizer.showWidget("camera" + std::to_string(i), camera,
-                          cv::Affine3d(R[i], position));
+    visualizer.addCamera(i, cameraMatrix[i], R[i], position);
   }
 }
 
@@ -117,7 +80,7 @@ void Tracker::capture(const bool render) {
   }
 }
 
-bool Tracker::render(const cv::Mat &screen, cv::viz::Viz3d &visualizer) {
+bool Tracker::render(const cv::Mat &screen) {
   capture();
   std::vector<cv::Point2f> firstPoint(1);
   std::vector<cv::Point2f> secondPoint(1);
@@ -164,6 +127,5 @@ bool Tracker::render(const cv::Mat &screen, cv::viz::Viz3d &visualizer) {
   point3dNormalized = point3dNormalized.t();
   point3dNormalized.convertTo(point3dNormalized, CV_64F);
   pos = point3dNormalized.at<cv::Vec3d>();
-  visualizer.setWidgetPose("ball", cv::Affine3d(cv::Vec3d(), pos));
   return true;
 }

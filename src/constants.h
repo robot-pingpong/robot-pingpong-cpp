@@ -22,4 +22,12 @@
 #define X_TABLE_SIZE 2.74
 #define Y_TABLE_SIZE 1.525
 
+#define OBJECT_POINTS                                                          \
+  {                                                                            \
+    {0, Y_TABLE_SIZE, 0}, {X_TABLE_SIZE, Y_TABLE_SIZE, 0},                     \
+        {X_TABLE_SIZE, 0, 0}, {0, 0, 0}, {X_TABLE_SIZE / 2, -0.1525, 0.15}, {  \
+      X_TABLE_SIZE / 2, Y_TABLE_SIZE + 0.1525, 0.15                            \
+    }                                                                          \
+  }
+
 #endif

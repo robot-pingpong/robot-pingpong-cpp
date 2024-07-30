@@ -2,15 +2,15 @@
 #include "constants.h"
 #include "linear_motor.h"
 #include "tracker.h"
+#include "visualizer.h"
 
 int main() {
   auto lm = LinearMotor(0);
   lm.guessLimits();
 
   cv::Mat screen;
-  cv::viz::Viz3d visualizer("visualizer");
-  visualizer.setWindowSize(cv::Size(1280, 360));
-  Tracker t(screen, visualizer);
+  Visualizer visualizer;
+  Tracker t(screen);
   t.setMask();
   t.setTableArea(visualizer);
 
@@ -20,9 +20,9 @@ int main() {
   cv::VideoWriter writer(fileName.str(),
                          cv::VideoWriter::fourcc('X', '2', '6', '4'), 30,
                          cv::Size(1280, 720));
-  visualizer.spinOnce();
-  while (!visualizer.wasStopped()) {
-    const bool success = t.render(screen, visualizer);
+  visualizer.render();
+  while (!visualizer.stopped()) {
+    const bool success = t.render(screen);
 
     auto curr = std::chrono::steady_clock::now();
     const auto elapsed = static_cast<double>(
@@ -39,9 +39,10 @@ int main() {
       cv::putText(screen, ss.str(), cv::Point(10, 80), cv::FONT_HERSHEY_SIMPLEX,
                   1, cv::Scalar(255, 255, 255));
       lm.setPosition(lm.map(t.pos[1], Y_TABLE_SIZE, 0), false);
+      visualizer.setBallPosition(t.pos);
     }
 
-    visualizer.spinOnce();
+    visualizer.render();
     visualizer.getScreenshot().copyTo(screen(cv::Rect(0, 360, 1280, 360)));
     cv::imshow("screen", screen);
     writer.write(screen);

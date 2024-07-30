@@ -19,6 +19,8 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/dlt.h
         src/linear_motor.cpp
         src/linear_motor.h
+        src/visualizer.cpp
+        src/visualizer.h
 )
 
 target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS} ${LinearMotor_LIBRARIES})

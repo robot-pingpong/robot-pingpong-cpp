@@ -2,6 +2,7 @@
 #define TRACKER_H
 
 #include "capture.h"
+#include "visualizer.h"
 
 #include <opencv2/viz.hpp>
 
@@ -17,17 +18,15 @@ class Tracker {
 
   void capture(bool render = false);
 
-  cv::viz::WSphere ball = cv::viz::WSphere(cv::Point3f(0, 0, 0), 0.1);
-
 public:
-  explicit Tracker(cv::Mat &screen, cv::viz::Viz3d &visualizer);
+  explicit Tracker(cv::Mat &screen);
 
   void setMask();
 
-  void setTableArea(cv::viz::Viz3d &visualizer);
+  void setTableArea(Visualizer &visualizer);
 
   cv::Vec3d pos;
-  bool render(const cv::Mat &screen, cv::viz::Viz3d &visualizer);
+  bool render(const cv::Mat &screen);
 };
 
 #endif // TRACKER_H
