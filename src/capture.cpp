@@ -196,7 +196,7 @@ bool Capture::render(cv::Mat &out, cv::Point2f &point) {
     }
   }
 
-  cv::addWeighted(frame, 0.1, copy, 0.9, 0, out);
+  cv::addWeighted(frame, 0.3, copy, 0.7, 0, out);
 
   if (maxContourIndex != -1) {
     cv::drawContours(out, contours, maxContourIndex, RED, 2);
