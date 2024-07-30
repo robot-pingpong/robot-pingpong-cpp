@@ -4,6 +4,14 @@
 
 #include <sstream>
 
+static const std::vector<std::vector<cv::Point3d>> objectPoints = {
+    {{0, Y_TABLE_SIZE, 0},
+     {X_TABLE_SIZE, Y_TABLE_SIZE, 0},
+     {X_TABLE_SIZE, 0, 0},
+     {0, 0, 0},
+     {X_TABLE_SIZE / 2, -0.1525, 0.15},
+     {X_TABLE_SIZE / 2, Y_TABLE_SIZE + 0.1525, 0.15}}};
+
 Tracker::Tracker(cv::Mat &screen, cv::viz::Viz3d &visualizer)
     : first(0), second(1) {
   capture(true);
@@ -12,19 +20,23 @@ Tracker::Tracker(cv::Mat &screen, cv::viz::Viz3d &visualizer)
 
   visualizer.showWidget("Coordinate Widget", cv::viz::WCoordinateSystem());
   auto table = cv::viz::WPlane(cv::Size2d(X_TABLE_SIZE, Y_TABLE_SIZE));
-  table.setRenderingProperty(cv::viz::REPRESENTATION,
-                             cv::viz::REPRESENTATION_WIREFRAME);
-  visualizer.showWidget(
-      "table", table,
-      cv::Affine3d(cv::Vec3d(0, 0, M_PI / 2),
-                   cv::Vec3d(Y_TABLE_SIZE / 2, X_TABLE_SIZE / 2, 0.0)));
+
+  for (int i = 0; i < 4; ++i) {
+    auto tableLine = cv::viz::WLine(cv::Point3d(objectPoints[0][i]),
+                                    cv::Point3d(objectPoints[0][(i + 1) % 4]));
+    tableLine.setRenderingProperty(cv::viz::LINE_WIDTH, 2);
+    visualizer.showWidget("table line" + std::to_string(i), tableLine);
+  }
+
   auto net = cv::viz::WPlane(cv::Size2d(Y_TABLE_SIZE + 0.305, 0.1525));
   net.setRenderingProperty(cv::viz::REPRESENTATION,
                            cv::viz::REPRESENTATION_WIREFRAME);
   visualizer.showWidget(
       "net", net,
-      cv::Affine3d(cv::Vec3d(M_PI / 2, 0, 0),
-                   cv::Vec3d(Y_TABLE_SIZE / 2, X_TABLE_SIZE / 2, 0.1525 / 2)));
+      cv::Affine3d(cv::Vec3d(), cv::Vec3d())
+          .rotate(cv::Vec3d(M_PI / 2))
+          .rotate(cv::Vec3d(0, 0, M_PI / 2))
+          .translate(cv::Vec3d(X_TABLE_SIZE / 2, Y_TABLE_SIZE / 2, 0.07625)));
   visualizer.setViewerPose(cv::viz::makeCameraPose(
       cv::Point3d(3, -10, 5), cv::Point3d(0, 0, 0), cv::Point3d(0, 0, -1)));
   visualizer.showWidget("ball", ball);
@@ -60,14 +72,6 @@ void Tracker::setTableArea(cv::viz::Viz3d &visualizer) {
   data << "first" << firstPoints;
   data << "second" << secondPoints;
   data.release();
-
-  const std::vector<std::vector<cv::Point3d>> objectPoints = {
-      {{0, Y_TABLE_SIZE, 0},
-       {X_TABLE_SIZE, Y_TABLE_SIZE, 0},
-       {X_TABLE_SIZE, 0, 0},
-       {0, 0, 0},
-       {X_TABLE_SIZE / 2, -0.1525, 0.15},
-       {X_TABLE_SIZE / 2, Y_TABLE_SIZE + 0.1525, 0.15}}};
 
   const std::vector<std::vector<cv::Point2d>> screenPoints[] = {
       {{
@@ -155,17 +159,12 @@ void Tracker::render(const cv::Mat &screen, cv::viz::Viz3d &visualizer) {
   cv::Mat point3dNormalized;
   cv::convertPointsFromHomogeneous(point3d.t(), point3dNormalized);
   point3dNormalized = point3dNormalized.t();
+  point3dNormalized.convertTo(point3dNormalized, CV_64F);
+  const cv::Vec3d pos = point3dNormalized.at<cv::Vec3d>();
 
   std::stringstream ss;
-  ss << "X: " << point3dNormalized.at<float>(0)
-     << ", Y: " << point3dNormalized.at<float>(1)
-     << ", Z: " << point3dNormalized.at<float>(2);
+  ss << "X: " << pos[0] << ", Y: " << pos[1] << ", Z: " << pos[2];
   cv::putText(screen, ss.str(), cv::Point(10, 80), cv::FONT_HERSHEY_SIMPLEX, 1,
               cv::Scalar(255, 255, 255));
-
-  visualizer.setWidgetPose(
-      "ball",
-      cv::Affine3d(cv::Vec3d(), cv::Vec3d(point3dNormalized.at<float>(1),
-                                          point3dNormalized.at<float>(0),
-                                          point3dNormalized.at<float>(2))));
+  visualizer.setWidgetPose("ball", cv::Affine3d(cv::Vec3d(), pos));
 }
