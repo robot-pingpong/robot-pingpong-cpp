@@ -38,7 +38,9 @@ Tracker::Tracker(cv::Mat &screen, cv::viz::Viz3d &visualizer)
           .rotate(cv::Vec3d(0, 0, M_PI / 2))
           .translate(cv::Vec3d(X_TABLE_SIZE / 2, Y_TABLE_SIZE / 2, 0.07625)));
   visualizer.setViewerPose(cv::viz::makeCameraPose(
-      cv::Point3d(3, -10, 5), cv::Point3d(0, 0, 0), cv::Point3d(0, 0, -1)));
+      cv::Point3d(6, -0.5, 1.5),
+      cv::Point3d(X_TABLE_SIZE / 2, Y_TABLE_SIZE / 2, 0),
+      cv::Point3d(0, 0, -1)));
   visualizer.showWidget("ball", ball);
 }
 

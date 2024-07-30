@@ -6,8 +6,8 @@ int main() {
   // AxlClose();
   cv::Mat screen;
   cv::viz::Viz3d visualizer("visualizer");
-  Tracker t(screen, visualizer);
   visualizer.setWindowSize(cv::Size(1280, 360));
+  Tracker t(screen, visualizer);
   t.setMask();
   t.setTableArea(visualizer);
 
