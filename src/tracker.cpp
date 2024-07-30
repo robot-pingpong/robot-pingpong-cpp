@@ -134,9 +134,10 @@ void Tracker::render(const cv::Mat &screen, cv::viz::Viz3d &visualizer) {
              cv::Scalar(0, 255, 0), 2);
   }
   if (secondSuccess) {
-    cv::line(secondFrame, cv::Point(0, static_cast<int>(secondPoint[0].y)),
-             cv::Point(secondFrame.cols, static_cast<int>(secondPoint[0].y)),
-             cv::Scalar(0, 255, 0), 2);
+    cv::line(
+        secondFrame, cv::Point(0, static_cast<int>(secondPoint[0].y / 2)),
+        cv::Point(secondFrame.cols, static_cast<int>(secondPoint[0].y / 2)),
+        cv::Scalar(0, 255, 0), 2);
     cv::line(
         secondFrame, cv::Point(static_cast<int>(secondPoint[0].x / 2), 0),
         cv::Point(static_cast<int>(secondPoint[0].x / 2), secondFrame.rows),
