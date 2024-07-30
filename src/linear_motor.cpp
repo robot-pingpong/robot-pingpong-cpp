@@ -57,7 +57,7 @@ void LinearMotor::guessLimits() {
 
   AxmSignalSetSoftLimit(axisNo, ENABLE, EMERGENCY_STOP, COMMAND, highLimit - 1,
                         1);
-  setPosition(highLimit / 5);
+  setPosition(highLimit / 2);
   max = highLimit - 1;
   min = 1;
 }
