@@ -13,9 +13,9 @@ int main() {
 
   auto prev = std::chrono::steady_clock::now();
   std::stringstream fileName;
-  fileName << "output" << std::time(nullptr) << ".avi";
+  fileName << "output" << std::time(nullptr) << ".mkv";
   cv::VideoWriter writer(fileName.str(),
-                         cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 30,
+                         cv::VideoWriter::fourcc('X', '2', '6', '4'), 30,
                          cv::Size(1280, 720));
   visualizer.spinOnce();
   while (!visualizer.wasStopped()) {
