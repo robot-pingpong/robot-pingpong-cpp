@@ -45,7 +45,6 @@ void DLT::pose(const std::vector<cv::Point3d> &objectPoints,
   P = normalizedMatrix.inv() * normalizedP;
 
   cv::decomposeProjectionMatrix(P, K, R, t);
-  t = t / t.at<double>(3);
-  t = -t.rowRange(0, 3);
-  t = P(cv::Rect(0, 0, 3, 3)).inv() * P(cv::Rect(3, 0, 1, 3));
+  t = -(P.colRange(0, 3).inv() * P.col(3));
+  R = R.inv();
 }

@@ -65,8 +65,7 @@ void Tracker::setTableArea(Visualizer &visualizer) {
   for (int i = 0; i < 2; ++i) {
     DLT::pose(objectPoints[0], screenPoints[i][0], cameraMatrix[i], R[i],
               tVecs[i], projectionMatrix[i]);
-    cv::Mat position = (R[i].inv() * tVecs[i]);
-    visualizer.addCamera(i, cameraMatrix[i], R[i], position);
+    visualizer.addCamera(i, cameraMatrix[i], R[i], tVecs[i]);
   }
 }
 
