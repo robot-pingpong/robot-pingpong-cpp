@@ -4,7 +4,7 @@
 #include "tracker.h"
 
 int main() {
-  const auto lm = LinearMotor(0);
+  auto lm = LinearMotor(0);
   lm.guessLimits();
 
   cv::Mat screen;

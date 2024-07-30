@@ -4,15 +4,19 @@
 class LinearMotor {
   int axisNo;
   static bool isMotionModule();
-  [[nodiscard]] double getPosition() const;
+  double min, max;
 
 public:
   LinearMotor() = delete;
   explicit LinearMotor(int axisNo);
 
+  [[nodiscard]] bool hasLimit() const;
+  [[nodiscard]] double map(double value, double min, double max) const;
+  [[nodiscard]] double getPosition() const;
+  void setPosition(double position, bool wait = true) const;
   [[nodiscard]] bool hasAlarm() const;
   void resetAlarm() const;
-  void guessLimits() const;
+  void guessLimits();
 
   ~LinearMotor();
 };
