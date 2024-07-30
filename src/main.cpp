@@ -4,8 +4,8 @@
 
 int main() {
   const auto lm = LinearMotor(0);
-  std::cout << lm.hasAlarm() << std::endl;
-  //
+  lm.guessLimits();
+
   // cv::Mat screen;
   // cv::viz::Viz3d visualizer("visualizer");
   // visualizer.setWindowSize(cv::Size(1280, 360));

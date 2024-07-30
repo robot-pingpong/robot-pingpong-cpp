@@ -4,6 +4,7 @@
 class LinearMotor {
   int axisNo;
   static bool isMotionModule();
+  [[nodiscard]] double getPosition() const;
 
 public:
   LinearMotor() = delete;
@@ -11,6 +12,7 @@ public:
 
   [[nodiscard]] bool hasAlarm() const;
   void resetAlarm() const;
+  void guessLimits() const;
 
   ~LinearMotor();
 };
