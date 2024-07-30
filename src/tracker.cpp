@@ -117,7 +117,7 @@ void Tracker::capture(const bool render) {
   }
 }
 
-void Tracker::render(const cv::Mat &screen, cv::viz::Viz3d &visualizer) {
+bool Tracker::render(const cv::Mat &screen, cv::viz::Viz3d &visualizer) {
   capture();
   std::vector<cv::Point2f> firstPoint(1);
   std::vector<cv::Point2f> secondPoint(1);
@@ -150,10 +150,10 @@ void Tracker::render(const cv::Mat &screen, cv::viz::Viz3d &visualizer) {
       screen(cv::Rect(halfSize.width, 0, halfSize.width, halfSize.height)));
 
   if (!firstSuccess || !secondSuccess) {
-    return;
+    return false;
   }
   if (projectionMatrix[0].empty() || projectionMatrix[1].empty()) {
-    return;
+    return false;
   }
   cv::Mat point3d;
   cv::triangulatePoints(projectionMatrix[0], projectionMatrix[1], firstPoint,
@@ -163,11 +163,7 @@ void Tracker::render(const cv::Mat &screen, cv::viz::Viz3d &visualizer) {
   cv::convertPointsFromHomogeneous(point3d.t(), point3dNormalized);
   point3dNormalized = point3dNormalized.t();
   point3dNormalized.convertTo(point3dNormalized, CV_64F);
-  const cv::Vec3d pos = point3dNormalized.at<cv::Vec3d>();
-
-  std::stringstream ss;
-  ss << "X: " << pos[0] << ", Y: " << pos[1] << ", Z: " << pos[2];
-  cv::putText(screen, ss.str(), cv::Point(10, 80), cv::FONT_HERSHEY_SIMPLEX, 1,
-              cv::Scalar(255, 255, 255));
+  pos = point3dNormalized.at<cv::Vec3d>();
   visualizer.setWidgetPose("ball", cv::Affine3d(cv::Vec3d(), pos));
+  return true;
 }

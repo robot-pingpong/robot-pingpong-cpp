@@ -26,7 +26,8 @@ public:
 
   void setTableArea(cv::viz::Viz3d &visualizer);
 
-  void render(const cv::Mat &screen, cv::viz::Viz3d &visualizer);
+  cv::Vec3d pos;
+  bool render(const cv::Mat &screen, cv::viz::Viz3d &visualizer);
 };
 
 #endif // TRACKER_H
