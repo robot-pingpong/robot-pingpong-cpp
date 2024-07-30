@@ -27,6 +27,8 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/timer.h
         src/dynamixel.cpp
         src/dynamixel.h
+        src/vision.cpp
+        src/vision.h
 )
 
 target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS} ${LinearMotor_LIBRARIES} ${DynamixelSDK_LIBRARIES})
