@@ -30,4 +30,18 @@
     }                                                                          \
   }
 
+#if defined(_WIN32) || defined(_WIN64)
+#define PORT_NAME "COM3"
+#elif defined(__linux__)
+#define PORT_NAME "/dev/ttyUSB0"
+#elif defined(__APPLE__)
+#define PORT_NAME "/dev/tty.usbserial-FT0G1Q2B"
+#endif
+
+#define BASE_ID 5
+#define YAW_SHOULDER_ID 2
+#define PITCH_SHOULDER_ID 6
+#define ELBOW_ID 1
+#define WRIST_ID 4
+
 #endif
