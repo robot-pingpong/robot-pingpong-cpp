@@ -1,8 +1,16 @@
 #include "arm.h"
 
+#include <algorithm>
 #include <cassert>
 #include <iostream>
 #include <thread>
+
+const std::vector<ArmDictionary> angle_set = {
+    {0.2, 260, 100, 230, 240, 90, 160},
+    {0.25, 260, 100, 223, 250, 90, 160},
+    {0.32, 250, 110, 206, 260, 100, 170},
+    {0.37, 240, 120, 189, 250, 110, 190},
+    {0.48, 220, 140, 172, 240, 150, 220}};
 
 Arm::Arm() {
   // base.setVelocityLimit(100);
@@ -44,24 +52,22 @@ Arm::Arm() {
   elbow.setTorqueEnable(Torque::ENABLE);
   wrist.setTorqueEnable(Torque::ENABLE);
 
-  base.setAngle(260);
-  yawShoulder.setAngle(100);
-  pitchShoulder.setAngle(230);
-  elbow.setAngle(240);
-  wrist.setAngle(90);
-  // std::vector<std::vector<double>> angle_set = {{260, 100, 230, 240, 90,
-  // 160},
-  //                                               {260, 100, 223, 250, 90,
-  //                                               160}, {250, 110, 206, 260,
-  //                                               100, 170}, {240, 120, 189,
-  //                                               250, 110, 190}, {220, 140,
-  //                                               172, 240, 150, 220}};
-  // for (const auto &angles : angle_set) {
-  //   base.setAngle(angles[0]);
-  //   yawShoulder.setAngle(angles[1]);
-  //   pitchShoulder.setAngle(angles[2]);
-  //   elbow.setAngle(angles[3]);
-  //   wrist.setAngle(angles[4]);
+  moveByZ(0);
+}
+
+void Arm::moveByZ(const double z) {
+  const auto target = std::find_if(
+      angle_set.begin(), angle_set.end(),
+      [z](const ArmDictionary &angle) { return z <= angle.maxHeight; });
+
+  if (target == angle_set.end())
+    return;
+
+  base.setAngle(target->baseAngle);
+  yawShoulder.setAngle(target->yawShoulderAngle);
+  pitchShoulder.setAngle(target->pitchShoulderAngle);
+  elbow.setAngle(target->elbowAngle);
+  wrist.setAngle(target->wristBeforeAngle);
   //   std::this_thread::sleep_for(std::chrono::milliseconds(300));
   //   while (base.readMoving() || pitchShoulder.readMoving() ||
   //          yawShoulder.readMoving() || elbow.readMoving() ||
@@ -69,5 +75,4 @@ Arm::Arm() {
   //     ;
   //   wrist.setAngle(angles[5]);
   //   std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-  // }
 }

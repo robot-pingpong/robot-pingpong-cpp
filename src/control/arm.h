@@ -5,6 +5,17 @@
 #include "../dynamixel/mx28_p2.h"
 #include "../dynamixel/mx64_p2.h"
 
+struct ArmDictionary {
+  double maxHeight;
+
+  double baseAngle;
+  double yawShoulderAngle;
+  double pitchShoulderAngle;
+  double elbowAngle;
+  double wristBeforeAngle;
+  double wristAfterAngle;
+};
+
 class Arm {
   Servos::Mx64P2 base = Servos::Mx64P2(PORT_NAME, BASE_ID);
   Servos::Mx64P2 yawShoulder = Servos::Mx64P2(PORT_NAME, YAW_SHOULDER_ID);
@@ -15,6 +26,8 @@ class Arm {
 
 public:
   Arm();
+
+  void moveByZ(double z);
 };
 
 #endif // ARM_H

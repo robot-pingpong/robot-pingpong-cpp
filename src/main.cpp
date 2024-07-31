@@ -6,7 +6,7 @@
 #include "vision/vision.h"
 
 int main() {
-  Arm a;
+  Arm arm;
   auto lm = LinearMotor(0);
   lm.guessLimits();
   Vision vision;
@@ -30,7 +30,7 @@ int main() {
     }
 
     if (predictor.predictZ(z)) {
-      // TODO: move arm
+      arm.moveByZ(z);
     }
 
     vision.setMachinePosition(lm.getMappedPosition(Y_TABLE_SIZE, 0));
