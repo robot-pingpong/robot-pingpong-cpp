@@ -1,38 +1,28 @@
-
-if (WIN32 OR CYGWIN)
-    set(CMAKE_FIND_LIBRARY_SUFFIXES ".lib" ".dll")
-else ()
-    set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
-endif ()
-
-if (NOT LinearMotor_DIR)
-    set(LinearMotor_DIR $ENV{LinearMotor_DIR})
-endif ()
-
-if (LinearMotor_DIR)
-    set(LinearMotor_FIND_QUIETLY TRUE)
-endif ()
-
 find_path(LinearMotor_INCLUDE_DIR AXL.h
-        PATHS ${LinearMotor_DIR}/include
-        NO_DEFAULT_PATH)
+        PATHS
+        ENV LINEAR_MOTOR_DIR
+        ${LinearMotor_DIR}
+        PATH_SUFFIXES
+        include)
 
 find_library(LinearMotor_LIBRARY
         NAMES AXL
-        PATHS ${LinearMotor_DIR}/lib
-        NO_DEFAULT_PATH)
-
-if (LinearMotor_INCLUDE_DIR AND LinearMotor_LIBRARY)
-    set(LinearMotor_FOUND TRUE)
-    set(LinearMotor_INCLUDE_DIRS ${LinearMotor_INCLUDE_DIR})
-    set(LinearMotor_LIBRARIES ${LinearMotor_LIBRARY})
-else ()
-    set(LinearMotor_FOUND FALSE)
-    set(LinearMotor_INCLUDE_DIRS)
-    set(LinearMotor_LIBRARIES)
-endif ()
-
-include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(LinearMotor DEFAULT_MSG LinearMotor_INCLUDE_DIR LinearMotor_LIBRARY)
+        PATHS
+        ENV LINEAR_MOTOR_DIR
+        ${LinearMotor_DIR}
+        PATH_SUFFIXES
+        lib)
 
 mark_as_advanced(LinearMotor_INCLUDE_DIR LinearMotor_LIBRARY)
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(LinearMotor REQUIRED_VARS LinearMotor_INCLUDE_DIR LinearMotor_LIBRARY)
+
+if (LinearMotor_FOUND AND NOT TARGET linear_motor::linear_motor)
+    add_library(linear_motor::linear_motor UNKNOWN IMPORTED)
+    set_target_properties(linear_motor::linear_motor PROPERTIES
+            IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+            IMPORTED_LOCATION "${LinearMotor_LIBRARY}"
+            INTERFACE_INCLUDE_DIRECTORIES "${LinearMotor_INCLUDE_DIR}"
+    )
+endif ()

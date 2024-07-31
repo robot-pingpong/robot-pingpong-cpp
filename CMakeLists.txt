@@ -1,15 +1,12 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.22)
 project(robot_pingpong_cpp)
 
 set(CMAKE_CXX_STANDARD 17)
 
 find_package(OpenCV REQUIRED)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake-modules)
-find_package(LinearMotor REQUIRED)
 find_package(DynamixelSDK REQUIRED)
-include_directories(${OpenCV_INCLUDE_DIRS})
-include_directories(${LinearMotor_INCLUDE_DIRS})
-include_directories(${DynamixelSDK_INCLUDE_DIRS})
+find_package(LinearMotor REQUIRED)
 
 add_executable(${PROJECT_NAME} src/main.cpp
         src/capture.cpp
@@ -25,13 +22,20 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/visualizer.h
         src/timer.cpp
         src/timer.h
-        src/dynamixel.cpp
-        src/dynamixel.h
         src/vision.cpp
         src/vision.h
+        src/arm.cpp
+        src/arm.h
+        src/dynamixel.cpp
+        src/dynamixel.h
 )
 
-target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS} ${LinearMotor_LIBRARIES} ${DynamixelSDK_LIBRARIES})
+target_link_libraries(
+        ${PROJECT_NAME}
+        ${OpenCV_LIBS}
+        dynamixel_sdk::dynamixel_sdk
+        linear_motor::linear_motor
+)
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_RUNTIME_DLLS:${PROJECT_NAME}> $<TARGET_FILE_DIR:${PROJECT_NAME}>
