@@ -65,7 +65,7 @@ template class Dynamixel<Mx64P2>;
 
 template <typename Motor>
 Dynamixel<Motor>::Dynamixel(const std::string &portName,
-                            typename Servos::ControlTables<Motor>::id_t id)
+                            typename Servos::ControlTables<Motor>::Id_t id)
     : portHandler(getController(portName)), id(id) {
   packetHandler = dynamixel::PacketHandler::getPacketHandler(
       ControlTables<Motor>::protocol_t::version);

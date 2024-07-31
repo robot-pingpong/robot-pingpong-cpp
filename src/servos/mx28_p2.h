@@ -10,15 +10,15 @@ class Mx28P2;
 template <> struct ControlTables<Mx28P2> {
   typedef Protocols::Protocol2 protocol_t;
   static constexpr protocol_t::address_t ModelNumber = 0;
-  typedef uint16_t modelNumber_t;
-  static constexpr modelNumber_t modelNumberValue = 30;
+   typedef uint16_t ModelNumber_t;
+  static constexpr ModelNumber_t modelNumberValue = 30;
 
   static constexpr protocol_t::address_t ModelInfo = 2;
   typedef uint32_t ModelInfo_t;
   static constexpr protocol_t::address_t FirmwareVersion = 6;
   typedef uint8_t FirmwareVersion_t;
   static constexpr protocol_t::address_t Id = 7;
-  typedef protocol_t::id_t id_t;
+  typedef protocol_t::id_t Id_t;
   static constexpr protocol_t::address_t Baudrate = 8;
   typedef uint8_t Baudrate_t;
   static constexpr protocol_t::address_t ReturnDelayTime = 9;
@@ -29,18 +29,18 @@ template <> struct ControlTables<Mx28P2> {
   typedef uint8_t OperatingMode_t;
   static constexpr protocol_t::address_t SecondaryId = 12;
   typedef uint8_t SecondaryId_t;
-  static constexpr protocol_t::address_t ProtocolVersion = 13;
-  typedef uint8_t ProtocolVersion_t;
+  static constexpr protocol_t::address_t ProtocolType = 13;
+  typedef uint8_t ProtocolType_t;
   static constexpr protocol_t::address_t HomingOffset = 20;
   typedef uint32_t HomingOffset_t;
   static constexpr protocol_t::address_t MovingThreshold = 24;
   typedef uint32_t MovingThreshold_t;
-  static constexpr protocol_t::address_t HighestTemperatureLimit = 31;
-  typedef uint8_t HighestTemperatureLimit_t;
-  static constexpr protocol_t::address_t HighestVoltageLimit = 32;
-  typedef uint16_t HighestVoltageLimit_t;
-  static constexpr protocol_t::address_t LowestVoltageLimit = 34;
-  typedef uint16_t LowestVoltageLimit_t;
+  static constexpr protocol_t::address_t TemperatureLimit = 31;
+  typedef uint8_t TemperatureLimit_t;
+  static constexpr protocol_t::address_t MaxVoltageLimit = 32;
+  typedef uint16_t MaxVoltageLimit_t;
+  static constexpr protocol_t::address_t MinVoltageLimit = 34;
+  typedef uint16_t MinVoltageLimit_t;
   static constexpr protocol_t::address_t PwmLimit = 36;
   typedef uint16_t PwmLimit_t;
   static constexpr protocol_t::address_t CurrentLimit = 38;
@@ -94,8 +94,8 @@ template <> struct ControlTables<Mx28P2> {
   static constexpr bool speedSignBit = false;
   static constexpr protocol_t::address_t ProfileAcceleration = 108;
   typedef uint32_t ProfileAcceleration_t;
-  static constexpr protocol_t::address_t ProfileSpeed = 112;
-  typedef uint32_t ProfileSpeed_t;
+  static constexpr protocol_t::address_t ProfileVelocity = 112;
+  typedef uint32_t ProfileVelocity_t;
   static constexpr protocol_t::address_t GoalPosition = 116;
   typedef int32_t GoalPosition_t;
   static constexpr GoalPosition_t minGoalPosition = 0;
@@ -112,16 +112,16 @@ template <> struct ControlTables<Mx28P2> {
   typedef uint16_t PresentPwm_t;
   static constexpr protocol_t::address_t PresentCurrent = 126;
   typedef uint16_t PresentCurrent_t;
-  static constexpr protocol_t::address_t PresentSpeed = 128;
-  typedef int32_t PresentSpeed_t;
+  static constexpr protocol_t::address_t PresentVelocity = 128;
+  typedef int32_t PresentVelocity_t;
   static constexpr protocol_t::address_t PresentPosition = 132;
   typedef int32_t PresentPosition_t;
-  static constexpr protocol_t::address_t SpeedTrajectory = 136;
-  typedef int32_t SpeedTrajectory_t;
+  static constexpr protocol_t::address_t VelocityTrajectory = 136;
+  typedef int32_t VelocityTrajectory_t;
   static constexpr protocol_t::address_t PositionTrajectory = 140;
   typedef int32_t PositionTrajectory_t;
-  static constexpr protocol_t::address_t PresentVoltage = 144;
-  typedef uint16_t PresentVoltage_t;
+  static constexpr protocol_t::address_t PresentInputVoltage = 144;
+  typedef uint16_t PresentInputVoltage_t;
   static constexpr protocol_t::address_t PresentTemperature = 146;
   typedef uint8_t PresentTemperature_t;
 };
@@ -134,9 +134,59 @@ public:
 
   MODEL_NAME("MX-28(2.0)")
 
-  READ_WRITE_FIELD(Led)
+  READ_FIELD(ModelNumber)
+  READ_FIELD(ModelInfo)
+  READ_FIELD(FirmwareVersion)
+  READ_WRITE_FIELD(Id)
+  READ_WRITE_FIELD(Baudrate)
+  READ_WRITE_FIELD(ReturnDelayTime)
+  READ_WRITE_FIELD(DriveMode)
+  READ_WRITE_FIELD(OperatingMode)
+  READ_WRITE_FIELD(SecondaryId)
+  READ_FIELD(ProtocolType)
+  READ_WRITE_FIELD(HomingOffset)
+  READ_WRITE_FIELD(MovingThreshold)
+  READ_WRITE_FIELD(TemperatureLimit)
+  READ_WRITE_FIELD(MaxVoltageLimit)
+  READ_WRITE_FIELD(MinVoltageLimit)
+  READ_WRITE_FIELD(PwmLimit)
+  READ_WRITE_FIELD(CurrentLimit)
+  READ_WRITE_FIELD(AccelerationLimit)
   READ_WRITE_FIELD(VelocityLimit)
+  READ_WRITE_FIELD(MaxPositionLimit)
+  READ_WRITE_FIELD(MinPositionLimit)
+  READ_WRITE_FIELD(AlarmShutdown)
+
+  READ_WRITE_FIELD(TorqueEnable)
+  READ_WRITE_FIELD(Led)
+  READ_WRITE_FIELD(StatusReturnLevel)
+  READ_FIELD(Registered)
+  READ_FIELD(HardwareErrorStatus)
+  READ_WRITE_FIELD(VelocityIGain)
+  READ_WRITE_FIELD(VelocityPGain)
+  READ_WRITE_FIELD(PositionDGain)
+  READ_WRITE_FIELD(PositionIGain)
+  READ_WRITE_FIELD(PositionPGain)
+  READ_WRITE_FIELD(Feedforward2ndGain)
+  READ_WRITE_FIELD(Feedforward1stGain)
+  READ_WRITE_FIELD(BusWatchdog)
+  READ_WRITE_FIELD(GoalPwm)
+  READ_WRITE_FIELD(GoalCurrent)
+  READ_WRITE_FIELD(GoalVelocity)
+  READ_WRITE_FIELD(ProfileAcceleration)
+  READ_WRITE_FIELD(ProfileVelocity)
+  READ_WRITE_FIELD(GoalPosition)
+  READ_FIELD(RealtimeTick)
+  READ_FIELD(Moving)
+  READ_FIELD(MovingStatus)
+  READ_FIELD(PresentPwm)
+  READ_FIELD(PresentCurrent)
+  READ_FIELD(PresentVelocity)
   READ_FIELD(PresentPosition)
+  READ_WRITE_FIELD(VelocityTrajectory)
+  READ_WRITE_FIELD(PositionTrajectory)
+  READ_FIELD(PresentInputVoltage)
+  READ_FIELD(PresentTemperature)
 };
 } // namespace Servos
 
