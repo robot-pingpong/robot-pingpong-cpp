@@ -28,6 +28,11 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/arm.h
         src/dynamixel.cpp
         src/dynamixel.h
+        src/servos/mx64_p2.h
+        src/servos/protocol2.h
+        src/servos/macros.h
+        src/servos/servo.h
+        src/servos/mx28_p2.h
 )
 
 target_link_libraries(

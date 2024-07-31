@@ -1,19 +1,23 @@
 #ifndef DYNAMIXEL_H
 #define DYNAMIXEL_H
+#include "servos/mx28_p2.h"
+#include "servos/servo.h"
+
 #include <dynamixel_sdk.h>
+#include <map>
+#include <memory>
 #include <string>
 
-class Dynamixel {
-  dynamixel::PortHandler *portHandler;
-  dynamixel::PacketHandler *packetHandler;
-  int id;
+static std::map<std::string, dynamixel::PortHandler *> controllers;
+static dynamixel::PortHandler *getController(const std::string &portName);
 
-  static std::string modelNumber2Name(uint16_t modelNumber);
+template <typename Motor> class Dynamixel {
+  std::shared_ptr<dynamixel::PortHandler> controller;
+  Motor motor;
 
 public:
-  explicit Dynamixel(const std::string &portName, int id);
-  [[nodiscard]] std::string ping() const;
-  ~Dynamixel();
+  Dynamixel(const std::string &portName,
+            typename Servos::ControlTables<Motor>::id_t id);
 };
 
 #endif // DYNAMIXEL_H
