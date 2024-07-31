@@ -47,8 +47,8 @@ template <> struct ControlTables<Mx28P2> {
   typedef uint16_t CurrentLimit_t;
   static constexpr protocol_t::address_t AccelerationLimit = 40;
   typedef uint32_t AccelerationLimit_t;
-  static constexpr protocol_t::address_t SpeedLimit = 44;
-  typedef uint32_t SpeedLimit_t;
+  static constexpr protocol_t::address_t VelocityLimit = 44;
+  typedef uint32_t VelocityLimit_t;
   static constexpr protocol_t::address_t MaxPositionLimit = 48;
   typedef int32_t MaxPositionLimit_t;
   static constexpr protocol_t::address_t MinPositionLimit = 52;
@@ -86,10 +86,10 @@ template <> struct ControlTables<Mx28P2> {
   typedef uint16_t GoalPwm_t;
   static constexpr protocol_t::address_t GoalCurrent = 102;
   typedef uint16_t GoalCurrent_t;
-  static constexpr protocol_t::address_t MovingSpeed = 104;
-  typedef uint32_t MovingSpeed_t;
-  static constexpr MovingSpeed_t minGoalSpeed = INT32_MIN;
-  static constexpr MovingSpeed_t maxGoalSpeed = INT32_MAX;
+  static constexpr protocol_t::address_t GoalVelocity = 104;
+  typedef uint32_t GoalVelocity_t;
+  static constexpr GoalVelocity_t minGoalVelocity = -1023;
+  static constexpr GoalVelocity_t maxGoalVelocity = 1023;
   static constexpr double rpmPerTick = 0.229;
   static constexpr bool speedSignBit = false;
   static constexpr protocol_t::address_t ProfileAcceleration = 108;
@@ -135,6 +135,7 @@ public:
   MODEL_NAME("MX-28(2.0)")
 
   READ_WRITE_FIELD(Led)
+  READ_WRITE_FIELD(VelocityLimit)
   READ_FIELD(PresentPosition)
 };
 } // namespace Servos
