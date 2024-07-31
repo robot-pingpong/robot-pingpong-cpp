@@ -4,6 +4,8 @@
 #include <map>
 #include <string>
 
+#define UNIT_SCALE 0.087891
+
 static std::map<std::string, dynamixel::PortHandler *> controllers;
 static dynamixel::PortHandler *getController(const std::string &portName);
 
@@ -19,6 +21,7 @@ public:
   typename protocol_t::id_t id;
   int ping();
   bool reboot();
+  double getAngle();
 
 protected:
   Dynamixel(const std::string &portName,

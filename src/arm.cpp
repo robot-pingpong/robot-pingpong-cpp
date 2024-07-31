@@ -12,6 +12,12 @@ Arm::Arm() {
   std::cout << elbow.ping() << std::endl;
   std::cout << wrist.ping() << std::endl;
 
+  std::cout << base.getAngle() << std::endl;
+  std::cout << pitchShoulder.getAngle() << std::endl;
+  std::cout << yawShoulder.getAngle() << std::endl;
+  std::cout << elbow.getAngle() << std::endl;
+  std::cout << wrist.getAngle() << std::endl;
+
   // controller.send(base.ping());
   // dynamixel::StatusPacket<dynamixel::Protocol2> status_packet;
   // controller.recv();

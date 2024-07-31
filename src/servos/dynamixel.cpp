@@ -56,4 +56,18 @@ template <typename Model> bool Dynamixel<Model>::reboot() {
   }
   return true;
 }
+template <typename Model> double Dynamixel<Model>::getAngle() {
+  uint32_t position;
+  uint8_t error;
+  if (const int result = packetHandler->read4ByteTxRx(
+          portHandler, id, ControlTables<Model>::presentPosition, &position,
+          &error);
+      result != COMM_SUCCESS) {
+    throw std::runtime_error(packetHandler->getTxRxResult(result));
+  }
+  if (error != 0) {
+    throw std::runtime_error(packetHandler->getRxPacketError(error));
+  }
+  return position * UNIT_SCALE;
+}
 } // namespace Servos
