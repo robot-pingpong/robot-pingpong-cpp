@@ -5,7 +5,7 @@ class LinearMotor {
   int axisNo;
   static bool isMotionModule();
   double min, max;
-  double getClampedPosition(double position) const;
+  [[nodiscard]] double getClampedPosition(double position) const;
 
 public:
   LinearMotor() = delete;
@@ -19,6 +19,7 @@ public:
   [[nodiscard]] bool hasAlarm() const;
   void resetAlarm() const;
   void guessLimits();
+  void setMaxVelocity(double velocity) const;
 
   ~LinearMotor();
 };
