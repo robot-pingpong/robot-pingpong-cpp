@@ -2,14 +2,17 @@
 #include "linear_motor.h"
 #include <AXL.h>
 #include <AXM.h>
-#include <bits/algorithmfwd.h>
 #include <cassert>
-#include <iostream>
 
 bool LinearMotor::isMotionModule() {
   unsigned long int result = 0;
   assert(AxmInfoIsMotionModule(&result) == 0);
   return result == 1;
+}
+double LinearMotor::getClampedPosition(const double position) const {
+  if (!hasLimit())
+    return position;
+  return position < min ? min : position > max ? max : position;
 }
 
 double LinearMotor::getPosition() const {
@@ -24,7 +27,7 @@ double LinearMotor::getMappedPosition(const double min,
 }
 
 void LinearMotor::setPosition(const double position, const bool wait) const {
-  const auto clamped = std::clamp(position, min, max);
+  const auto clamped = getClampedPosition(position);
   if (wait) {
     AxmMovePos(axisNo, clamped, 100, 100, 100);
   } else {

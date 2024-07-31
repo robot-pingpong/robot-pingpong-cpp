@@ -5,6 +5,7 @@ class LinearMotor {
   int axisNo;
   static bool isMotionModule();
   double min, max;
+  double getClampedPosition(double position) const;
 
 public:
   LinearMotor() = delete;
