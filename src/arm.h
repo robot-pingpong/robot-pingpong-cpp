@@ -18,8 +18,8 @@ class Arm {
   Dynamixel<Servos::Mx28P2> wrist =
       Dynamixel<Servos::Mx28P2>(PORT_NAME, WRIST_ID);
 
-  // public:
-  //   Arm();
+public:
+  Arm();
 };
 
 #endif // ARM_H

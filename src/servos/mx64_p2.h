@@ -1,5 +1,6 @@
 #ifndef MX64_P2_H
 #define MX64_P2_H
+#include "macros.h"
 #include "protocol2.h"
 #include "servo.h"
 
@@ -129,6 +130,8 @@ class Mx64P2 : public Servo<Mx64P2> {
 public:
   typedef Mx64P2 Model;
   explicit Mx64P2(const protocol_t::id_t id) : Servo(id){};
+
+  MODEL_NAME("MX-64(2.0)");
 };
 } // namespace Servos
 

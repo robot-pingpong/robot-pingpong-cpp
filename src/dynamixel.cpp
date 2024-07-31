@@ -19,3 +19,7 @@ template <typename Motor>
 Dynamixel<Motor>::Dynamixel(const std::string &portName,
                             typename Servos::ControlTables<Motor>::id_t id)
     : controller(getController(portName)), motor(id) {}
+
+template <typename Motor> std::string Dynamixel<Motor>::getName() const {
+  return motor.getName();
+}

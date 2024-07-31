@@ -18,6 +18,7 @@ template <typename Motor> class Dynamixel {
 public:
   Dynamixel(const std::string &portName,
             typename Servos::ControlTables<Motor>::id_t id);
+  [[nodiscard]] std::string getName() const;
 };
 
 #endif // DYNAMIXEL_H

@@ -1,5 +1,6 @@
 #ifndef MX28_P2_H
 #define MX28_P2_H
+#include "macros.h"
 #include "protocol2.h"
 #include "servo.h"
 
@@ -129,6 +130,8 @@ class Mx28P2 : public Servo<Mx28P2> {
 public:
   typedef Mx28P2 Model;
   explicit Mx28P2(const protocol_t::id_t id) : Servo(id){};
+
+  MODEL_NAME("MX-28(2.0)")
 };
 } // namespace Servos
 
