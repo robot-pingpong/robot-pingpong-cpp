@@ -11,7 +11,7 @@ template <> struct ControlTables<Mx64P2> {
   typedef Protocols::Protocol2 protocol_t;
   static constexpr protocol_t::address_t ModelNumber = 0;
   typedef uint16_t ModelNumber_t;
-  static constexpr ModelNumber_t ModelNumberValue = 311;
+  static constexpr ModelNumber_t modelNumberValue = 311;
 
   static constexpr protocol_t::address_t ModelInfo = 2;
   typedef uint32_t ModelInfo_t;
@@ -134,6 +134,7 @@ public:
 
   MODEL_NAME("MX-64(2.0)");
 
+  READ_WRITE_FIELD(Led)
   READ_FIELD(PresentPosition)
 };
 } // namespace Servos

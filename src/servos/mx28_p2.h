@@ -134,6 +134,7 @@ public:
 
   MODEL_NAME("MX-28(2.0)")
 
+  READ_WRITE_FIELD(Led)
   READ_FIELD(PresentPosition)
 };
 } // namespace Servos

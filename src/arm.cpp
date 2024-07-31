@@ -20,6 +20,8 @@ Arm::Arm() {
 
   wrist.readPresentPosition();
 
+  wrist.writeLed(1);
+
   // controller.send(base.ping());
   // dynamixel::StatusPacket<dynamixel::Protocol2> status_packet;
   // controller.recv();
