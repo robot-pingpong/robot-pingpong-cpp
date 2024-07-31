@@ -6,14 +6,44 @@
 #include <stdexcept>
 
 #define READ(N)                                                                \
-  uint8_t error;                                                               \
-  if (const int result = packetHandler->read##N##ByteTxRx(                     \
-          portHandler, id, address, &value, &error);                           \
-      result != COMM_SUCCESS) {                                                \
-    throw std::runtime_error(packetHandler->getTxRxResult(result));            \
-  }                                                                            \
-  if (error != 0) {                                                            \
-    throw std::runtime_error(packetHandler->getRxPacketError(error));          \
+  {                                                                            \
+    uint8_t error;                                                             \
+    if (const int result = packetHandler->read##N##ByteTxRx(                   \
+            portHandler, id, address, &value, &error);                         \
+        result != COMM_SUCCESS) {                                              \
+      throw std::runtime_error(packetHandler->getTxRxResult(result));          \
+    }                                                                          \
+    if (error != 0) {                                                          \
+      throw std::runtime_error(packetHandler->getRxPacketError(error));        \
+    }                                                                          \
+  }
+
+#define SREAD(N, M)                                                            \
+  {                                                                            \
+    uint##M##_t v;                                                             \
+    uint8_t error;                                                             \
+    if (const int result = packetHandler->read##N##ByteTxRx(                   \
+            portHandler, id, address, &v, &error);                             \
+        result != COMM_SUCCESS) {                                              \
+      throw std::runtime_error(packetHandler->getTxRxResult(result));          \
+    }                                                                          \
+    if (error != 0) {                                                          \
+      throw std::runtime_error(packetHandler->getRxPacketError(error));        \
+    }                                                                          \
+    value = static_cast<int##M##_t>(v);                                        \
+  }
+
+#define WRITE(N)                                                               \
+  {                                                                            \
+    uint8_t error;                                                             \
+    if (const int result = packetHandler->write##N##ByteTxRx(                  \
+            portHandler, id, address, value, &error);                          \
+        result != COMM_SUCCESS) {                                              \
+      throw std::runtime_error(packetHandler->getTxRxResult(result));          \
+    }                                                                          \
+    if (error != 0) {                                                          \
+      throw std::runtime_error(packetHandler->getRxPacketError(error));        \
+    }                                                                          \
   }
 
 dynamixel::PortHandler *getController(const std::string &portName) {
@@ -42,29 +72,29 @@ Dynamixel<Motor>::Dynamixel(const std::string &portName,
 }
 
 template <typename Model>
-void Dynamixel<Model>::readByte(uint16_t address, int8_t &value) {
-  READ(1)
-}
+void Dynamixel<Model>::readByte(uint16_t address, int8_t &value) SREAD(1, 8);
 template <typename Model>
-void Dynamixel<Model>::readByte(uint16_t address, int16_t &value) {
-  READ(2)
-}
+void Dynamixel<Model>::readByte(uint16_t address, int16_t &value) SREAD(2, 16);
 template <typename Model>
-void Dynamixel<Model>::readByte(uint16_t address, int32_t &value) {
-  READ(4)
-}
+void Dynamixel<Model>::readByte(uint16_t address, int32_t &value) SREAD(4, 32);
 template <typename Model>
-void Dynamixel<Model>::readByte(uint16_t address, uint8_t &value) {
-  READ(1)
-}
+void Dynamixel<Model>::readByte(uint16_t address, uint8_t &value) READ(1);
 template <typename Model>
-void Dynamixel<Model>::readByte(uint16_t address, uint16_t &value) {
-  READ(2)
-}
+void Dynamixel<Model>::readByte(uint16_t address, uint16_t &value) READ(2);
 template <typename Model>
-void Dynamixel<Model>::readByte(uint16_t address, uint32_t &value) {
-  READ(4)
-}
+void Dynamixel<Model>::readByte(uint16_t address, uint32_t &value) READ(4);
+template <typename Model>
+void Dynamixel<Model>::writeByte(uint16_t address, int8_t value) WRITE(1);
+template <typename Model>
+void Dynamixel<Model>::writeByte(uint16_t address, int16_t value) WRITE(2);
+template <typename Model>
+void Dynamixel<Model>::writeByte(uint16_t address, int32_t value) WRITE(4);
+template <typename Model>
+void Dynamixel<Model>::writeByte(uint16_t address, uint8_t value) WRITE(1);
+template <typename Model>
+void Dynamixel<Model>::writeByte(uint16_t address, uint16_t value) WRITE(2);
+template <typename Model>
+void Dynamixel<Model>::writeByte(uint16_t address, uint32_t value) WRITE(4);
 
 template <typename Model> int Dynamixel<Model>::ping() {
   uint16_t modelNumber;
@@ -94,6 +124,8 @@ template <typename Model> bool Dynamixel<Model>::reboot() {
   return true;
 }
 template <typename Model> double Dynamixel<Model>::getAngle() {
-  return read4Byte(ControlTables<Model>::presentPosition) * UNIT_SCALE;
+  int32_t value;
+  readByte(ControlTables<Model>::PresentPosition, value);
+  return value * UNIT_SCALE;
 }
 } // namespace Servos
