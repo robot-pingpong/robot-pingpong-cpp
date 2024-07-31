@@ -45,4 +45,15 @@ template <typename Model> int Dynamixel<Model>::ping() {
   }
   return modelNumber;
 }
+template <typename Model> bool Dynamixel<Model>::reboot() {
+  uint8_t error;
+  if (const int result = packetHandler->reboot(portHandler, id, &error);
+      result != COMM_SUCCESS) {
+    throw std::runtime_error(packetHandler->getTxRxResult(result));
+  }
+  if (error != 0) {
+    throw std::runtime_error(packetHandler->getRxPacketError(error));
+  }
+  return true;
+}
 } // namespace Servos

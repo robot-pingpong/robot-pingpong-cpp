@@ -18,6 +18,7 @@ public:
   typedef typename Servos::ControlTables<Model>::protocol_t protocol_t;
   typename protocol_t::id_t id;
   int ping();
+  bool reboot();
 
 protected:
   Dynamixel(const std::string &portName,
