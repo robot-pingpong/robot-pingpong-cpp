@@ -6,6 +6,7 @@ class LinearMotor {
   static bool isMotionModule();
   double min, max;
   [[nodiscard]] double getClampedPosition(double position) const;
+  double targetPosition;
 
 public:
   LinearMotor() = delete;
@@ -15,11 +16,13 @@ public:
   [[nodiscard]] double map(double value, double min, double max) const;
   [[nodiscard]] double getPosition() const;
   [[nodiscard]] double getMappedPosition(double min, double max) const;
-  void setPosition(double position, bool wait = true) const;
+  void setPosition(double position, bool wait = true);
   [[nodiscard]] bool hasAlarm() const;
   void resetAlarm() const;
   void guessLimits();
   void setMaxVelocity(double velocity) const;
+  void update();
+  [[nodiscard]] bool isMoving() const;
 
   ~LinearMotor();
 };

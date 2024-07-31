@@ -43,5 +43,6 @@ int main() {
     }
     vision.setMachinePosition(lm.getMappedPosition(Y_TABLE_SIZE, 0));
     vision.render(timer.getFps());
+    lm.update();
   } while (!vision.stopped());
 }

@@ -26,12 +26,13 @@ double LinearMotor::getMappedPosition(const double min,
          min;
 }
 
-void LinearMotor::setPosition(const double position, const bool wait) const {
+void LinearMotor::setPosition(const double position, const bool wait) {
   const auto clamped = getClampedPosition(position);
+  targetPosition = position;
   if (wait) {
-    AxmMovePos(axisNo, clamped, 100, 100, 100);
+    AxmMovePos(axisNo, clamped, 100, 800, 100);
   } else {
-    AxmMoveStartPos(axisNo, clamped, 100, 100, 100);
+    AxmMoveStartPos(axisNo, clamped, 100, 800, 100);
   }
 }
 
@@ -66,13 +67,25 @@ void LinearMotor::guessLimits() {
 
   AxmSignalSetSoftLimit(axisNo, ENABLE, EMERGENCY_STOP, COMMAND, highLimit - 1,
                         1);
-   max = highLimit - 1;
+  max = highLimit - 1;
   min = 1;
   setPosition(highLimit / 2);
+  setMaxVelocity(100);
   AxmStatusSetCmdPos(axisNo, getPosition());
 }
 void LinearMotor::setMaxVelocity(const double velocity) const {
   AxmMotSetMaxVel(axisNo, velocity);
+}
+void LinearMotor::update() {
+  if (!isMoving()) {
+    setPosition(targetPosition, false);
+  }
+}
+
+bool LinearMotor::isMoving() const {
+  unsigned long int value;
+  AxmStatusReadInMotion(axisNo, &value);
+  return value != 0;
 }
 
 LinearMotor::LinearMotor(const int axisNo) : axisNo(axisNo), min(0), max(0) {
@@ -105,6 +118,7 @@ LinearMotor::LinearMotor(const int axisNo) : axisNo(axisNo), min(0), max(0) {
   if (hasAlarm()) {
     resetAlarm();
   }
+  targetPosition = getPosition();
 }
 bool LinearMotor::hasLimit() const { return min != 0 && max != 0; }
 
