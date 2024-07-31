@@ -1,8 +1,8 @@
 #ifndef MX64_P2_H
 #define MX64_P2_H
+#include "dynamixel.h"
 #include "macros.h"
 #include "protocol2.h"
-#include "servo.h"
 
 namespace Servos {
 class Mx64P2;
@@ -126,10 +126,11 @@ template <> struct ControlTables<Mx64P2> {
   typedef uint8_t presentTemperature_t;
 };
 
-class Mx64P2 : public Servo<Mx64P2> {
+class Mx64P2 : public Dynamixel<Mx64P2> {
 public:
   typedef Mx64P2 Model;
-  explicit Mx64P2(const protocol_t::id_t id) : Servo(id){};
+  explicit Mx64P2(const std::string &portName, const protocol_t::id_t id)
+      : Dynamixel(portName, id){};
 
   MODEL_NAME("MX-64(2.0)");
 };

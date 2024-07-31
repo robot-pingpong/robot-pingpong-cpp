@@ -26,12 +26,11 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/vision.h
         src/arm.cpp
         src/arm.h
-        src/dynamixel.cpp
-        src/dynamixel.h
+        src/servos/dynamixel.cpp
         src/servos/mx64_p2.h
         src/servos/protocol2.h
         src/servos/macros.h
-        src/servos/servo.h
+        src/servos/dynamixel.h
         src/servos/mx28_p2.h
 )
 

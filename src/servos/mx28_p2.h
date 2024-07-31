@@ -1,8 +1,8 @@
 #ifndef MX28_P2_H
 #define MX28_P2_H
+#include "dynamixel.h"
 #include "macros.h"
 #include "protocol2.h"
-#include "servo.h"
 
 namespace Servos {
 class Mx28P2;
@@ -126,10 +126,11 @@ template <> struct ControlTables<Mx28P2> {
   typedef uint8_t presentTemperature_t;
 };
 
-class Mx28P2 : public Servo<Mx28P2> {
+class Mx28P2 : public Dynamixel<Mx28P2> {
 public:
   typedef Mx28P2 Model;
-  explicit Mx28P2(const protocol_t::id_t id) : Servo(id){};
+  explicit Mx28P2(const std::string &portName, const protocol_t::id_t id)
+      : Dynamixel(portName, id){};
 
   MODEL_NAME("MX-28(2.0)")
 };
