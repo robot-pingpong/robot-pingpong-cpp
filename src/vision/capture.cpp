@@ -19,6 +19,7 @@ Capture::Capture(const int deviceId, const int apiPreference)
   cv::Mat img;
   bgSubtractor = cv::createBackgroundSubtractorMOG2(500, 32, false);
   capture >> img;
+  cv::resize(img, img, cv::Size(CAPTURE_WIDTH, CAPTURE_HEIGHT));
   globalMask = cv::Mat(img.size(), CV_8UC1, cv::Scalar(255));
   {
     cv::SimpleBlobDetector::Params p;
@@ -71,6 +72,7 @@ Capture::setGlobalMask(const std::string &windowName,
 
   while (true) {
     capture >> screen;
+    cv::resize(screen, screen, cv::Size(CAPTURE_WIDTH, CAPTURE_HEIGHT));
     for (auto it = points.begin(); it != points.end(); ++it) {
       cv::circle(screen, *it, 5, cv::Scalar(0, 0, 255), -1);
       cv::line(screen, *it,
@@ -116,6 +118,7 @@ Capture::getTableArea(const std::string &windowName,
 
   while (true) {
     capture >> screen;
+    cv::resize(screen, screen, cv::Size(CAPTURE_WIDTH, CAPTURE_HEIGHT));
     for (auto it = points.begin(); it != points.end(); ++it) {
       cv::circle(screen, *it, 5, cv::Scalar(0, 0, 255), -1);
       cv::putText(screen,
@@ -137,7 +140,10 @@ Capture::getTableArea(const std::string &windowName,
   return points;
 }
 
-void Capture::captureFrame() { capture >> frame; }
+void Capture::captureFrame() {
+  capture >> frame;
+  cv::resize(frame, frame, cv::Size(CAPTURE_WIDTH, CAPTURE_HEIGHT));
+}
 
 bool Capture::render(cv::Mat &out, cv::Point2f &point) {
   frame.copyTo(copy);
