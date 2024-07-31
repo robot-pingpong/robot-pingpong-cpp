@@ -1,7 +1,7 @@
 #include "constants.h"
 #include "control/arm.h"
 #include "control/linear_motor.h"
-#include "timer.h"
+#include "utils/timer.h"
 #include "vision/vision.h"
 
 int main() {

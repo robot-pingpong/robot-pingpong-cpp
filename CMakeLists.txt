@@ -20,8 +20,8 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/control/linear_motor.h
         src/vision/visualizer.cpp
         src/vision/visualizer.h
-        src/timer.cpp
-        src/timer.h
+        src/utils/timer.cpp
+        src/utils/timer.h
         src/vision/vision.cpp
         src/vision/vision.h
         src/control/arm.cpp
