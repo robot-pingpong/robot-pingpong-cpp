@@ -1,13 +1,11 @@
 #include "arm.h"
 
-#include "constants.h"
-
 #include <cassert>
 #include <iostream>
 #include <thread>
 
 Arm::Arm() {
-    // base.setVelocityLimit(100);
+  // base.setVelocityLimit(100);
   // base.setAccelerationLimit(30);
   // yawShoulder.setDriveMode(DriveMode::DIRECTION_CCW |
   //                          DriveMode::PROFILE_VELOCITY);

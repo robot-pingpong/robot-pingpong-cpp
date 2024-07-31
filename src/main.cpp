@@ -1,6 +1,6 @@
-#include "arm.h"
 #include "constants.h"
-#include "linear_motor.h"
+#include "control/arm.h"
+#include "control/linear_motor.h"
 #include "timer.h"
 #include "vision/vision.h"
 

@@ -16,22 +16,22 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/vision/tracker.h
         src/vision/dlt.cpp
         src/vision/dlt.h
-        src/linear_motor.cpp
-        src/linear_motor.h
+        src/control/linear_motor.cpp
+        src/control/linear_motor.h
         src/vision/visualizer.cpp
         src/vision/visualizer.h
         src/timer.cpp
         src/timer.h
         src/vision/vision.cpp
         src/vision/vision.h
-        src/arm.cpp
-        src/arm.h
-        src/servos/dynamixel.cpp
-        src/servos/mx64_p2.h
-        src/servos/protocol2.h
-        src/servos/macros.h
-        src/servos/dynamixel.h
-        src/servos/mx28_p2.h
+        src/control/arm.cpp
+        src/control/arm.h
+        src/dynamixel/dynamixel.cpp
+        src/dynamixel/mx64_p2.h
+        src/dynamixel/protocol2.h
+        src/dynamixel/macros.h
+        src/dynamixel/dynamixel.h
+        src/dynamixel/mx28_p2.h
 )
 
 target_link_libraries(

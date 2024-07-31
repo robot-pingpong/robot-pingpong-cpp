@@ -1,9 +1,9 @@
 #ifndef ARM_H
 #define ARM_H
 
-#include "constants.h"
-#include "servos/mx28_p2.h"
-#include "servos/mx64_p2.h"
+#include "../constants.h"
+#include "../dynamixel/mx28_p2.h"
+#include "../dynamixel/mx64_p2.h"
 
 class Arm {
   Servos::Mx64P2 base = Servos::Mx64P2(PORT_NAME, BASE_ID);
