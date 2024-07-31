@@ -2,6 +2,7 @@
 #include "linear_motor.h"
 #include <AXL.h>
 #include <AXM.h>
+#include <bits/algorithmfwd.h>
 #include <cassert>
 #include <iostream>
 
@@ -23,10 +24,11 @@ double LinearMotor::getMappedPosition(const double min,
 }
 
 void LinearMotor::setPosition(const double position, const bool wait) const {
+  const auto clamped = std::clamp(position, min, max);
   if (wait) {
-    AxmMovePos(axisNo, position, 100, 100, 100);
+    AxmMovePos(axisNo, clamped, 100, 100, 100);
   } else {
-    AxmMoveStartPos(axisNo, position, 100, 100, 100);
+    AxmMoveStartPos(axisNo, clamped, 100, 100, 100);
   }
 }
 
@@ -58,7 +60,6 @@ void LinearMotor::guessLimits() {
 
   const double highLimit = getPosition();
   AxmStatusSetCmdPos(axisNo, highLimit);
-  setPosition(0);
 
   AxmSignalSetSoftLimit(axisNo, ENABLE, EMERGENCY_STOP, COMMAND, highLimit - 1,
                         1);
