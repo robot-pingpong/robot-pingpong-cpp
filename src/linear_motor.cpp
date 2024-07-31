@@ -78,7 +78,9 @@ void LinearMotor::setMaxVelocity(const double velocity) const {
 }
 void LinearMotor::update() {
   if (!isMoving()) {
-    setPosition(targetPosition, false);
+    if (abs(getPosition() - targetPosition) > 0.1) {
+      setPosition(targetPosition, false);
+    }
   }
 }
 
