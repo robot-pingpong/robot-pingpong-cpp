@@ -5,7 +5,7 @@
 #include "vision.h"
 
 int main() {
-  // Arm a;
+  Arm a;
   auto lm = LinearMotor(0);
   lm.guessLimits();
   Vision vision;

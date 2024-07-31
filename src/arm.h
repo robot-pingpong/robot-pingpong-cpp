@@ -11,6 +11,7 @@ class Arm {
   Servos::Mx64P2 pitchShoulder = Servos::Mx64P2(PORT_NAME, PITCH_SHOULDER_ID);
   Servos::Mx28P2 elbow = Servos::Mx28P2(PORT_NAME, ELBOW_ID);
   Servos::Mx28P2 wrist = Servos::Mx28P2(PORT_NAME, WRIST_ID);
+  // TODO: make abstract servo base class
 
 public:
   Arm();
