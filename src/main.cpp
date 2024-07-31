@@ -2,7 +2,7 @@
 #include "constants.h"
 #include "linear_motor.h"
 #include "timer.h"
-#include "vision.h"
+#include "vision/vision.h"
 
 int main() {
   Arm a;

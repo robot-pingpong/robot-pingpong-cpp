@@ -1,5 +1,5 @@
 #include "visualizer.h"
-#include "constants.h"
+#include "../constants.h"
 
 Visualizer::Visualizer() {
   visualizer.setWindowSize(cv::Size(1280, 360));

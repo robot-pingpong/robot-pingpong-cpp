@@ -1,7 +1,7 @@
 #include <iostream>
 
+#include "../constants.h"
 #include "capture.h"
-#include "constants.h"
 
 Capture::Capture(const int deviceId, const int apiPreference)
     : capture(deviceId, apiPreference) {

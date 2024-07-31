@@ -1,7 +1,5 @@
 #include "vision.h"
 
-#include "constants.h"
-
 Vision::Vision() : t(screen) {
   std::stringstream fileName;
   fileName << "output" << std::time(nullptr) << ".mkv";

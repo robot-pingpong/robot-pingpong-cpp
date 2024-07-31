@@ -9,21 +9,21 @@ find_package(DynamixelSDK REQUIRED)
 find_package(LinearMotor REQUIRED)
 
 add_executable(${PROJECT_NAME} src/main.cpp
-        src/capture.cpp
-        src/capture.h
+        src/vision/capture.cpp
+        src/vision/capture.h
         src/constants.h
-        src/tracker.cpp
-        src/tracker.h
-        src/dlt.cpp
-        src/dlt.h
+        src/vision/tracker.cpp
+        src/vision/tracker.h
+        src/vision/dlt.cpp
+        src/vision/dlt.h
         src/linear_motor.cpp
         src/linear_motor.h
-        src/visualizer.cpp
-        src/visualizer.h
+        src/vision/visualizer.cpp
+        src/vision/visualizer.h
         src/timer.cpp
         src/timer.h
-        src/vision.cpp
-        src/vision.h
+        src/vision/vision.cpp
+        src/vision/vision.h
         src/arm.cpp
         src/arm.h
         src/servos/dynamixel.cpp
