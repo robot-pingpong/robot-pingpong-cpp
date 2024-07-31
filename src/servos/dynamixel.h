@@ -26,6 +26,12 @@ public:
 protected:
   Dynamixel(const std::string &portName,
             typename Servos::ControlTables<Model>::id_t id);
+  void readByte(uint16_t address, int8_t &value);
+  void readByte(uint16_t address, int16_t &value);
+  void readByte(uint16_t address, int32_t &value);
+  void readByte(uint16_t address, uint8_t &value);
+  void readByte(uint16_t address, uint16_t &value);
+  void readByte(uint16_t address, uint32_t &value);
 };
 } // namespace Servos
 

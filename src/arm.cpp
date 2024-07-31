@@ -18,6 +18,8 @@ Arm::Arm() {
   std::cout << elbow.getAngle() << std::endl;
   std::cout << wrist.getAngle() << std::endl;
 
+  wrist.readPresentPosition();
+
   // controller.send(base.ping());
   // dynamixel::StatusPacket<dynamixel::Protocol2> status_packet;
   // controller.recv();

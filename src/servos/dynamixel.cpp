@@ -5,6 +5,17 @@
 
 #include <stdexcept>
 
+#define READ(N)                                                                \
+  uint8_t error;                                                               \
+  if (const int result = packetHandler->read##N##ByteTxRx(                     \
+          portHandler, id, address, &value, &error);                           \
+      result != COMM_SUCCESS) {                                                \
+    throw std::runtime_error(packetHandler->getTxRxResult(result));            \
+  }                                                                            \
+  if (error != 0) {                                                            \
+    throw std::runtime_error(packetHandler->getRxPacketError(error));          \
+  }
+
 dynamixel::PortHandler *getController(const std::string &portName) {
   if (controllers.find(portName) != controllers.end()) {
     return controllers[portName];
@@ -29,6 +40,32 @@ Dynamixel<Motor>::Dynamixel(const std::string &portName,
   packetHandler = dynamixel::PacketHandler::getPacketHandler(
       ControlTables<Motor>::protocol_t::version);
 }
+
+template <typename Model>
+void Dynamixel<Model>::readByte(uint16_t address, int8_t &value) {
+  READ(1)
+}
+template <typename Model>
+void Dynamixel<Model>::readByte(uint16_t address, int16_t &value) {
+  READ(2)
+}
+template <typename Model>
+void Dynamixel<Model>::readByte(uint16_t address, int32_t &value) {
+  READ(4)
+}
+template <typename Model>
+void Dynamixel<Model>::readByte(uint16_t address, uint8_t &value) {
+  READ(1)
+}
+template <typename Model>
+void Dynamixel<Model>::readByte(uint16_t address, uint16_t &value) {
+  READ(2)
+}
+template <typename Model>
+void Dynamixel<Model>::readByte(uint16_t address, uint32_t &value) {
+  READ(4)
+}
+
 template <typename Model> int Dynamixel<Model>::ping() {
   uint16_t modelNumber;
   uint8_t error;
@@ -57,17 +94,6 @@ template <typename Model> bool Dynamixel<Model>::reboot() {
   return true;
 }
 template <typename Model> double Dynamixel<Model>::getAngle() {
-  uint32_t position;
-  uint8_t error;
-  if (const int result = packetHandler->read4ByteTxRx(
-          portHandler, id, ControlTables<Model>::presentPosition, &position,
-          &error);
-      result != COMM_SUCCESS) {
-    throw std::runtime_error(packetHandler->getTxRxResult(result));
-  }
-  if (error != 0) {
-    throw std::runtime_error(packetHandler->getRxPacketError(error));
-  }
-  return position * UNIT_SCALE;
+  return read4Byte(ControlTables<Model>::presentPosition) * UNIT_SCALE;
 }
 } // namespace Servos
