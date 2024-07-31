@@ -128,4 +128,8 @@ template <typename Model> double Dynamixel<Model>::getAngle() {
   readByte(ControlTables<Model>::PresentPosition, value);
   return value * UNIT_SCALE;
 }
+template <typename Model> void Dynamixel<Model>::setAngle(const double angle) {
+  writeByte(ControlTables<Model>::GoalPosition,
+            static_cast<uint32_t>(angle / UNIT_SCALE));
+}
 } // namespace Servos

@@ -1,7 +1,17 @@
 #ifndef MACROS_H
 #define MACROS_H
 
-#include <string>
+enum DriveMode {
+  DIRECTION_CW = (0x00 << 0),
+  DIRECTION_CCW = (0x01 << 0),
+  PROFILE_VELOCITY = (0x00 << 2),
+  PROFILE_TIME = (0x01 << 2),
+};
+
+enum Torque {
+  ENABLE = 0x01,
+  DISABLE = 0x00,
+};
 
 #define MODEL_NAME(name)                                                       \
   static const std::string getName() { return name; }
@@ -14,7 +24,7 @@
   }
 
 #define WRITE_FIELD(Name)                                                      \
-  void write##Name(const Servos::ControlTables<Model>::Name##_t value) {       \
+  void set##Name(const Servos::ControlTables<Model>::Name##_t value) {         \
     writeByte(Servos::ControlTables<Model>::Name, value);                      \
   }
 

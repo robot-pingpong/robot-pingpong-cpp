@@ -22,6 +22,7 @@ public:
   int ping();
   bool reboot();
   double getAngle();
+  void setAngle(double angle);
 
 protected:
   Dynamixel(const std::string &portName,

@@ -4,6 +4,7 @@
 
 #include <cassert>
 #include <iostream>
+#include <thread>
 
 Arm::Arm() {
   std::cout << base.ping() << std::endl;
@@ -18,22 +19,60 @@ Arm::Arm() {
   std::cout << elbow.getAngle() << std::endl;
   std::cout << wrist.getAngle() << std::endl;
 
-  wrist.readPresentPosition();
+  // base.setVelocityLimit(100);
+  // base.setAccelerationLimit(30);
+  // yawShoulder.setDriveMode(DriveMode::DIRECTION_CCW |
+  //                          DriveMode::PROFILE_VELOCITY);
+  // yawShoulder.setVelocityLimit(100);
+  // yawShoulder.setAccelerationLimit(30);
+  // pitchShoulder.setVelocityLimit(100);
+  // pitchShoulder.setAccelerationLimit(30);
+  // elbow.setVelocityLimit(100);
+  // elbow.setAccelerationLimit(30);
+  // wrist.setVelocityLimit(1000);
+  // wrist.setAccelerationLimit(300);
 
-  wrist.writeLed(1);
+  base.setGoalVelocity(100);
+  base.setProfileVelocity(100);
+  base.setProfileAcceleration(30);
 
-  // controller.send(base.ping());
-  // dynamixel::StatusPacket<dynamixel::Protocol2> status_packet;
-  // controller.recv();
-  // controller.send(base.get_moving_speed());
-  // controller.recv(status_packet);
-  // base.parse_moving_speed(status_packet);
-  //
-  // controller.spee
+  yawShoulder.setGoalVelocity(100);
+  yawShoulder.setProfileVelocity(100);
+  yawShoulder.setProfileAcceleration(30);
 
-  // assert(base.ping() == "MX-64(2.0)");
-  // assert(yawShoulder.ping() == "MX-64(2.0)");
-  // assert(pitchShoulder.ping() == "MX-64(2.0)");
-  // assert(elbow.ping() == "MX-28(2.0)");
-  // assert(wrist.ping() == "MX-28(2.0)");
+  pitchShoulder.setGoalVelocity(100);
+  pitchShoulder.setProfileVelocity(100);
+  pitchShoulder.setProfileAcceleration(30);
+
+  elbow.setGoalVelocity(100);
+  elbow.setProfileVelocity(100);
+  elbow.setProfileAcceleration(30);
+
+  wrist.setGoalVelocity(1000);
+  wrist.setProfileVelocity(1200);
+  wrist.setProfileAcceleration(300);
+
+  // base.setAngle(180);
+  // yawShoulder.setAngle(180);
+  // pitchShoulder.setAngle(230);
+  // elbow.setAngle(180);
+  // wrist.setAngle(180);
+  std::vector<std::vector<double>> angle_set = {{260, 100, 230, 240, 90, 160},
+                                                {260, 100, 223, 250, 90, 160},
+                                                {250, 110, 206, 260, 100, 170},
+                                                {240, 120, 189, 250, 110, 190},
+                                                {220, 140, 172, 240, 150, 220}};
+  for (const auto &angles : angle_set) {
+    base.setAngle(angles[0]);
+    yawShoulder.setAngle(angles[1]);
+    pitchShoulder.setAngle(angles[2]);
+    elbow.setAngle(angles[3]);
+    wrist.setAngle(angles[4]);
+    std::this_thread::sleep_for(std::chrono::milliseconds(300));
+    while (base.readMoving() || pitchShoulder.readMoving() ||
+           yawShoulder.readMoving() || elbow.readMoving() || wrist.readMoving())
+      ;
+    wrist.setAngle(angles[5]);
+    std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+  }
 }
