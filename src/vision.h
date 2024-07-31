@@ -18,7 +18,7 @@ public:
   [[nodiscard]] bool stopped() const;
   void setMachinePosition(double machinePosition);
   bool track(cv::Vec3d &pos);
-  void render(const double fps);
+  void render(double fps);
   ~Vision();
 };
 
