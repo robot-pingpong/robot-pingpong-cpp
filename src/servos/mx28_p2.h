@@ -11,7 +11,7 @@ template <> struct ControlTables<Mx28P2> {
   typedef Protocols::Protocol2 protocol_t;
   static constexpr protocol_t::address_t modelNumber = 0;
   typedef uint16_t modelNumber_t;
-  static constexpr modelNumber_t modelNumberValue = 311;
+  static constexpr modelNumber_t modelNumberValue = 30;
 
   static constexpr protocol_t::address_t modelInfo = 2;
   typedef uint32_t modelInfo_t;

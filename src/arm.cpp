@@ -6,11 +6,12 @@
 #include <iostream>
 
 Arm::Arm() {
-  std::cout << base.getName() << std::endl;
-  std::cout << yawShoulder.getName() << std::endl;
-  std::cout << pitchShoulder.getName() << std::endl;
-  std::cout << elbow.getName() << std::endl;
-  std::cout << wrist.getName() << std::endl;
+  std::cout << base.ping() << std::endl;
+  std::cout << pitchShoulder.ping() << std::endl;
+  std::cout << yawShoulder.ping() << std::endl;
+  std::cout << elbow.ping() << std::endl;
+  std::cout << wrist.ping() << std::endl;
+
   // controller.send(base.ping());
   // dynamixel::StatusPacket<dynamixel::Protocol2> status_packet;
   // controller.recv();

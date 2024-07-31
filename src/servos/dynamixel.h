@@ -11,11 +11,13 @@ namespace Servos {
 template <typename Model> struct ControlTables {};
 
 template <typename Model> class Dynamixel {
-  dynamixel::PortHandler *controller;
+  dynamixel::PortHandler *portHandler;
+  dynamixel::PacketHandler *packetHandler;
 
 public:
   typedef typename Servos::ControlTables<Model>::protocol_t protocol_t;
   typename protocol_t::id_t id;
+  int ping();
 
 protected:
   Dynamixel(const std::string &portName,
