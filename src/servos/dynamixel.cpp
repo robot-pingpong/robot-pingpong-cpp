@@ -69,6 +69,7 @@ Dynamixel<Motor>::Dynamixel(const std::string &portName,
     : portHandler(getController(portName)), id(id) {
   packetHandler = dynamixel::PacketHandler::getPacketHandler(
       ControlTables<Motor>::protocol_t::version);
+  ping();
 }
 
 template <typename Model>
@@ -96,7 +97,7 @@ void Dynamixel<Model>::writeByte(uint16_t address, uint16_t value) WRITE(2);
 template <typename Model>
 void Dynamixel<Model>::writeByte(uint16_t address, uint32_t value) WRITE(4);
 
-template <typename Model> int Dynamixel<Model>::ping() {
+template <typename Model> void Dynamixel<Model>::ping() {
   uint16_t modelNumber;
   uint8_t error;
   if (const int result =
@@ -110,7 +111,6 @@ template <typename Model> int Dynamixel<Model>::ping() {
   if (modelNumber != ControlTables<Model>::modelNumberValue) {
     throw std::runtime_error("Model number mismatch");
   }
-  return modelNumber;
 }
 template <typename Model> bool Dynamixel<Model>::reboot() {
   uint8_t error;

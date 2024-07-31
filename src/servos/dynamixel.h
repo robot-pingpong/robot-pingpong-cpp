@@ -19,7 +19,7 @@ template <typename Model> class Dynamixel {
 public:
   typedef typename Servos::ControlTables<Model>::protocol_t protocol_t;
   typename protocol_t::id_t id;
-  int ping();
+  void ping();
   bool reboot();
   double getAngle();
   void setAngle(double angle);
