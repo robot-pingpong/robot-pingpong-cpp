@@ -28,6 +28,7 @@ public:
   Arm();
 
   void moveByZ(double z);
+  void hitByZ(double z);
 };
 
 #endif // ARM_H

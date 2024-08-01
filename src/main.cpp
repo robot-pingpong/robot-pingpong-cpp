@@ -24,13 +24,17 @@ int main() {
       predictor.addMissingBallPosition();
     }
     if (predictor.predictY(y)) {
-      lm.setPosition(lm.map(y, Y_TABLE_SIZE, 0), false);
+      lm.setPosition(lm.map(y - 0.5, Y_TABLE_SIZE + 0.1, -0.1), false);
     } else {
       lm.setPosition(lm.map(0.5, 0, 1), false);
     }
 
     if (predictor.predictZ(z)) {
       arm.moveByZ(z);
+    }
+
+    if (predictor.hitTarget()) {
+      arm.hitByZ(z);
     }
 
     vision.setMachinePosition(lm.getMappedPosition(Y_TABLE_SIZE, 0));

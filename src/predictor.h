@@ -11,6 +11,8 @@ class Predictor {
   double targetY = 0;
   bool zSet = false;
   double targetZ = 0;
+  bool hit = false;
+  bool hitDone = false;
   void reset();
 
   [[nodiscard]] bool isDistanceIgnorable(const cv::Vec3d &a,
@@ -24,6 +26,7 @@ public:
   void addMissingBallPosition();
   bool predictY(double &y) const;
   bool predictZ(double &z) const;
+  bool hitTarget();
 };
 
 #endif // PREDICTOR_H

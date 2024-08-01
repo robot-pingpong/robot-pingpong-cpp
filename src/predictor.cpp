@@ -5,12 +5,12 @@
 #define TARGET_X (X_TABLE_SIZE - 0.35)
 
 void Predictor::addBallPosition(const cv::Vec3d &position) {
-  if (!history.empty()) {
-    if (isDistanceIgnorable(position, history.back())) {
-      reset();
-      return;
-    }
-  }
+  // if (!history.empty()) {
+  //   if (isDistanceIgnorable(position, history.back())) {
+  //     reset();
+  //     return;
+  //   }
+  // }
   history.push_back(position);
 
   if (history.size() > 2) {
@@ -34,9 +34,16 @@ void Predictor::addBallPosition(const cv::Vec3d &position) {
     const auto dx = last[0] - first[0];
     const auto dy = last[1] - first[1];
 
-    targetY = last[1] + dy / dx * (TARGET_X - last[0]);
+    if (dx < 0) {
+      return;
+    }
 
+    targetY = last[1] + dy / dx * 1.1 * (TARGET_X - last[0]);
     ySet = true;
+  }
+
+  if (position[0] > TARGET_X - 0.5 && zSet) {
+    hit = true;
   }
 }
 
@@ -56,6 +63,13 @@ bool Predictor::predictZ(double &z) const {
   z = targetZ;
   return ySet;
 }
+bool Predictor::hitTarget() {
+  if (hit && !hitDone) {
+    hitDone = true;
+    return true;
+  }
+  return false;
+}
 
 void Predictor::reset() {
   history.clear();
@@ -63,6 +77,8 @@ void Predictor::reset() {
   missCount = 0;
   ySet = false;
   zSet = false;
+  hit = false;
+  hitDone = false;
 }
 
 bool Predictor::isDistanceIgnorable(const cv::Vec3d &a,
