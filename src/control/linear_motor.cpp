@@ -30,9 +30,9 @@ void LinearMotor::setPosition(const double position, const bool wait) {
   const auto clamped = getClampedPosition(position);
   targetPosition = position;
   if (wait) {
-    AxmMovePos(axisNo, clamped, 400, 800, 100);
+    AxmMovePos(axisNo, clamped, 600, 800, 100);
   } else {
-    AxmMoveStartPos(axisNo, clamped, 400, 800, 100);
+    AxmMoveStartPos(axisNo, clamped, 600, 800, 100);
   }
 }
 
@@ -70,7 +70,7 @@ void LinearMotor::guessLimits() {
   max = highLimit - 1;
   min = 1;
   setPosition(highLimit / 2);
-  setMaxVelocity(300);
+  setMaxVelocity(600);
   AxmStatusSetCmdPos(axisNo, getPosition());
 }
 void LinearMotor::setMaxVelocity(const double velocity) const {
