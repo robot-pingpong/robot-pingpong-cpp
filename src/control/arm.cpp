@@ -87,6 +87,7 @@ void Arm::moveByZ(const double z) {
   } catch (std::exception &e) {
     std::cerr << e.what() << std::endl;
   }
+  resetted = false;
 }
 
 void Arm::hitByZ(const double z) {
@@ -103,15 +104,16 @@ void Arm::hitByZ(const double z) {
   //     wrist.readMoving())
   //   ;
   wrist.setAngle(target->wristAfterAngle);
+  resetted = false;
 }
 
 void Arm::resetByZ(const double z) {
-  const auto target = std::find_if(
-      angle_set.begin(), angle_set.end(),
-      [z](const ArmDictionary &angle) { return z <= angle.maxHeight; });
-
-  if (target == angle_set.end())
+  if (resetted)
     return;
-
-  wrist.setAngle(target->wristBeforeAngle);
+  base.setAngle(angle_set[3].baseAngle);
+  yawShoulder.setAngle(angle_set[3].yawShoulderAngle);
+  pitchShoulder.setAngle(angle_set[3].pitchShoulderAngle);
+  elbow.setAngle(angle_set[3].elbowAngle);
+  wrist.setAngle(angle_set[3].wristBeforeAngle);
+  resetted = true;
 }

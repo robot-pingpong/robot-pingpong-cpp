@@ -23,6 +23,7 @@ class Arm {
   Servos::Mx28P2 elbow = Servos::Mx28P2(PORT_NAME, ELBOW_ID);
   Servos::Mx28P2 wrist = Servos::Mx28P2(PORT_NAME, WRIST_ID);
   // TODO: make abstract servo base class
+  bool resetted = false;
 
 public:
   Arm();
