@@ -29,16 +29,17 @@ void Predictor::addBallPosition(const cv::Vec3d &position) {
   }
 
   if (!ySet && position[0] > X_TABLE_SIZE / 2) {
-    auto &first = history[history.size() / 3];
-    auto &last = position;
-    const auto dx = last[0] - first[0];
-    const auto dy = last[1] - first[1];
-
-    if (dx < 0) {
-      return;
+    double sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+    for (const auto &pos : history) {
+      sumX += pos[0];
+      sumY += pos[1];
+      sumXY += pos[0] * pos[1];
+      sumX2 += pos[0] * pos[0];
     }
-
-    targetY = last[1] + dy / dx * 1.1 * (TARGET_X - last[0]);
+    const auto n = static_cast<double>(history.size());
+    const auto a = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+    const auto b = (sumY - a * sumX) / n;
+    targetY = a * TARGET_X + b;
     ySet = true;
   }
 
