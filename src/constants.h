@@ -31,7 +31,7 @@
   }
 
 #if defined(_WIN32) || defined(_WIN64)
-#define PORT_NAME "COM3"
+#define PORT_NAME "COM6"
 #elif defined(__linux__)
 #define PORT_NAME "/dev/ttyUSB0"
 #elif defined(__APPLE__)
