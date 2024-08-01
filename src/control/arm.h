@@ -29,6 +29,7 @@ public:
 
   void moveByZ(double z);
   void hitByZ(double z);
+  void resetByZ(double z);
 };
 
 #endif // ARM_H

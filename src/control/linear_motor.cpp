@@ -70,7 +70,7 @@ void LinearMotor::guessLimits() {
   max = highLimit - 1;
   min = 1;
   setPosition(highLimit / 2);
-  setMaxVelocity(150);
+  setMaxVelocity(300);
   AxmStatusSetCmdPos(axisNo, getPosition());
 }
 void LinearMotor::setMaxVelocity(const double velocity) const {

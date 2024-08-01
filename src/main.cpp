@@ -15,7 +15,7 @@ int main() {
   Predictor predictor;
 
   cv::Vec3d ballPosition;
-  double y, z;
+  double y, z = 0;
 
   do {
     if (vision.track(ballPosition)) {
@@ -27,6 +27,7 @@ int main() {
       lm.setPosition(lm.map(y - 0.5, Y_TABLE_SIZE + 0.1, -0.1), false);
     } else {
       lm.setPosition(lm.map(0.5, 0, 1), false);
+      arm.resetByZ(z);
     }
 
     if (predictor.predictZ(z)) {

@@ -42,7 +42,7 @@ void Predictor::addBallPosition(const cv::Vec3d &position) {
     ySet = true;
   }
 
-  if (position[0] > TARGET_X - 0.5 && zSet) {
+  if (position[0] > TARGET_X / 2) {
     hit = true;
   }
 }
