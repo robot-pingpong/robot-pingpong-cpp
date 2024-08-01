@@ -110,10 +110,10 @@ void Arm::hitByZ(const double z) {
 void Arm::resetByZ(const double z) {
   if (resetted)
     return;
-  base.setAngle(angle_set[3].baseAngle);
-  yawShoulder.setAngle(angle_set[3].yawShoulderAngle);
-  pitchShoulder.setAngle(angle_set[3].pitchShoulderAngle);
-  elbow.setAngle(angle_set[3].elbowAngle);
-  wrist.setAngle(angle_set[3].wristBeforeAngle);
+  base.setAngle(angle_set[2].baseAngle);
+  yawShoulder.setAngle(angle_set[2].yawShoulderAngle);
+  pitchShoulder.setAngle(angle_set[2].pitchShoulderAngle);
+  elbow.setAngle(angle_set[2].elbowAngle);
+  wrist.setAngle(angle_set[2].wristBeforeAngle);
   resetted = true;
 }
