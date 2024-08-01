@@ -3,7 +3,8 @@
 #include "dlt.h"
 #include "visualizer.h"
 
-Tracker::Tracker(cv::Mat &screen) : first(0), second(1) {
+ Tracker::Tracker(cv::Mat &screen)
+    : first(0, cv::CAP_DSHOW), second(1, cv::CAP_DSHOW) {
   capture(true);
   halfSize = cv::Size(firstFrame.cols / 2, firstFrame.rows / 2);
   firstFrame.copyTo(screen);
