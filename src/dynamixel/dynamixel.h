@@ -1,6 +1,6 @@
 #ifndef SERVO_H
 #define SERVO_H
-#include "motor.h"
+#include "base_motor.h"
 
 #include <dynamixel_sdk.h>
 #include <map>
@@ -14,7 +14,7 @@ static dynamixel::PortHandler *getController(const std::string &portName);
 namespace Servos {
 template <typename Model> struct ControlTables {};
 
-template <typename Model> class Dynamixel : public Motor {
+template <typename Model> class Dynamixel : public BaseMotor {
   dynamixel::PortHandler *portHandler;
   dynamixel::PacketHandler *packetHandler;
 
@@ -25,20 +25,6 @@ public:
   bool reboot();
   double getAngle();
   void setAngle(double angle);
-
-  void setTorqueEnable(typename Servos::ControlTables<Model>::TorqueEnable_t
-                           torque) override = 0;
-  void setTorqueEnable(const Torque torque) override {
-    setTorqueEnable(
-        static_cast<typename Servos::ControlTables<Model>::TorqueEnable_t>(
-            torque));
-  };
-  void setDriveMode(
-      typename Servos::ControlTables<Model>::DriveMode_t mode) override = 0;
-  void setDriveMode(const DriveMode mode) override {
-    setDriveMode(
-        static_cast<typename Servos::ControlTables<Model>::DriveMode_t>(mode));
-  };
 
 protected:
   Dynamixel(const std::string &portName,
