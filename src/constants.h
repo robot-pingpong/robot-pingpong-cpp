@@ -38,10 +38,10 @@
 #define PORT_NAME "/dev/tty.usbserial-FT0G1Q2B"
 #endif
 
-#define BASE_ID 5
-#define YAW_SHOULDER_ID 2
-#define PITCH_SHOULDER_ID 6
-#define ELBOW_ID 1
-#define WRIST_ID 4
+#define BASE_ID 1
+#define SHOULDER_ID 2
+#define ARM_ID 3
+#define ELBOW_ID 4
+#define WRIST_ID 5
 
 #endif
