@@ -5,6 +5,8 @@
 #include "../dynamixel/mx28_p2.h"
 #include "../dynamixel/mx64_p2.h"
 
+#include <list>
+
 struct ArmDictionary {
   double maxHeight;
 
@@ -18,11 +20,8 @@ struct ArmDictionary {
 
 class Arm {
   Servos::Mx64P2 base = Servos::Mx64P2(PORT_NAME, BASE_ID);
-  Servos::Mx64P2 yawShoulder = Servos::Mx64P2(PORT_NAME, YAW_SHOULDER_ID);
-  Servos::Mx64P2 pitchShoulder = Servos::Mx64P2(PORT_NAME, PITCH_SHOULDER_ID);
-  Servos::Mx28P2 elbow = Servos::Mx28P2(PORT_NAME, ELBOW_ID);
-  Servos::Mx28P2 wrist = Servos::Mx28P2(PORT_NAME, WRIST_ID);
-  // TODO: make abstract servo base class
+  Servos::Mx64P2 shoulder = Servos::Mx64P2(PORT_NAME, SHOULDER_ID);
+  std::list<Motor *> motors = {&base, &shoulder};
   bool resetted = false;
 
 public:

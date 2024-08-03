@@ -6,11 +6,11 @@
 #include <thread>
 
 const std::vector<ArmDictionary> angle_set = {
-    {0.20, 260, 100, 230, 240, 90, 160},
-    {0.25, 260, 100, 223, 250, 90, 160},
-    {0.32, 250, 110, 206, 260, 100, 170},
-    {0.37, 240, 120, 189, 250, 110, 190},
-    {0.48, 220, 140, 172, 240, 150, 220}};
+    {0.20, 160, 100, 230, 240, 90, 160},
+    {0.25, 170, 100, 223, 250, 90, 160},
+    {0.32, 180, 110, 206, 260, 100, 170},
+    {0.37, 190, 120, 189, 250, 110, 190},
+    {0.48, 200, 140, 172, 240, 150, 220}};
 
 Arm::Arm() {
   // base.setTorqueEnable(Torque::DISABLE);
@@ -41,31 +41,16 @@ Arm::Arm() {
   // wrist.setVelocityLimit(1000);
   // wrist.setAccelerationLimit(300);
 
-  base.setGoalVelocity(400);
-  base.setProfileVelocity(400);
-  base.setProfileAcceleration(120);
+  for (const auto &motor : motors) {
+    motor->setGoalVelocity(400);
+    motor->setProfileVelocity(400);
+    motor->setProfileAcceleration(120);
+    motor->setTorqueEnable(Torque::ENABLE);
+  }
 
-  yawShoulder.setGoalVelocity(400);
-  yawShoulder.setProfileVelocity(400);
-  yawShoulder.setProfileAcceleration(120);
-
-  pitchShoulder.setGoalVelocity(400);
-  pitchShoulder.setProfileVelocity(400);
-  pitchShoulder.setProfileAcceleration(120);
-
-  elbow.setGoalVelocity(400);
-  elbow.setProfileVelocity(400);
-  elbow.setProfileAcceleration(120);
-
-  wrist.setGoalVelocity(1000);
-  wrist.setProfileVelocity(1800);
-  wrist.setProfileAcceleration(450);
-
-  base.setTorqueEnable(Torque::ENABLE);
-  yawShoulder.setTorqueEnable(Torque::ENABLE);
-  pitchShoulder.setTorqueEnable(Torque::ENABLE);
-  elbow.setTorqueEnable(Torque::ENABLE);
-  wrist.setTorqueEnable(Torque::ENABLE);
+  // wrist.setGoalVelocity(1000);
+  // wrist.setProfileVelocity(1800);
+  // wrist.setProfileAcceleration(450);
 
   moveByZ(0);
 }
@@ -80,9 +65,9 @@ void Arm::moveByZ(const double z) {
 
   try {
     base.setAngle(target->baseAngle);
-    yawShoulder.setAngle(target->yawShoulderAngle);
-    pitchShoulder.setAngle(target->pitchShoulderAngle);
-    elbow.setAngle(target->elbowAngle);
+    // yawShoulder.setAngle(target->yawShoulderAngle);
+    // pitchShoulder.setAngle(target->pitchShoulderAngle);
+    // elbow.setAngle(target->elbowAngle);
     // wrist.setAngle(target->wristBeforeAngle);
   } catch (std::exception &e) {
     std::cerr << e.what() << std::endl;
@@ -103,7 +88,7 @@ void Arm::hitByZ(const double z) {
   //     //      yawShoulder.readMoving() || elbow.readMoving() ||
   //     wrist.readMoving())
   //   ;
-  wrist.setAngle(target->wristAfterAngle);
+  // wrist.setAngle(target->wristAfterAngle);
   resetted = false;
 }
 
@@ -111,9 +96,9 @@ void Arm::resetByZ(const double z) {
   if (resetted)
     return;
   base.setAngle(angle_set[2].baseAngle);
-  yawShoulder.setAngle(angle_set[2].yawShoulderAngle);
-  pitchShoulder.setAngle(angle_set[2].pitchShoulderAngle);
-  elbow.setAngle(angle_set[2].elbowAngle);
-  wrist.setAngle(angle_set[2].wristBeforeAngle);
+  // yawShoulder.setAngle(angle_set[2].yawShoulderAngle);
+  // pitchShoulder.setAngle(angle_set[2].pitchShoulderAngle);
+  // elbow.setAngle(angle_set[2].elbowAngle);
+  // wrist.setAngle(angle_set[2].wristBeforeAngle);
   resetted = true;
 }
