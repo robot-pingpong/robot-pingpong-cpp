@@ -126,7 +126,7 @@ template <> struct ControlTables<Mx64P2> {
   typedef uint8_t PresentTemperature_t;
 };
 
-class Mx64P2 : public Dynamixel<Mx64P2> {
+class Mx64P2 final : public Dynamixel<Mx64P2> {
 public:
   typedef Mx64P2 Model;
   explicit Mx64P2(const std::string &portName, const protocol_t::id_t id)

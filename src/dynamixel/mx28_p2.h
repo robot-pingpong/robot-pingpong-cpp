@@ -10,7 +10,7 @@ class Mx28P2;
 template <> struct ControlTables<Mx28P2> {
   typedef Protocols::Protocol2 protocol_t;
   static constexpr protocol_t::address_t ModelNumber = 0;
-   typedef uint16_t ModelNumber_t;
+  typedef uint16_t ModelNumber_t;
   static constexpr ModelNumber_t modelNumberValue = 30;
 
   static constexpr protocol_t::address_t ModelInfo = 2;
@@ -126,7 +126,7 @@ template <> struct ControlTables<Mx28P2> {
   typedef uint8_t PresentTemperature_t;
 };
 
-class Mx28P2 : public Dynamixel<Mx28P2> {
+class Mx28P2 final : public Dynamixel<Mx28P2> {
 public:
   typedef Mx28P2 Model;
   explicit Mx28P2(const std::string &portName, const protocol_t::id_t id)
