@@ -42,7 +42,7 @@ Arm::Arm() {
   // wrist.setAccelerationLimit(300);
 
   for (const auto &motor : motors) {
-    motor->setGoalVelocity(400);
+    // motor->setGoalVelocity(400);
     motor->setProfileVelocity(400);
     motor->setProfileAcceleration(120);
     motor->setTorqueEnable(Torque::ENABLE);
