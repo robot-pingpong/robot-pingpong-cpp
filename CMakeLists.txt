@@ -34,6 +34,7 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/dynamixel/mx28_p2.h
         src/predictor.cpp
         src/predictor.h
+        src/dynamixel/motor.h
 )
 
 target_link_libraries(
