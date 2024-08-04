@@ -65,6 +65,7 @@ void Arm::moveByZ(const double z) {
 
   try {
     base.setAngle(target->baseAngle);
+    shoulder.setAngle(200);
     // yawShoulder.setAngle(target->yawShoulderAngle);
     // pitchShoulder.setAngle(target->pitchShoulderAngle);
     // elbow.setAngle(target->elbowAngle);
