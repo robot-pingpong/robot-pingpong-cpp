@@ -11,35 +11,40 @@ int main() {
   lm.guessLimits();
   Vision vision;
   vision.init(true);
-  Timer timer;
-  Predictor predictor;
 
-  cv::Vec3d ballPosition;
-  double y, z = 0;
+  try {
+    Timer timer;
+    Predictor predictor;
 
-  do {
-    if (vision.track(ballPosition)) {
-      predictor.addBallPosition(ballPosition);
-    } else {
-      predictor.addMissingBallPosition();
-    }
-    if (predictor.predictY(y)) {
-      lm.setPosition(lm.map(y - 0.45, Y_TABLE_SIZE + 0.1, -0.1), false);
-    } else {
-      lm.setPosition(lm.map(0.5, 0, 1), false);
-      // arm.resetByZ(z);
-    }
+    cv::Vec3d ballPosition;
+    double y, z = 0;
 
-    if (predictor.predictZ(z)) {
-      // arm.moveByZ(z);
-    }
+    do {
+      if (vision.track(ballPosition)) {
+        predictor.addBallPosition(ballPosition);
+      } else {
+        predictor.addMissingBallPosition();
+      }
+      if (predictor.predictY(y)) {
+        lm.setPosition(lm.map(y - 0.45, Y_TABLE_SIZE + 0.1, -0.1), false);
+      } else {
+        lm.setPosition(lm.map(0.5, 0, 1), false);
+        // arm.resetByZ(z);
+      }
 
-    if (predictor.hitTarget()) {
-      // arm.hitByZ(z);
-    }
+      if (predictor.predictZ(z)) {
+        // arm.moveByZ(z);
+      }
 
-    vision.setMachinePosition(lm.getMappedPosition(Y_TABLE_SIZE, 0));
-    vision.render(timer.getFps());
-    lm.update();
-  } while (!vision.stopped());
+      if (predictor.hitTarget()) {
+        // arm.hitByZ(z);
+      }
+
+      vision.setMachinePosition(lm.getMappedPosition(Y_TABLE_SIZE, 0));
+      vision.render(timer.getFps());
+      lm.update();
+    } while (!vision.stopped());
+  } catch (std::exception &e) {
+    std::cerr << e.what() << std::endl;
+  }
 }
