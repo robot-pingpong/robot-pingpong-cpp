@@ -186,15 +186,6 @@ bool Capture::render(cv::Mat &out, cv::Point2f &point) {
       continue;
     }
 
-    cv::Point2f center;
-    float radius;
-    cv::minEnclosingCircle(contour, center, radius);
-    const auto circleArea = M_PI * radius * radius;
-    if (const auto areaRatio = area / circleArea; areaRatio < AREA_THRESHOLD) {
-      cv::drawContours(copy, contours, i, CYAN, 2);
-      continue;
-    }
-
     grayMask = cv::Scalar(0);
     cv::drawContours(grayMask, contours, i, cv::Scalar(255), cv::FILLED);
     cv::drawContours(copy, contours, i, GREEN, 2);
