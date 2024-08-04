@@ -174,8 +174,8 @@ bool Capture::render(cv::Mat &out, cv::Point2f &point) {
 
   for (int i = 0; i < contours.size(); ++i) {
     const auto area = cv::contourArea(contours.at(i));
-    if (area < MIN_AREA) {
-      cv::drawContours(copy, contours, i, PURPLE, 2);
+    if (area < MIN_AREA || area > MAX_AREA) {
+      cv::drawContours(copy, contours, i, MAGENTA, 2);
       continue;
     }
     const auto perimeter = cv::arcLength(contours.at(i), true);
