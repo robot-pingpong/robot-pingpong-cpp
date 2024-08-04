@@ -186,18 +186,12 @@ bool Capture::render(cv::Mat &out, cv::Point2f &point) {
       continue;
     }
 
-    const auto rect = cv::boundingRect(contour);
-    if (const auto ratio = static_cast<double>(rect.width) / rect.height;
-        ratio > RATIO_THRESHOLD || ratio < 1 / RATIO_THRESHOLD) {
+    cv::Point2f center;
+    float radius;
+    cv::minEnclosingCircle(contour, center, radius);
+    const auto circleArea = M_PI * radius * radius;
+    if (const auto areaRatio = area / circleArea; areaRatio < AREA_THRESHOLD) {
       cv::drawContours(copy, contours, i, CYAN, 2);
-      continue;
-    }
-
-    const auto convexHull = std::vector<cv::Point>();
-    cv::convexHull(contour, convexHull);
-    if (const auto convexity = area / cv::contourArea(convexHull);
-        convexity < CONVEXITY_THRESHOLD) {
-      cv::drawContours(copy, contours, i, BLUE, 2);
       continue;
     }
 

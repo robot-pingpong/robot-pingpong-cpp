@@ -9,7 +9,7 @@
 #define MIN_COLOR_SIMILARITY 130.0
 #define CIRCULARITY_THRESHOLD 0.3
 #define CONVEXITY_THRESHOLD 0.8
-#define RATIO_THRESHOLD 2.0
+#define AREA_THRESHOLD 0.7
 #define RED cv::Scalar(0, 0, 255)
 #define YELLOW cv::Scalar(0, 255, 255)
 #define MAGENTA cv::Scalar(255, 0, 255)
