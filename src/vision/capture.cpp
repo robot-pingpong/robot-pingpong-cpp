@@ -149,6 +149,7 @@ void Capture::captureFrame() {
 bool Capture::render(cv::Mat &out, cv::Point2f &point) {
   frame.copyTo(copy);
   out = cv::Scalar(0, 0, 0);
+  cv::blur(copy, copy, cv::Size(9, 9));
   cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
   cv::inRange(hsv, ORANGE_HSV_LOWER, ORANGE_HSV_UPPER, grayMask);
   cv::bitwise_and(grayMask, globalMask, grayMask);
