@@ -11,7 +11,7 @@ void Vision::init(const bool skip) {
   t.setMask(skip);
   t.setTableArea(visualizer, skip);
 }
-bool Vision::stopped() const { return visualizer.stopped(); }
+bool Vision::stopped() const { return hasStopped || visualizer.stopped(); }
 
 void Vision::setMachinePosition(const double machinePosition) {
   visualizer.setMachinePosition(machinePosition);
@@ -39,6 +39,9 @@ void Vision::render(const double fps) {
   visualizer.render();
   visualizer.getScreenshot().copyTo(screen(cv::Rect(0, 360, 1280, 360)));
   cv::imshow("screen", screen);
+  if (cv::waitKey(1) == 27) {
+    hasStopped = true;
+  }
   writer.write(screen);
 }
 Vision::~Vision() {
