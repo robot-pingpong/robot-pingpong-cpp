@@ -4,7 +4,7 @@ Vision::Vision() : t(screen) {
   std::stringstream fileName;
   fileName << "output" << std::time(nullptr) << ".mkv";
   writer.open(fileName.str(), cv::VideoWriter::fourcc('X', '2', '6', '4'), 30,
-              cv::Size(1280, 720));
+              cv::Size(1280 * 2, 720 * 2));
 };
 
 void Vision::init(const bool skip) {
@@ -37,12 +37,14 @@ void Vision::render(const double fps) {
   }
 
   visualizer.render();
-  visualizer.getScreenshot().copyTo(screen(cv::Rect(0, 360, 1280, 360)));
-  cv::imshow("screen", screen);
+  visualizer.getScreenshot().copyTo(
+      screen(cv::Rect(0, screen.rows / 2, screen.cols, screen.rows / 2)));
+  writer.write(screen);
+  cv::resize(screen, windowScreen, cv::Size(1920, 1080));
+  cv::imshow("screen", windowScreen);
   if (cv::waitKey(1) == 27) {
     hasStopped = true;
   }
-  writer.write(screen);
 }
 Vision::~Vision() {
   writer.release();

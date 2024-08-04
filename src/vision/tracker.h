@@ -11,7 +11,6 @@ class Tracker {
   Capture second;
   cv::Mat firstFrame;
   cv::Mat secondFrame;
-  cv::Size halfSize;
   cv::Mat cameraMatrix[2];
   cv::Mat projectionMatrix[2];
   cv::Mat rmap[2][2];

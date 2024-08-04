@@ -7,6 +7,7 @@
 
 class Vision {
   cv::Mat screen;
+  cv::Mat windowScreen;
   Visualizer visualizer;
   Tracker t;
   cv::VideoWriter writer;

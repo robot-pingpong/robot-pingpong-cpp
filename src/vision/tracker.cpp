@@ -6,8 +6,8 @@
 Tracker::Tracker(cv::Mat &screen)
     : first(0, cv::CAP_DSHOW), second(1, cv::CAP_DSHOW) {
   capture(true);
-  halfSize = cv::Size(firstFrame.cols / 2, firstFrame.rows / 2);
   firstFrame.copyTo(screen);
+  cv::resize(screen, screen, cv::Size(screen.cols * 2, screen.rows * 2));
 }
 
 void Tracker::setMask(const bool skip) {
@@ -95,30 +95,25 @@ bool Tracker::render(const cv::Mat &screen) {
   const auto firstSuccess = first.render(firstFrame, firstPoint[0]);
   const auto secondSuccess = second.render(secondFrame, secondPoint[0]);
 
-  cv::resize(firstFrame, firstFrame, halfSize);
-  cv::resize(secondFrame, secondFrame, halfSize);
-
   if (firstSuccess) {
-    cv::line(firstFrame, cv::Point(0, static_cast<int>(firstPoint[0].y / 2)),
-             cv::Point(firstFrame.cols, static_cast<int>(firstPoint[0].y / 2)),
+    cv::line(firstFrame, cv::Point(0, static_cast<int>(firstPoint[0].y)),
+             cv::Point(firstFrame.cols, static_cast<int>(firstPoint[0].y)),
              cv::Scalar(0, 255, 0), 2);
-    cv::line(firstFrame, cv::Point(static_cast<int>(firstPoint[0].x / 2), 0),
-             cv::Point(static_cast<int>(firstPoint[0].x / 2), firstFrame.rows),
+    cv::line(firstFrame, cv::Point(static_cast<int>(firstPoint[0].x), 0),
+             cv::Point(static_cast<int>(firstPoint[0].x), firstFrame.rows),
              cv::Scalar(0, 255, 0), 2);
   }
   if (secondSuccess) {
-    cv::line(
-        secondFrame, cv::Point(0, static_cast<int>(secondPoint[0].y / 2)),
-        cv::Point(secondFrame.cols, static_cast<int>(secondPoint[0].y / 2)),
-        cv::Scalar(0, 255, 0), 2);
-    cv::line(
-        secondFrame, cv::Point(static_cast<int>(secondPoint[0].x / 2), 0),
-        cv::Point(static_cast<int>(secondPoint[0].x / 2), secondFrame.rows),
-        cv::Scalar(0, 255, 0), 2);
+    cv::line(secondFrame, cv::Point(0, static_cast<int>(secondPoint[0].y)),
+             cv::Point(secondFrame.cols, static_cast<int>(secondPoint[0].y)),
+             cv::Scalar(0, 255, 0), 2);
+    cv::line(secondFrame, cv::Point(static_cast<int>(secondPoint[0].x), 0),
+             cv::Point(static_cast<int>(secondPoint[0].x), secondFrame.rows),
+             cv::Scalar(0, 255, 0), 2);
   }
-  firstFrame.copyTo(screen(cv::Rect(0, 0, halfSize.width, halfSize.height)));
+  firstFrame.copyTo(screen(cv::Rect(0, 0, firstFrame.cols, firstFrame.rows)));
   secondFrame.copyTo(
-      screen(cv::Rect(halfSize.width, 0, halfSize.width, halfSize.height)));
+      screen(cv::Rect(firstFrame.cols, 0, secondFrame.cols, secondFrame.rows)));
 
   if (!firstSuccess || !secondSuccess) {
     return false;
