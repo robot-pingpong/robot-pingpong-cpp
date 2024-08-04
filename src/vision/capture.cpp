@@ -173,22 +173,31 @@ bool Capture::render(cv::Mat &out, cv::Point2f &point) {
   int maxContourIndex = -1;
 
   for (int i = 0; i < contours.size(); ++i) {
-    const auto area = cv::contourArea(contours.at(i));
+    const auto contour = contours.at(i);
+    const auto area = cv::contourArea(contour);
     if (area < MIN_AREA || area > MAX_AREA) {
       cv::drawContours(copy, contours, i, MAGENTA, 2);
       continue;
     }
-    const auto perimeter = cv::arcLength(contours.at(i), true);
+    const auto perimeter = cv::arcLength(contour, true);
     if (const auto circularity = 4 * M_PI * area / (perimeter * perimeter);
         circularity < CIRCULARITY_THRESHOLD) {
       cv::drawContours(copy, contours, i, YELLOW, 2);
       continue;
     }
 
-    const auto rect = cv::boundingRect(contours.at(i));
+    const auto rect = cv::boundingRect(contour);
     if (const auto ratio = static_cast<double>(rect.width) / rect.height;
         ratio > RATIO_THRESHOLD || ratio < 1 / RATIO_THRESHOLD) {
       cv::drawContours(copy, contours, i, CYAN, 2);
+      continue;
+    }
+
+    const auto convexHull = std::vector<cv::Point>();
+    cv::convexHull(contour, convexHull);
+    if (const auto convexity = area / cv::contourArea(convexHull);
+        convexity < CONVEXITY_THRESHOLD) {
+      cv::drawContours(copy, contours, i, BLUE, 2);
       continue;
     }
 
