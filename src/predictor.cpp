@@ -12,19 +12,24 @@ void Predictor::addBallPosition(const cv::Vec3d &position) {
   //   }
   // }
   history.push_back(position);
+  if (history.size() < 3)
+    return;
 
-  if (history.size() > 2) {
-    if (const auto first = history[history.size() - 3],
-        mid = history[history.size() - 2];
-        checkIsBounded(first, mid, position)) {
-      boundIndicies.push_back(history.size() - 2);
+  const auto first = history[history.size() - 3];
+  const auto mid = history[history.size() - 2];
+  if (first[0] > mid[0] && mid[0] > position[0]) {
+    reset();
+    return;
+  }
 
-      if (position[0] > X_TABLE_SIZE / 2) {
-        const auto refX = TARGET_X - (TARGET_X - position[0]) * 2;
-        const auto &ref = getNearestPositionWithX(refX);
-        targetZ = ref[2];
-        zSet = true;
-      }
+  if (checkIsBounded(first, mid, position)) {
+    boundIndicies.push_back(history.size() - 2);
+
+    if (position[0] > X_TABLE_SIZE / 2) {
+      const auto refX = TARGET_X - (TARGET_X - position[0]) * 2;
+      const auto &ref = getNearestPositionWithX(refX);
+      targetZ = ref[2];
+      zSet = true;
     }
   }
 
