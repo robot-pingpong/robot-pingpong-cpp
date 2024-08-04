@@ -21,9 +21,9 @@ class Tracker {
 public:
   explicit Tracker(cv::Mat &screen);
 
-  void setMask();
+  void setMask(bool skip = false);
 
-  void setTableArea(Visualizer &visualizer);
+  void setTableArea(Visualizer &visualizer, bool skip = false);
 
   cv::Vec3d pos;
   bool render(const cv::Mat &screen);

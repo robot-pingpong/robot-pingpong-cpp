@@ -10,7 +10,7 @@ int main() {
   auto lm = LinearMotor(0);
   lm.guessLimits();
   Vision vision;
-  vision.init();
+  vision.init(true);
   Timer timer;
   Predictor predictor;
 
@@ -24,7 +24,7 @@ int main() {
       predictor.addMissingBallPosition();
     }
     if (predictor.predictY(y)) {
-      lm.setPosition(lm.map(y - 0.5, Y_TABLE_SIZE + 0.1, -0.1), false);
+      lm.setPosition(lm.map(y - 0.45, Y_TABLE_SIZE + 0.1, -0.1), false);
     } else {
       lm.setPosition(lm.map(0.5, 0, 1), false);
       arm.resetByZ(z);

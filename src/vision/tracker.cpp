@@ -3,39 +3,47 @@
 #include "dlt.h"
 #include "visualizer.h"
 
- Tracker::Tracker(cv::Mat &screen)
+Tracker::Tracker(cv::Mat &screen)
     : first(0, cv::CAP_DSHOW), second(1, cv::CAP_DSHOW) {
   capture(true);
   halfSize = cv::Size(firstFrame.cols / 2, firstFrame.rows / 2);
   firstFrame.copyTo(screen);
 }
 
-void Tracker::setMask() {
+void Tracker::setMask(const bool skip) {
   auto data = cv::FileStorage("mask.yml", cv::FileStorage::READ);
   std::vector<cv::Point> firstMask, secondMask;
   if (data.isOpened()) {
     data["first"] >> firstMask;
     data["second"] >> secondMask;
     data.release();
+  } else if (skip) {
+    std::cerr << "Mask file not found" << std::endl;
+    exit(-1);
   }
-  firstMask = first.setGlobalMask("first mask", firstMask);
-  secondMask = second.setGlobalMask("second mask", secondMask);
+  firstMask = first.setGlobalMask("first mask", firstMask, skip);
+  secondMask = second.setGlobalMask("second mask", secondMask, skip);
   data.open("mask.yml", cv::FileStorage::WRITE);
   data << "first" << firstMask;
   data << "second" << secondMask;
   data.release();
 }
 
-void Tracker::setTableArea(Visualizer &visualizer) {
+void Tracker::setTableArea(Visualizer &visualizer, const bool skip) {
   auto data = cv::FileStorage("points.yml", cv::FileStorage::READ);
   std::vector<cv::Point2f> firstPoints, secondPoints;
   if (data.isOpened()) {
     data["first"] >> firstPoints;
     data["second"] >> secondPoints;
     data.release();
+  } else if (skip) {
+    std::cerr << "Points file not found" << std::endl;
+    exit(-1);
   }
-  firstPoints = first.getTableArea("first area", firstPoints);
-  secondPoints = second.getTableArea("second area", secondPoints);
+  if (!skip) {
+    firstPoints = first.getTableArea("first area", firstPoints);
+    secondPoints = second.getTableArea("second area", secondPoints);
+  }
   data.open("points.yml", cv::FileStorage::WRITE);
   data << "first" << firstPoints;
   data << "second" << secondPoints;

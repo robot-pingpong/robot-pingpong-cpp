@@ -54,7 +54,8 @@ Capture::Capture(const int deviceId, const int apiPreference)
 
 std::vector<cv::Point>
 Capture::setGlobalMask(const std::string &windowName,
-                       const std::vector<cv::Point> &initialPoints) {
+                       const std::vector<cv::Point> &initialPoints,
+                       const bool skip) {
   cv::Mat screen;
   std::vector points(initialPoints);
 
@@ -70,7 +71,7 @@ Capture::setGlobalMask(const std::string &windowName,
       },
       &points);
 
-  while (true) {
+  while (!skip) {
     capture >> screen;
     cv::resize(screen, screen, cv::Size(CAPTURE_WIDTH, CAPTURE_HEIGHT));
     for (auto it = points.begin(); it != points.end(); ++it) {

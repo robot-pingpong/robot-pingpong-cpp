@@ -20,10 +20,9 @@ class Capture {
 public:
   cv::Mat frame;
   explicit Capture(int deviceId, int apiPreference = cv::CAP_ANY);
-
   std::vector<cv::Point>
-  setGlobalMask(const std::string &windowName = "Global Mask",
-                const std::vector<cv::Point> &initialPoints = {});
+  setGlobalMask(const std::string &windowName,
+                const std::vector<cv::Point> &initialPoints, bool skip = false);
 
   std::vector<cv::Point2f>
   getTableArea(const std::string &windowName = "Table Area",

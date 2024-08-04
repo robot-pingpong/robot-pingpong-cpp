@@ -7,9 +7,9 @@ Vision::Vision() : t(screen) {
               cv::Size(1280, 720));
 };
 
-void Vision::init() {
-  t.setMask();
-  t.setTableArea(visualizer);
+void Vision::init(const bool skip) {
+  t.setMask(skip);
+  t.setTableArea(visualizer, skip);
 }
 bool Vision::stopped() const { return visualizer.stopped(); }
 

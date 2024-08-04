@@ -11,10 +11,11 @@ class Vision {
   Tracker t;
   cv::VideoWriter writer;
   bool lastSuccess = false;
+  bool hasStopped = false;
 
 public:
   Vision();
-  void init();
+  void init(bool skip = false);
   [[nodiscard]] bool stopped() const;
   void setMachinePosition(double machinePosition);
   bool track(cv::Vec3d &pos);
