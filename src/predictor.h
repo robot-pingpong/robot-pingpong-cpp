@@ -27,6 +27,8 @@ public:
   bool predictY(double &y) const;
   bool predictZ(double &z) const;
   bool hitTarget();
+  [[nodiscard]] const std::vector<cv::Vec3d> &getHistory() const;
+  [[nodiscard]] std::vector<cv::Vec3d> getBoundPositions() const;
 };
 
 #endif // PREDICTOR_H
