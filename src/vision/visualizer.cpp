@@ -4,10 +4,10 @@
 #define WINDOW_NAME "screen"
 
 Visualizer::Visualizer()
-    : screen(900, 1600, CV_8UC3), top(450, 800, CV_8UC3),
-      right(450, 800, CV_8UC3), ballVisible(false),
-      machinePosition(Y_TABLE_SIZE / 2), hasStopped(false),
-      resizedScreen(450, 1600, CV_8UC3) {
+    : screen(720 * 2, 1280 * 2, CV_8UC3), visionScreen(720, 1280 * 2, CV_8UC3),
+      windowScreen(900, 1600, CV_8UC3), top(720, 1280, CV_8UC3),
+      right(720, 1280, CV_8UC3), ballVisible(false),
+      machinePosition(Y_TABLE_SIZE / 2), hasStopped(false) {
   // visualizer.setViewerPose(cv::viz::makeCameraPose(
   //     cv::Point3d(6, -0.5, 1.5),
   //     cv::Point3d(X_TABLE_SIZE / 2, Y_TABLE_SIZE / 2, 0),
@@ -22,6 +22,7 @@ Visualizer::Visualizer()
   fileName << "output" << std::time(nullptr) << ".mkv";
   writer.open(fileName.str(), cv::VideoWriter::fourcc('X', '2', '6', '4'), 30,
               cv::Size(1280 * 2, 720 * 2));
+  cv::namedWindow(WINDOW_NAME);
 }
 
 bool Visualizer::stopped() const { return hasStopped; }
@@ -73,10 +74,12 @@ cv::Point Visualizer::convertToRight(const cv::Vec3d &vec) {
 }
 
 void Visualizer::render(const double fps) {
-  screen(cv::Rect(0, 0, 1600, 450)) = resizedScreen;
+  screen = cv::Scalar();
+  visionScreen.copyTo(screen(cv::Rect(0, 0, 1280 * 2, 720)));
+  renderTop();
   renderRight();
-  screen(cv::Rect(0, 450, 800, 450)) = top;
-  screen(cv::Rect(800, 450, 800, 450)) = right;
+  top.copyTo(screen(cv::Rect(0, 720, 1280, 720)));
+  right.copyTo(screen(cv::Rect(1280, 720, 1280, 720)));
 
   if (ballVisible) {
     std::stringstream ss;
@@ -88,7 +91,9 @@ void Visualizer::render(const double fps) {
 
   cv::putText(screen, "FPS: " + std::to_string(fps), cv::Point(10, 30),
               cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 0, 255));
-  cv::imshow(WINDOW_NAME, screen);
+  writer << screen;
+  cv::resize(screen, windowScreen, windowScreen.size());
+  cv::imshow(WINDOW_NAME, windowScreen);
   if (cv::waitKey(1) == 27) {
     hasStopped = true;
   }
@@ -101,9 +106,7 @@ void Visualizer::setBallPosition(const cv::Vec3d &vec) {
 }
 
 void Visualizer::setMachinePosition(const double y) { machinePosition = y; }
-void Visualizer::setScreen(const cv::Mat &screen) {
-  cv::resize(screen, resizedScreen, cv::Size(1600, 450));
-}
+void Visualizer::setScreen(const cv::Mat &screen) { visionScreen = screen; }
 Visualizer::~Visualizer() {
   writer.release();
   cv::destroyWindow(WINDOW_NAME);

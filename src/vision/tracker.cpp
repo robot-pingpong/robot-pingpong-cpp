@@ -7,7 +7,7 @@ Tracker::Tracker(cv::Mat &screen)
     : first(0, cv::CAP_DSHOW), second(1, cv::CAP_DSHOW) {
   capture(true);
   firstFrame.copyTo(screen);
-  cv::resize(screen, screen, cv::Size(screen.cols * 2, screen.rows * 2));
+  cv::resize(screen, screen, cv::Size(screen.cols * 2, screen.rows));
 }
 
 void Tracker::setMask(const bool skip) {
@@ -111,9 +111,7 @@ bool Tracker::render(const cv::Mat &screen) {
              cv::Point(static_cast<int>(secondPoint[0].x), secondFrame.rows),
              cv::Scalar(0, 255, 0), 2);
   }
-  firstFrame.copyTo(screen(cv::Rect(0, 0, firstFrame.cols, firstFrame.rows)));
-  secondFrame.copyTo(
-      screen(cv::Rect(firstFrame.cols, 0, secondFrame.cols, secondFrame.rows)));
+  cv::hconcat(firstFrame, secondFrame, screen);
 
   if (!firstSuccess || !secondSuccess) {
     return false;
