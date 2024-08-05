@@ -21,7 +21,8 @@ struct ArmDictionary {
 class Arm {
   Servos::Mx64P2 base = Servos::Mx64P2(PORT_NAME, BASE_ID);
   Servos::Mx64P2 shoulder = Servos::Mx64P2(PORT_NAME, SHOULDER_ID);
-  std::list<BaseMotor *> motors = {&base, &shoulder};
+  Servos::Mx64P2 arm = Servos::Mx64P2(PORT_NAME, ARM_ID);
+  std::list<BaseMotor *> motors = {&base, &shoulder, &arm};
   bool resetted = false;
 
 public:
