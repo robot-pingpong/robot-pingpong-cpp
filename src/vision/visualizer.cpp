@@ -3,13 +3,11 @@
 
 #define WINDOW_NAME "screen"
 
-Visualizer::Visualizer() {
-  screen = cv::Mat(900, 1600, CV_8UC3);
-  top = cv::Mat(450, 800, CV_8UC3);
-  right = cv::Mat(450, 800, CV_8UC3);
-  ballVisible = false;
-  ballPosition = cv::Vec3d();
-  machinePosition = Y_TABLE_SIZE / 2;
+Visualizer::Visualizer()
+    : screen(900, 1600, CV_8UC3), top(450, 800, CV_8UC3),
+      right(450, 800, CV_8UC3), ballVisible(false),
+      machinePosition(Y_TABLE_SIZE / 2), hasStopped(false),
+      resizedScreen(450, 1600, CV_8UC3) {
   // visualizer.setViewerPose(cv::viz::makeCameraPose(
   //     cv::Point3d(6, -0.5, 1.5),
   //     cv::Point3d(X_TABLE_SIZE / 2, Y_TABLE_SIZE / 2, 0),
@@ -75,7 +73,7 @@ cv::Point Visualizer::convertToRight(const cv::Vec3d &vec) {
 }
 
 void Visualizer::render(const double fps) {
-  screen(cv::Rect(0, 0, 1600, 450)) =resizedScreen;
+  screen(cv::Rect(0, 0, 1600, 450)) = resizedScreen;
   renderRight();
   screen(cv::Rect(0, 450, 800, 450)) = top;
   screen(cv::Rect(800, 450, 800, 450)) = right;
