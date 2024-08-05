@@ -39,9 +39,11 @@ void Arm::moveByZ(const double z) {
     return;
 
   try {
-    base.setAngle(target->baseAngle);
-    shoulder.setAngle(200);
+    base.setAngle(180);
+    shoulder.setAngle(180);
     arm.setAngle(target->elbowAngle);
+    elbow.setAngle(180);
+    wrist.setAngle(180);
   } catch (std::exception &e) {
     std::cerr << e.what() << std::endl;
   }
