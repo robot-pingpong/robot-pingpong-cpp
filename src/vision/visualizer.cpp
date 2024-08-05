@@ -38,6 +38,18 @@ void Visualizer::renderTopRight() {
   for (const auto &history : predictor.history) {
     circle(history, 5, GREEN, -1);
   }
+  double y = 0, z = 0;
+  if (!predictor.predictY(y))
+    y = 0;
+  if (!predictor.predictZ(z))
+    z = 0;
+  if (y != 0) {
+    line(cv::Vec3d(0, y, 0), cv::Vec3d(X_TABLE_SIZE - 0.35, y, 0), GREEN, 2);
+  }
+  if (z != 0) {
+    line(cv::Vec3d(X_TABLE_SIZE - 0.35, 0, z),
+         cv::Vec3d(X_TABLE_SIZE - 0.35, Y_TABLE_SIZE, z), GREEN, 2);
+  }
 }
 
 cv::Point Visualizer::convertToTop(const cv::Vec3d &vec) {
