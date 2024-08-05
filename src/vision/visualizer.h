@@ -5,19 +5,25 @@
 #include <opencv2/viz.hpp>
 
 class Visualizer {
-  cv::viz::Viz3d visualizer = cv::viz::Viz3d("visualizer");
-  cv::viz::WSphere ball = cv::viz::WSphere(cv::Point3f(0, 0, 0), 0.1);
-  cv::viz::WCube machine = cv::viz::WCube(cv::Point3f(-0.2, -0.1, 0),
-                                          cv::Point3f(0.2, 0.1, 0.5), true);
+  cv::Mat screen;
+  cv::Mat top;
+  cv::Mat right;
+  cv::Vec3d ballPosition;
+  bool ballVisible;
+  double machinePosition;
+  std::list<std::pair<cv::viz::WCameraPosition, cv::Affine3d>> cameras;
+
+  void renderTop();
+  void renderRight();
+  static cv::Point convertToTop(const cv::Vec3d &vec);
+  static cv::Point convertToRight(const cv::Vec3d &vec);
 
 public:
   Visualizer();
   void addCamera(int index, const cv::Matx33d &matrix, const cv::Mat &rotation,
                  const cv::Mat &position);
-  void render(bool force = false);
-  [[nodiscard]] bool stopped() const;
+  const cv::Mat &render();
   void setBallPosition(const cv::Vec3d &vec);
-  cv::Mat getScreenshot() const;
   void setMachinePosition(double y);
 };
 

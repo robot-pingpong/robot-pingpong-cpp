@@ -16,6 +16,7 @@
 #define CYAN cv::Scalar(255, 255, 0)
 #define GREEN cv::Scalar(0, 255, 0)
 #define BLUE cv::Scalar(255, 0, 0)
+#define WHITE cv::Scalar(255, 255, 255)
 #define ORANGE_HSV cv::Scalar(20, 200, 200)
 #define ORANGE_HSV_LOWER cv::Scalar(12, 150, 160)
 #define ORANGE_HSV_UPPER cv::Scalar(20, 255, 255)
