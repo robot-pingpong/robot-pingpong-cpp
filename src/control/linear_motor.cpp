@@ -3,6 +3,8 @@
 #include <AXL.h>
 #include <AXM.h>
 #include <cassert>
+#include <iostream>
+#include <thread>
 
 bool LinearMotor::isMotionModule() {
   unsigned long int result = 0;
@@ -43,6 +45,8 @@ bool LinearMotor::hasAlarm() const {
 }
 
 void LinearMotor::resetAlarm() const {
+  AxmSignalServoAlarmReset(axisNo, FALSE);
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
   AxmSignalServoAlarmReset(axisNo, TRUE);
   while (hasAlarm())
     ;
@@ -50,14 +54,16 @@ void LinearMotor::resetAlarm() const {
 }
 
 void LinearMotor::guessLimits() {
-  AxmMoveVel(axisNo, -100, 100, 100);
+  setPosition(5);
+  AxmMoveVel(axisNo, -10, 100, 100);
   while (!hasAlarm())
     ;
   resetAlarm();
   AxmStatusSetCmdPos(axisNo, 0);
   AxmStatusSetActPos(axisNo, 0);
 
-  AxmMoveVel(axisNo, 100, 100, 100);
+  setPosition(110);
+  AxmMoveVel(axisNo, 40, 100, 100);
   while (!hasAlarm())
     ;
   resetAlarm();
@@ -69,9 +75,10 @@ void LinearMotor::guessLimits() {
                         1);
   max = highLimit - 1;
   min = 1;
-  setPosition(highLimit / 2);
   setMaxVelocity(600);
   AxmStatusSetCmdPos(axisNo, getPosition());
+  std::this_thread::sleep_for(std::chrono::milliseconds(300));
+  setPosition(highLimit / 2);
 }
 void LinearMotor::setMaxVelocity(const double velocity) const {
   AxmMotSetMaxVel(axisNo, velocity);
@@ -99,7 +106,7 @@ LinearMotor::LinearMotor(const int axisNo) : axisNo(axisNo), min(0), max(0) {
   AxmSignalSetServoAlarm(axisNo, LOW);                       // 4
   AxmSignalSetLimit(axisNo, EMERGENCY_STOP, UNUSED, UNUSED); // 5, 6, TODO
   AxmMotSetMinVel(axisNo, 1);                                // 7
-  AxmMotSetMaxVel(axisNo, 40);                               // 8, 700000
+  AxmMotSetMaxVel(axisNo, 600);                              // 8, 700000
   AxmHomeSetMethod(axisNo, DIR_CCW, HomeSensor, LOW, 1000,
                    0);                              // 11, 9, 13, 22, 23
   AxmHomeSetSignalLevel(axisNo, LOW);               // 10
