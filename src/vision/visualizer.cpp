@@ -8,16 +8,6 @@ Visualizer::Visualizer()
       windowScreen(900, 1600, CV_8UC3), top(720, 1280, CV_8UC3),
       right(720, 1280, CV_8UC3), ballVisible(false),
       machinePosition(Y_TABLE_SIZE / 2), hasStopped(false) {
-  // visualizer.setViewerPose(cv::viz::makeCameraPose(
-  //     cv::Point3d(6, -0.5, 1.5),
-  //     cv::Point3d(X_TABLE_SIZE / 2, Y_TABLE_SIZE / 2, 0),
-  //     cv::Point3d(0, 0, -1)));
-  // visualizer.showWidget("ball", ball);
-  // visualizer.showWidget(
-  //     "machine", machine,
-  //     cv::Affine3d(cv::Vec3d(), cv::Vec3d(X_TABLE_SIZE, Y_TABLE_SIZE / 2,
-  //     0)));
-
   std::stringstream fileName;
   fileName << "output" << std::time(nullptr) << ".mkv";
   writer.open(fileName.str(), cv::VideoWriter::fourcc('X', '2', '6', '4'), 30,
