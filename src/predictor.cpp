@@ -5,12 +5,14 @@
 #define TARGET_X (X_TABLE_SIZE - 0.35)
 
 void Predictor::addBallPosition(const cv::Vec3d &position) {
-  // if (!history.empty()) {
-  //   if (isDistanceIgnorable(position, history.back())) {
-  //     reset();
-  //     return;
-  //   }
-  // }
+  if (history.size() > 1) {
+    if (const auto base =
+            cv::norm(history.back() - history.at(history.size() - 2));
+        isDistanceIgnorable(position, history.back(), base)) {
+
+      return;
+    }
+  }
   history.push_back(position);
   if (history.size() < 3)
     return;
@@ -87,9 +89,9 @@ void Predictor::reset() {
   hitDone = false;
 }
 
-bool Predictor::isDistanceIgnorable(const cv::Vec3d &a,
-                                    const cv::Vec3d &b) const {
-  return cv::norm(a - b) > 0.1 * (missCount + 1);
+bool Predictor::isDistanceIgnorable(const cv::Vec3d &a, const cv::Vec3d &b,
+                                    const double unit) const {
+  return cv::norm(a - b) > unit * (missCount + 1);
 }
 
 bool Predictor::checkIsBounded(const cv::Vec3d &a, const cv::Vec3d &b,

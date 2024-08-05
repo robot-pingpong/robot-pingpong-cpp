@@ -16,8 +16,8 @@ class Predictor {
   bool hitDone = false;
   void reset();
 
-  [[nodiscard]] bool isDistanceIgnorable(const cv::Vec3d &a,
-                                         const cv::Vec3d &b) const;
+  [[nodiscard]] bool isDistanceIgnorable(const cv::Vec3d &a, const cv::Vec3d &b,
+                                         const double unit) const;
   static bool checkIsBounded(const cv::Vec3d &a, const cv::Vec3d &b,
                              const cv::Vec3d &c);
   [[nodiscard]] const cv::Vec3d &getNearestPositionWithX(double x) const;
