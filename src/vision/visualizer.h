@@ -17,10 +17,16 @@ class Visualizer {
   cv::VideoWriter writer;
   bool hasStopped;
 
-  void renderTop();
-  void renderRight();
+  void renderTopRight();
   static cv::Point convertToTop(const cv::Vec3d &vec);
   static cv::Point convertToRight(const cv::Vec3d &vec);
+
+  void circle(const cv::Vec3d &center, int radius, const cv::Scalar &color,
+              int thickness = -1);
+  void line(const cv::Vec3d &start, const cv::Vec3d &end,
+            const cv::Scalar &color, int thickness = 1);
+  void rect(const cv::Vec3d &pt1, const cv::Vec3d &pt2,
+            const cv::Scalar &color);
 
 public:
   Visualizer();

@@ -23,35 +23,16 @@ void Visualizer::addCamera(const int index, const cv::Matx33d &matrix,
                        cv::Affine3d(rotation, position));
 }
 
-void Visualizer::renderTop() {
-  top = cv::Scalar();
-  cv::circle(top, convertToTop(cv::Vec3d()), 3, RED, -1);
-  cv::rectangle(top, convertToTop(cv::Vec3d(0, 0, 0)),
-                convertToTop(cv::Vec3d(X_TABLE_SIZE, Y_TABLE_SIZE, 0)), WHITE,
-                1);
-  cv::rectangle(
-      top, convertToTop(cv::Vec3d(X_TABLE_SIZE / 2, -0.1525, 0)),
-      convertToTop(cv::Vec3d(X_TABLE_SIZE / 2, Y_TABLE_SIZE + 0.1525, 0.15)),
-      WHITE, 1);
+void Visualizer::renderTopRight() {
+  circle(cv::Vec3d(), 3, RED, 1);
+  rect(cv::Vec3d(0, 0, 0), cv::Vec3d(X_TABLE_SIZE, Y_TABLE_SIZE, 0), WHITE);
+  rect(cv::Vec3d(X_TABLE_SIZE / 2, -0.1525, 0),
+       cv::Vec3d(X_TABLE_SIZE / 2, Y_TABLE_SIZE + 0.1525, 0.15), WHITE);
   if (ballVisible) {
-    cv::circle(top, convertToTop(ballPosition), 10, cv::Scalar(0, 0, 255), -1);
+    circle(ballPosition, 10, RED);
   }
   cv::circle(top, convertToTop(cv::Vec3d(X_TABLE_SIZE, machinePosition, 0)), 10,
              RED, -1);
-}
-void Visualizer::renderRight() {
-  right = cv::Scalar();
-  cv::circle(right, convertToRight(cv::Vec3d()), 3, RED, -1);
-  cv::rectangle(right, convertToRight(cv::Vec3d(0, 0, 0)),
-                convertToRight(cv::Vec3d(X_TABLE_SIZE, Y_TABLE_SIZE, 0)), WHITE,
-                1);
-  cv::rectangle(
-      right, convertToRight(cv::Vec3d(X_TABLE_SIZE / 2, -0.1525, 0)),
-      convertToRight(cv::Vec3d(X_TABLE_SIZE / 2, Y_TABLE_SIZE + 0.1525, 0.15)),
-      WHITE, 1);
-  if (ballVisible) {
-    cv::circle(right, convertToRight(ballPosition), 10, RED, -1);
-  }
 }
 
 cv::Point Visualizer::convertToTop(const cv::Vec3d &vec) {
@@ -62,12 +43,30 @@ cv::Point Visualizer::convertToRight(const cv::Vec3d &vec) {
   return {640 + static_cast<int>((vec[0] - X_TABLE_SIZE / 2) * 300),
           360 - static_cast<int>((vec[2] - 0.15) * 300)};
 }
+void Visualizer::circle(const cv::Vec3d &center, const int radius,
+                        const cv::Scalar &color, const int thickness) {
+  cv::circle(top, convertToTop(center), radius, color, thickness);
+  cv::circle(right, convertToRight(center), radius, color, thickness);
+}
+void Visualizer::line(const cv::Vec3d &start, const cv::Vec3d &end,
+                      const cv::Scalar &color, const int thickness) {
+  cv::line(top, convertToTop(start), convertToTop(end), color, thickness);
+  cv::line(right, convertToRight(start), convertToRight(end), color, thickness);
+}
+void Visualizer::rect(const cv::Vec3d &pt1, const cv::Vec3d &pt2,
+                      const cv::Scalar &color) {
+  cv::rectangle(top, convertToTop(pt1), convertToTop(pt2), color, 1);
+  cv::rectangle(right, convertToRight(pt1), convertToRight(pt2), color, 1);
+}
 
 void Visualizer::render(const double fps) {
   screen = cv::Scalar();
   visionScreen.copyTo(screen(cv::Rect(0, 0, 1280 * 2, 720)));
-  renderTop();
-  renderRight();
+  top = cv::Scalar();
+  right = cv::Scalar();
+
+  renderTopRight();
+
   top.copyTo(screen(cv::Rect(0, 720, 1280, 720)));
   right.copyTo(screen(cv::Rect(1280, 720, 1280, 720)));
 
