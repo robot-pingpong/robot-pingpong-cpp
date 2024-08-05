@@ -35,6 +35,8 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/predictor.cpp
         src/predictor.h
         src/dynamixel/base_motor.h
+        src/utils/regression.h
+        src/utils/regression.cpp
 )
 
 target_link_libraries(
