@@ -7,21 +7,13 @@
 
 class Vision {
   cv::Mat screen;
-  cv::Mat windowScreen;
-  Visualizer visualizer;
   Tracker t;
-  cv::VideoWriter writer;
-  bool lastSuccess = false;
-  bool hasStopped = false;
 
 public:
   Vision();
-  void init(bool skip = false);
-  [[nodiscard]] bool stopped() const;
-  void setMachinePosition(double machinePosition);
+  void init(Visualizer &visualizer, bool skip = false);
   bool track(cv::Vec3d &pos);
-  void render(double fps);
-  ~Vision();
+  const cv::Mat &getScreen() { return screen; }
 };
 
 #endif // VISION_H

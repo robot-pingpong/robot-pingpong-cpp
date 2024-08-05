@@ -9,8 +9,9 @@ int main() {
   Arm arm;
   auto lm = LinearMotor(0);
   lm.guessLimits();
+  Visualizer visualizer;
   Vision vision;
-  vision.init(true);
+  vision.init(visualizer, true);
 
   try {
     Timer timer;
@@ -22,6 +23,7 @@ int main() {
     do {
       if (vision.track(ballPosition)) {
         predictor.addBallPosition(ballPosition);
+        visualizer.setBallPosition(ballPosition);
       } else {
         predictor.addMissingBallPosition();
       }
@@ -40,10 +42,11 @@ int main() {
         // arm.hitByZ(z);
       }
 
-      vision.setMachinePosition(lm.getMappedPosition(Y_TABLE_SIZE, 0));
-      vision.render(timer.getFps());
+      visualizer.setMachinePosition(lm.getMappedPosition(Y_TABLE_SIZE, 0));
+      visualizer.setScreen(vision.getScreen());
+      visualizer.render(timer.getFps());
       lm.update();
-    } while (!vision.stopped());
+    } while (!visualizer.stopped());
   } catch (std::exception &e) {
     std::cerr << e.what() << std::endl;
   }

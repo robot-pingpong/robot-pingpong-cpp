@@ -1,10 +1,12 @@
 #include "visualizer.h"
 #include "../constants.h"
 
+#define WINDOW_NAME "screen"
+
 Visualizer::Visualizer() {
-  screen = cv::Mat(720, 1280 * 2, CV_8UC3);
-  top = cv::Mat(720, 1280, CV_8UC3);
-  right = cv::Mat(720, 1280, CV_8UC3);
+  screen = cv::Mat(900, 1600, CV_8UC3);
+  top = cv::Mat(450, 800, CV_8UC3);
+  right = cv::Mat(450, 800, CV_8UC3);
   ballVisible = false;
   ballPosition = cv::Vec3d();
   machinePosition = Y_TABLE_SIZE / 2;
@@ -17,7 +19,14 @@ Visualizer::Visualizer() {
   //     "machine", machine,
   //     cv::Affine3d(cv::Vec3d(), cv::Vec3d(X_TABLE_SIZE, Y_TABLE_SIZE / 2,
   //     0)));
+
+  std::stringstream fileName;
+  fileName << "output" << std::time(nullptr) << ".mkv";
+  writer.open(fileName.str(), cv::VideoWriter::fourcc('X', '2', '6', '4'), 30,
+              cv::Size(1280 * 2, 720 * 2));
 }
+
+bool Visualizer::stopped() const { return hasStopped; }
 
 void Visualizer::addCamera(const int index, const cv::Matx33d &matrix,
                            const cv::Mat &rotation, const cv::Mat &position) {
@@ -65,12 +74,28 @@ cv::Point Visualizer::convertToRight(const cv::Vec3d &vec) {
           360 - static_cast<int>((vec[2] - 0.15) * 300)};
 }
 
-const cv::Mat &Visualizer::render() {
-  renderTop();
+void Visualizer::render(const double fps) {
+  screen(cv::Rect(0, 0, 1600, 450)) =resizedScreen;
   renderRight();
-  cv::hconcat(top, right, screen);
+  screen(cv::Rect(0, 450, 800, 450)) = top;
+  screen(cv::Rect(800, 450, 800, 450)) = right;
+
+  if (ballVisible) {
+    std::stringstream ss;
+    ss << "X: " << ballPosition[0] << ", Y: " << ballPosition[1]
+       << ", Z: " << ballPosition[2];
+    cv::putText(screen, ss.str(), cv::Point(10, 80), cv::FONT_HERSHEY_SIMPLEX,
+                1, cv::Scalar(255, 255, 255));
+  }
+
+  cv::putText(screen, "FPS: " + std::to_string(fps), cv::Point(10, 30),
+              cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 0, 255));
+  cv::imshow(WINDOW_NAME, screen);
+  if (cv::waitKey(1) == 27) {
+    hasStopped = true;
+  }
+
   ballVisible = false;
-  return screen;
 }
 void Visualizer::setBallPosition(const cv::Vec3d &vec) {
   ballVisible = true;
@@ -78,3 +103,10 @@ void Visualizer::setBallPosition(const cv::Vec3d &vec) {
 }
 
 void Visualizer::setMachinePosition(const double y) { machinePosition = y; }
+void Visualizer::setScreen(const cv::Mat &screen) {
+  cv::resize(screen, resizedScreen, cv::Size(1600, 450));
+}
+Visualizer::~Visualizer() {
+  writer.release();
+  cv::destroyWindow(WINDOW_NAME);
+}

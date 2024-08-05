@@ -12,6 +12,9 @@ class Visualizer {
   bool ballVisible;
   double machinePosition;
   std::list<std::pair<cv::viz::WCameraPosition, cv::Affine3d>> cameras;
+  cv::VideoWriter writer;
+  bool hasStopped;
+  cv::Mat resizedScreen;
 
   void renderTop();
   void renderRight();
@@ -20,11 +23,14 @@ class Visualizer {
 
 public:
   Visualizer();
+  [[nodiscard]] bool stopped() const;
   void addCamera(int index, const cv::Matx33d &matrix, const cv::Mat &rotation,
                  const cv::Mat &position);
-  const cv::Mat &render();
+  void render(const double fps);
   void setBallPosition(const cv::Vec3d &vec);
   void setMachinePosition(double y);
+  void setScreen(const cv::Mat &screen);
+  ~Visualizer();
 };
 
 #endif // VISUALIZER_H
