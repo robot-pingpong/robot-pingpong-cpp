@@ -1,6 +1,8 @@
 #ifndef VISUALIZER_H
 #define VISUALIZER_H
 
+#include "../predictor.h"
+
 #include <opencv2/opencv.hpp>
 #include <opencv2/viz.hpp>
 
@@ -16,6 +18,8 @@ class Visualizer {
   std::list<std::pair<cv::viz::WCameraPosition, cv::Affine3d>> cameras;
   cv::VideoWriter writer;
   bool hasStopped;
+  std::vector<std::pair<cv::Vec3d, bool>> ballHistory;
+  const Predictor &predictor;
 
   void renderTopRight();
   static cv::Point convertToTop(const cv::Vec3d &vec);
@@ -29,7 +33,7 @@ class Visualizer {
             const cv::Scalar &color);
 
 public:
-  Visualizer();
+  explicit Visualizer(const Predictor &predictor);
   [[nodiscard]] bool stopped() const;
   void addCamera(int index, const cv::Matx33d &matrix, const cv::Mat &rotation,
                  const cv::Mat &position);

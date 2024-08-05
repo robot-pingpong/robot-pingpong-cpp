@@ -3,11 +3,12 @@
 
 #define WINDOW_NAME "screen"
 
-Visualizer::Visualizer()
+Visualizer::Visualizer(const Predictor &predictor)
     : screen(720 * 2, 1280 * 2, CV_8UC3), visionScreen(720, 1280 * 2, CV_8UC3),
       windowScreen(900, 1600, CV_8UC3), top(720, 1280, CV_8UC3),
       right(720, 1280, CV_8UC3), ballVisible(false),
-      machinePosition(Y_TABLE_SIZE / 2), hasStopped(false) {
+      machinePosition(Y_TABLE_SIZE / 2), hasStopped(false),
+      predictor(predictor) {
   std::stringstream fileName;
   fileName << "output" << std::time(nullptr) << ".mkv";
   writer.open(fileName.str(), cv::VideoWriter::fourcc('X', '2', '6', '4'), 30,
@@ -33,6 +34,10 @@ void Visualizer::renderTopRight() {
   }
   cv::circle(top, convertToTop(cv::Vec3d(X_TABLE_SIZE, machinePosition, 0)), 10,
              RED, -1);
+
+  for (const auto &history : predictor.history) {
+    circle(history, 5, GREEN, -1);
+  }
 }
 
 cv::Point Visualizer::convertToTop(const cv::Vec3d &vec) {

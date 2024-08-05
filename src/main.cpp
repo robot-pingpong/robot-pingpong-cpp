@@ -9,13 +9,13 @@ int main() {
   Arm arm;
   auto lm = LinearMotor(0);
   lm.guessLimits();
-  Visualizer visualizer;
+  Predictor predictor;
+  Visualizer visualizer(predictor);
   Vision vision;
   vision.init(visualizer, true);
 
   try {
     Timer timer;
-    Predictor predictor;
 
     cv::Vec3d ballPosition;
     double y, z = 0;

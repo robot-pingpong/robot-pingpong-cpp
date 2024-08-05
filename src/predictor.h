@@ -4,6 +4,7 @@
 #include <opencv2/opencv.hpp>
 
 class Predictor {
+  friend class Visualizer;
   std::vector<cv::Vec3d> history;
   int missCount = 0;
   std::vector<size_t> boundIndicies;
@@ -27,8 +28,6 @@ public:
   bool predictY(double &y) const;
   bool predictZ(double &z) const;
   bool hitTarget();
-  [[nodiscard]] const std::vector<cv::Vec3d> &getHistory() const;
-  [[nodiscard]] std::vector<cv::Vec3d> getBoundPositions() const;
 };
 
 #endif // PREDICTOR_H

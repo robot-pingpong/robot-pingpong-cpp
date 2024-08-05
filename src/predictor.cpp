@@ -76,14 +76,6 @@ bool Predictor::hitTarget() {
   }
   return false;
 }
-const std::vector<cv::Vec3d> &Predictor::getHistory() const { return history; }
-std::vector<cv::Vec3d> Predictor::getBoundPositions() const {
-  std::vector<cv::Vec3d> bound;
-  for (const auto &index : boundIndicies) {
-    bound.push_back(history[index]);
-  }
-  return bound;
-}
 
 void Predictor::reset() {
   history.clear();
