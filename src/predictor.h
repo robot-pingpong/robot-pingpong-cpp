@@ -11,6 +11,7 @@ class Predictor {
   std::vector<double> boundQuadratic;
 
   bool ySet = false;
+  bool yFinalSet = false;
   double targetY = 0;
   bool zSet = false;
   double targetZ = 0;

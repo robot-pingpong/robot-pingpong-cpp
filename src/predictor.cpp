@@ -54,7 +54,7 @@ void Predictor::addBallPosition(const cv::Vec3d &position) {
     }
   }
 
-  if (!ySet && position[0] > X_TABLE_SIZE / 3 * 2) {
+  if (!ySet && position[0] > X_TABLE_SIZE / 2) {
     double sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
     for (const auto &pos : history) {
       sumX += pos[0];
@@ -67,6 +67,22 @@ void Predictor::addBallPosition(const cv::Vec3d &position) {
     const auto b = (sumY - a * sumX) / n;
     targetY = a * TARGET_X + b;
     ySet = true;
+  }
+  if (!yFinalSet && position[0] > X_TABLE_SIZE / 3 * 2) {
+    double sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+    const std::vector sublist(&history[history.size() / 2],
+                              &history[history.size() - 1]);
+    for (const auto &pos : sublist) {
+      sumX += pos[0];
+      sumY += pos[1];
+      sumXY += pos[0] * pos[1];
+      sumX2 += pos[0] * pos[0];
+    }
+    const auto n = static_cast<double>(sublist.size());
+    const auto a = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+    const auto b = (sumY - a * sumX) / n;
+    targetY = a * TARGET_X + b;
+    yFinalSet = true;
   }
 
   if (position[0] > TARGET_X / 2) {
@@ -103,6 +119,7 @@ void Predictor::reset() {
   boundIndicies.clear();
   missCount = 0;
   ySet = false;
+  yFinalSet = false;
   zSet = false;
   hit = false;
   hitDone = false;
