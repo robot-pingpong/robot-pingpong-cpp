@@ -36,6 +36,8 @@ Arm::Arm() {
 }
 
 void Arm::moveByZ(const double z) {
+  if (z > 400 || z < 0)
+    return;
   constexpr auto l1 = 198.251;
   constexpr auto l2 = 225;
   constexpr auto l3 = 30;

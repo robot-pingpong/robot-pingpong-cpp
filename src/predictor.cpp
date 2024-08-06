@@ -39,16 +39,14 @@ void Predictor::addBallPosition(const cv::Vec3d &position) {
       srcX.push_back(history[i][0]);
       srcY.push_back(history[i][2]);
     }
-    quadraticRegression(srcX, srcY, std::get<0>(boundQuadratic),
-                        std::get<1>(boundQuadratic),
-                        std::get<2>(boundQuadratic));
+    PolynomialRegression<double>::fitIt(srcX, srcY, 2, boundQuadratic);
 
-    std::cout << "Quadratic: " << std::get<0>(boundQuadratic) << " "
-              << std::get<1>(boundQuadratic) << " "
-              << std::get<2>(boundQuadratic) << std::endl;
-    if (const auto targetZ = std::get<0>(boundQuadratic) +
-                             std::get<1>(boundQuadratic) * TARGET_X +
-                             std::get<2>(boundQuadratic) * TARGET_X * TARGET_X;
+    std::cout << "Quadratic: " << boundQuadratic.at(0) << " "
+              << boundQuadratic.at(1) << " " << boundQuadratic.at(2)
+              << std::endl;
+    if (const auto targetZ = boundQuadratic.at(0) +
+                             boundQuadratic.at(1) * TARGET_X +
+                             boundQuadratic.at(2) * TARGET_X * TARGET_X;
         targetZ > 0) {
       std::cout << "Target Z: " << targetZ << std::endl;
       this->targetZ = targetZ;

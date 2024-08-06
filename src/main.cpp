@@ -31,11 +31,11 @@ int main() {
         lm.setPosition(lm.map(y, Y_TABLE_SIZE - 0.18, 0.18), false);
       } else {
         lm.setPosition(lm.map(0.5, 0, 1), false);
-        // arm.resetByZ(z);
+        arm.resetByZ(z);
       }
 
       if (predictor.predictZ(z)) {
-        // arm.moveByZ(z);
+        arm.moveByZ(z * 1000);
       }
 
       if (predictor.hitTarget()) {
