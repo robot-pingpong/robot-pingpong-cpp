@@ -141,7 +141,7 @@ bool Predictor::predictZ(double &z) const {
   if (isnan(z))
     return false;
   z = targetZ;
-  return ySet && zSet;
+  return zSet;
 }
 bool Predictor::hitTarget() const { return hit; }
 
