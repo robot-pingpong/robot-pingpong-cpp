@@ -127,6 +127,7 @@ LinearMotor::LinearMotor(const int axisNo) : axisNo(axisNo), min(0), max(0) {
   if (hasAlarm()) {
     resetAlarm();
   }
+  AxmStatusSetCmdPos(axisNo, getPosition());
   targetPosition = getPosition();
 }
 bool LinearMotor::hasLimit() const { return min != 0 && max != 0; }
