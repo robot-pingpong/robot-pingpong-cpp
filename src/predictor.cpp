@@ -55,7 +55,6 @@ void Predictor::predict(const cv::Vec3d &position) {
                              boundQuadratic.at(1) * TARGET_X +
                              boundQuadratic.at(2) * TARGET_X * TARGET_X;
         boundQuadratic.at(2) < 0 && targetZ > 0 && targetZ < 0.5) {
-      std::cout << "Target Z: " << targetZ << std::endl;
       this->targetZ = targetZ;
       zSet = true;
     }
