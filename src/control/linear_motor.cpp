@@ -75,7 +75,7 @@ void LinearMotor::guessLimits() {
                         1);
   max = highLimit - 1;
   min = 1;
-  setMaxVelocity(1300);
+  setMaxVelocity(1800);
   AxmStatusSetCmdPos(axisNo, getPosition());
   std::this_thread::sleep_for(std::chrono::milliseconds(300));
   setPosition(highLimit / 2);
