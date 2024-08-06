@@ -56,6 +56,9 @@ dynamixel::PortHandler *getController(const std::string &portName) {
   if (!controller->openPort()) {
     throw std::runtime_error("Failed to open port " + portName);
   }
+  if (!controller->setBaudRate(4500000)) {
+    throw std::runtime_error("Failed to set baud rate");
+  }
   controllers[portName] = controller;
   return controllers[portName];
 }
