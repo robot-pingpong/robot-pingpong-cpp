@@ -35,11 +35,7 @@ int main() {
       }
 
       if (predictor.predictZ(z)) {
-        arm.move(y, z * 1000);
-      }
-
-      if (predictor.hitTarget()) {
-        // arm.hitByZ(z);
+        arm.move(y, z * 1000, predictor.hitTarget());
       }
 
       visualizer.setMachinePosition(

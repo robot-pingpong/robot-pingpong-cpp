@@ -32,15 +32,15 @@ Arm::Arm() {
   wrist.setProfileVelocity(1800);
   wrist.setProfileAcceleration(450);
 
-  move(Y_TABLE_SIZE / 2, 100);
+  move(Y_TABLE_SIZE / 2, 100, false);
 }
 
-void Arm::move(const double y, const double z) {
+void Arm::move(const double y, const double z, const bool hitTarget) {
   const auto clampedZ = std::clamp(z, 40.0, 400.0);
   constexpr auto l1 = 198.251;
   constexpr auto l2 = 225;
   constexpr auto l3 = 30;
-  constexpr auto pi = M_PI / 2;
+  const auto pi = hitTarget ? M_PI / 3 : M_PI / 3 * 2;
   constexpr auto x = 190;
   const auto xn = clampedZ - l3 * std::cos(pi);
   const auto yn = x - l3 * std::sin(pi);
@@ -58,24 +58,6 @@ void Arm::move(const double y, const double z) {
   arm.setAngle(200);
   elbow.setAngle(theta2 / M_PI * 180 - 70 + 180);
   wrist.setAngle(theta3 / M_PI * 180 + 180);
-}
-
-void Arm::hitByZ(const double z) {
-  const auto target =
-      std::ranges::find_if(angle_set, [z](const ArmDictionary &angle) {
-        return z <= angle.maxHeight;
-      });
-
-  if (target == angle_set.end())
-    return;
-
-  // while (
-  //     // base.readMoving() || pitchShoulder.readMoving() ||
-  //     //      yawShoulder.readMoving() || elbow.readMoving() ||
-  //     wrist.readMoving())
-  //   ;
-  // wrist.setAngle(target->wristAfterAngle);
-  resetted = false;
 }
 
 void Arm::resetByZ(const double z) {

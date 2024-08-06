@@ -91,7 +91,7 @@ void Predictor::predict(const cv::Vec3d &position) {
     yFinalSet = true;
   }
 
-  if (position[0] > TARGET_X / 2) {
+  if (position[0] > TARGET_X - 0.3) {
     hit = true;
   }
 }
@@ -112,13 +112,7 @@ bool Predictor::predictZ(double &z) const {
   z = targetZ;
   return ySet;
 }
-bool Predictor::hitTarget() {
-  if (hit && !hitDone) {
-    hitDone = true;
-    return true;
-  }
-  return false;
-}
+bool Predictor::hitTarget() const { return hit; }
 
 void Predictor::reset() {
   history.clear();
@@ -128,7 +122,6 @@ void Predictor::reset() {
   yFinalSet = false;
   zSet = false;
   hit = false;
-  hitDone = false;
 }
 
 bool Predictor::isDistanceIgnorable(const cv::Vec3d &a, const cv::Vec3d &b,

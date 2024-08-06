@@ -29,8 +29,7 @@ class Arm {
 
 public:
   Arm();
-  void move(double y, double z);
-  void hitByZ(double z);
+  void move(double y, double z, bool hitTarget);
   void resetByZ(double z);
 };
 
