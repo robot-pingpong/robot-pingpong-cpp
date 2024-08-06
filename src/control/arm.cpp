@@ -32,39 +32,85 @@ Arm::Arm() {
   wrist.setProfileVelocity(1800);
   wrist.setProfileAcceleration(450);
 
-  move(Y_TABLE_SIZE / 2, 100, false);
+  resetByZ(100);
 }
 
-void Arm::move(const double y, const double z, const bool hitTarget) {
-  const auto clampedZ = std::clamp(z, 40.0, 400.0);
+bool Arm::inverseKinematics(const double x, const double y, const double z,
+                            double &theta1, double &theta2, double &theta3) {
+  const auto clampedZ = std::clamp(z, 40.0, 390.0);
   constexpr auto l1 = 198.251;
   constexpr auto l2 = 225;
   constexpr auto l3 = 30;
-  const auto pi = hitTarget ? M_PI / 3 : M_PI / 3 * 2;
-  constexpr auto x = 190;
+  // const auto pi = hitTarget ? M_PI / 3 : M_PI / 3 * 2;
+  constexpr auto pi = M_PI / 2;
   const auto xn = clampedZ - l3 * std::cos(pi);
   const auto yn = x - l3 * std::sin(pi);
   const auto cosTheta2 =
       (xn * xn + yn * yn - l1 * l1 - l2 * l2) / (2 * l1 * l2);
   const auto sinTheta2 = std::sqrt(1 - cosTheta2 * cosTheta2);
-  const auto theta2 = std::atan2(sinTheta2, cosTheta2);
+  theta2 = std::atan2(sinTheta2, cosTheta2);
   const auto k1 = l1 + l2 * cosTheta2;
   const auto k2 = l2 * sinTheta2;
-  const auto theta1 = std::atan2(k2, k1) - std::atan2(yn, xn);
-  const auto theta3 = pi + theta1 - theta2;
+  theta1 = std::atan2(k2, k1) - std::atan2(yn, xn);
+  theta3 = pi + theta1 - theta2;
 
-  base.setAngle(std::clamp((y - (Y_TABLE_SIZE / 2)) * 10 + 180, 150.0, 210.0));
-  shoulder.setAngle(theta1 / M_PI * 180 + 180 + 43.7);
-  arm.setAngle(200);
-  elbow.setAngle(theta2 / M_PI * 180 - 70 + 180);
-  wrist.setAngle(theta3 / M_PI * 180 + 180);
+  theta1 = theta1 / M_PI * 180 + 180 + 43.7;
+  theta2 = theta2 / M_PI * 180 - 70 + 180;
+  theta3 = theta3 / M_PI * 180 + 180;
+
+  if (std::isnan(theta1) || std::isnan(theta2) || std::isnan(theta3)) {
+    return false;
+  }
+  return true;
+}
+
+void Arm::move(const double y, const double z, const bool hitTarget) {
+  std::thread([&, y, z, hitTarget] {
+    mtx.lock();
+    try {
+      for (;;) {
+        double theta1, theta2, theta3;
+        if (!inverseKinematics(190, 0, z, theta1, theta2, theta3)) {
+          break;
+        }
+        base.setAngle(
+            std::clamp((y - (Y_TABLE_SIZE / 2)) * 10 + 180, 150.0, 210.0));
+        shoulder.setAngle(theta1);
+        arm.setAngle(200);
+        elbow.setAngle(theta2);
+        wrist.setAngle(theta3 - (hitTarget ? 45 : 0));
+        break;
+      }
+    } catch (const std::exception &e) {
+      std::cerr << e.what() << std::endl;
+    }
+    resetted = false;
+    mtx.unlock();
+  }).detach();
 }
 
 void Arm::resetByZ(const double z) {
   if (resetted)
     return;
-  // pitchShoulder.setAngle(angle_set[2].pitchShoulderAngle);
-  // elbow.setAngle(angle_set[2].elbowAngle);
-  // wrist.setAngle(angle_set[2].wristBeforeAngle);
+  std::thread([&, z] {
+    mtx.lock();
+    try {
+      for (;;) {
+        double theta1, theta2, theta3;
+        if (!inverseKinematics(190, 0, z, theta1, theta2, theta3)) {
+          break;
+        }
+        base.setAngle(180);
+        shoulder.setAngle(theta1);
+        arm.setAngle(200);
+        elbow.setAngle(theta2);
+        wrist.setAngle(theta3);
+        break;
+      }
+    } catch (const std::exception &e) {
+      std::cerr << e.what() << std::endl;
+    }
+    mtx.unlock();
+  }).detach();
   resetted = true;
 }
