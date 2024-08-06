@@ -53,7 +53,7 @@ void Arm::move(const double y, const double z) {
   const auto theta1 = std::atan2(k2, k1) - std::atan2(yn, xn);
   const auto theta3 = pi + theta1 - theta2;
 
-  base.setAngle((y - (Y_TABLE_SIZE / 2)) * 10 + 180);
+  base.setAngle(std::clamp((y - (Y_TABLE_SIZE / 2)) * 10 + 180, 150.0, 210.0));
   shoulder.setAngle(theta1 / M_PI * 180 + 180 + 43.7);
   arm.setAngle(200);
   elbow.setAngle(theta2 / M_PI * 180 - 70 + 180);
