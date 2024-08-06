@@ -8,6 +8,8 @@ class Predictor {
   std::vector<cv::Vec3d> history;
   int missCount = 0;
   std::vector<size_t> boundIndicies;
+  std::tuple<double, double, double> boundQuadratic;
+
   bool ySet = false;
   double targetY = 0;
   bool zSet = false;
@@ -17,7 +19,7 @@ class Predictor {
   void reset();
 
   [[nodiscard]] bool isDistanceIgnorable(const cv::Vec3d &a, const cv::Vec3d &b,
-                                         const double unit) const;
+                                         double unit) const;
   static bool checkIsBounded(const cv::Vec3d &a, const cv::Vec3d &b,
                              const cv::Vec3d &c);
   [[nodiscard]] const cv::Vec3d &getNearestPositionWithX(double x) const;

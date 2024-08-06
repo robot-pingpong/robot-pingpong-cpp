@@ -29,8 +29,7 @@ class Visualizer {
               int thickness = -1);
   void line(const cv::Vec3d &start, const cv::Vec3d &end,
             const cv::Scalar &color, int thickness = 1);
-  void rect(const cv::Vec3d &pt1, const cv::Vec3d &pt2,
-            const cv::Scalar &color);
+  void rect(const cv::Vec3d &pt1, const cv::Vec3d &pt2, const cv::Scalar &colo);
 
 public:
   explicit Visualizer(const Predictor &predictor);

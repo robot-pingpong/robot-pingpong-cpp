@@ -1,18 +1,19 @@
 #include "predictor.h"
 
 #include "constants.h"
+#include "utils/regression.h"
 
 #define TARGET_X (X_TABLE_SIZE - 0.35)
 
 void Predictor::addBallPosition(const cv::Vec3d &position) {
-  if (history.size() > 1) {
-    if (const auto base =
-            cv::norm(history.back() - history.at(history.size() - 2));
-        isDistanceIgnorable(position, history.back(), base)) {
-
-      return;
-    }
-  }
+  // if (history.size() > 1) {
+  //   if (const auto base =
+  //           cv::norm(history.back() - history.at(history.size() - 2));
+  //       isDistanceIgnorable(position, history.back(), base)) {
+  //
+  //     return;
+  //   }
+  // }
   history.push_back(position);
   if (history.size() < 3)
     return;
@@ -26,11 +27,30 @@ void Predictor::addBallPosition(const cv::Vec3d &position) {
 
   if (checkIsBounded(first, mid, position)) {
     boundIndicies.push_back(history.size() - 2);
+  }
 
-    if (position[0] > X_TABLE_SIZE / 2) {
-      const auto refX = TARGET_X - (TARGET_X - position[0]) * 2;
-      const auto &ref = getNearestPositionWithX(refX);
-      targetZ = ref[2];
+  if (!boundIndicies.empty()) {
+    // Quadratic interpolation
+    std::vector<double> srcX;
+    std::vector<double> srcY;
+    const size_t startIndex = boundIndicies.back();
+    const size_t endIndex = history.size() - 1;
+    for (size_t i = startIndex; i <= endIndex; i++) {
+      srcX.push_back(history[i][0]);
+      srcY.push_back(history[i][2]);
+    }
+    quadraticRegression(srcX, srcY, std::get<0>(boundQuadratic),
+                        std::get<1>(boundQuadratic),
+                        std::get<2>(boundQuadratic));
+
+    std::cout << "Quadratic: " << std::get<0>(boundQuadratic) << " "
+              << std::get<1>(boundQuadratic) << " "
+              << std::get<2>(boundQuadratic) << std::endl;
+    if (const auto targetZ = std::get<0>(boundQuadratic) +
+                             std::get<1>(boundQuadratic) * TARGET_X +
+                             std::get<2>(boundQuadratic) * TARGET_X * TARGET_X;
+        targetZ > 0) {
+      this->targetZ = targetZ;
       zSet = true;
     }
   }
@@ -91,7 +111,7 @@ void Predictor::reset() {
 
 bool Predictor::isDistanceIgnorable(const cv::Vec3d &a, const cv::Vec3d &b,
                                     const double unit) const {
-  return cv::norm(a - b) > unit * (missCount + 1);
+  return cv::norm(a - b) > unit * 2 * (missCount + 1);
 }
 
 bool Predictor::checkIsBounded(const cv::Vec3d &a, const cv::Vec3d &b,
