@@ -36,14 +36,10 @@
 
 #define WRITE(N)                                                               \
   {                                                                            \
-    uint8_t error;                                                             \
-    if (const int result = packetHandler->write##N##ByteTxRx(                  \
-            portHandler, id, address, value, &error);                          \
+    if (const int result = packetHandler->write##N##ByteTxOnly(                \
+            portHandler, id, address, value);                                  \
         result != COMM_SUCCESS) {                                              \
       throw std::runtime_error(packetHandler->getTxRxResult(result));          \
-    }                                                                          \
-    if (error != 0) {                                                          \
-      throw std::runtime_error(packetHandler->getRxPacketError(error));        \
     }                                                                          \
   }
 
