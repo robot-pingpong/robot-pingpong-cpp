@@ -39,7 +39,6 @@
  * @author Chris Engelsma
  */
 #include <cmath>
-#include <cstdlib>
 #include <stdexcept>
 #include <vector>
 
