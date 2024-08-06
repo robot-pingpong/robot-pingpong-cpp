@@ -52,18 +52,18 @@ void Visualizer::renderTopRight() {
     line(cv::Vec3d(X_TABLE_SIZE - 0.55, y, z),
          cv::Vec3d(X_TABLE_SIZE - 0.15, y, z), GREEN, 2);
   }
-  // if (!predictor.boundIndicies.empty()) {
-  //   std::vector<cv::Point> points;
-  //   double x = 0;
-  //   while (x < X_TABLE_SIZE) {
-  //     const auto height = std::get<0>(predictor.boundQuadratic) +
-  //                         std::get<1>(predictor.boundQuadratic) * x +
-  //                         std::get<2>(predictor.boundQuadratic) * x * x;
-  //     points.push_back(convertToRight(cv::Vec3d(x, 0, height)));
-  //     x += 0.01;
-  //   }
-  //   cv::polylines(right, points, false, CYAN, 2);
-  // }
+  if (!predictor.boundIndicies.empty()) {
+    std::vector<cv::Point> points;
+    double x = 0;
+    while (x < X_TABLE_SIZE) {
+      const auto height = predictor.boundQuadratic.at(0) +
+                          predictor.boundQuadratic.at(1) * x +
+                          predictor.boundQuadratic.at(2) * x * x;
+      points.push_back(convertToRight(cv::Vec3d(x, 0, height)));
+      x += 0.01;
+    }
+    cv::polylines(right, points, false, CYAN, 2);
+  }
 }
 
 cv::Point Visualizer::convertToTop(const cv::Vec3d &vec) {
