@@ -8,7 +8,7 @@ class Predictor {
   std::vector<cv::Vec3d> history;
   int missCount = 0;
   std::vector<size_t> boundIndicies;
-  std::vector<double> boundQuadratic;
+  std::vector<std::vector<double>> boundQuadratic;
 
   bool ySet = false;
   bool yFinalSet = false;

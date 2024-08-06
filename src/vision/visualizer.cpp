@@ -53,16 +53,17 @@ void Visualizer::renderTopRight() {
          GREEN, 2);
   }
   if (predictor.history.size() > 2) {
-    std::vector<cv::Point> points;
-    double x = 0;
-    while (x < X_TABLE_SIZE) {
-      const auto height = predictor.boundQuadratic.at(0) +
-                          predictor.boundQuadratic.at(1) * x +
-                          predictor.boundQuadratic.at(2) * x * x;
-      points.push_back(convertToRight(cv::Vec3d(x, 0, height)));
-      x += 0.01;
+    for (const auto &coeffs : predictor.boundQuadratic) {
+      std::vector<cv::Point> points;
+      double x = 0;
+      while (x < X_TABLE_SIZE) {
+        const auto height =
+            coeffs.at(0) + coeffs.at(1) * x + coeffs.at(2) * x * x;
+        points.push_back(convertToRight(cv::Vec3d(x, 0, height)));
+        x += 0.01;
+      }
+      cv::polylines(right, points, false, CYAN, 2);
     }
-    cv::polylines(right, points, false, CYAN, 2);
   }
 }
 

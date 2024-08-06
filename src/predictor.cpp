@@ -40,6 +40,8 @@ void Predictor::addBallPosition(const cv::Vec3d &position) {
 
 void Predictor::predict(const cv::Vec3d &position) {
   if (history.size() > 2) {
+    boundQuadratic.clear();
+    boundQuadratic.emplace_back();
     // Quadratic interpolation
     std::vector<double> srcX;
     std::vector<double> srcY;
@@ -49,14 +51,39 @@ void Predictor::predict(const cv::Vec3d &position) {
       srcX.push_back(history[i][0]);
       srcY.push_back(history[i][2]);
     }
-    PolynomialRegression<double>::fitIt(srcX, srcY, 2, boundQuadratic);
+    PolynomialRegression<double>::fitIt(srcX, srcY, 2, boundQuadratic.back());
 
-    if (const auto targetZ = boundQuadratic.at(0) +
-                             boundQuadratic.at(1) * TARGET_X +
-                             boundQuadratic.at(2) * TARGET_X * TARGET_X;
-        boundQuadratic.at(2) < 0 && targetZ > 0 && targetZ < 0.5) {
-      this->targetZ = targetZ;
-      zSet = true;
+    if (boundQuadratic.back().at(2) < 0) {
+      for (;;) {
+        if (const auto targetZ =
+                boundQuadratic.back().at(0) +
+                boundQuadratic.back().at(1) * TARGET_X +
+                boundQuadratic.back().at(2) * TARGET_X * TARGET_X;
+            targetZ > 0) {
+          if (targetZ < 0.5) {
+            this->targetZ = targetZ;
+            zSet = true;
+          }
+          break;
+        }
+
+        const auto a = boundQuadratic.back().at(2);
+        const auto b = boundQuadratic.back().at(1);
+        const auto c = boundQuadratic.back().at(0);
+        const auto boundX = (-b - std::sqrt(b * b - 4 * a * c)) / (2 * a);
+        const auto p = -b / (2 * a);
+        const auto q = c - a * p * p;
+        const auto newP = p + (boundX - p) * 2;
+        if (0 < boundX && boundX < TARGET_X * 3) {
+          boundQuadratic.emplace_back(std::vector{
+              a * newP * newP + q,
+              -2 * a * newP,
+              a,
+          });
+        } else {
+          break;
+        }
+      }
     }
   }
 
