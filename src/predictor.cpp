@@ -105,10 +105,14 @@ void Predictor::addMissingBallPosition() {
   }
 }
 bool Predictor::predictY(double &y) const {
+  if (isnan(y))
+    return false;
   y = targetY;
   return ySet;
 }
 bool Predictor::predictZ(double &z) const {
+  if (isnan(z))
+    return false;
   z = targetZ;
   return ySet;
 }
