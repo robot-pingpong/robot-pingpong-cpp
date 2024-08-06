@@ -25,8 +25,6 @@ Arm::Arm() {
     motor->setProfileVelocity(400);
     motor->setProfileAcceleration(120);
     motor->setTorqueEnable(Torque::ENABLE);
-    motor->setAngle(180);
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
   arm.setAngle(200);
 
@@ -34,11 +32,7 @@ Arm::Arm() {
   wrist.setProfileVelocity(1800);
   wrist.setProfileAcceleration(450);
 
-  for (int i = 80; i < 400; i += 10) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    std::cout << "i: " << i << std::endl;
-    moveByZ(i);
-  }
+  moveByZ(100);
 }
 
 void Arm::moveByZ(const double z) {
