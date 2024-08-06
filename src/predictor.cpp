@@ -39,11 +39,11 @@ void Predictor::addBallPosition(const cv::Vec3d &position) {
 }
 
 void Predictor::predict(const cv::Vec3d &position) {
-  if (!boundIndicies.empty()) {
+  if (history.size() > 2) {
     // Quadratic interpolation
     std::vector<double> srcX;
     std::vector<double> srcY;
-    const size_t startIndex = boundIndicies.back();
+    const size_t startIndex = boundIndicies.empty() ? 0 : boundIndicies.back();
     const size_t endIndex = history.size() - 1;
     for (size_t i = startIndex; i <= endIndex; i++) {
       srcX.push_back(history[i][0]);
@@ -91,7 +91,7 @@ void Predictor::predict(const cv::Vec3d &position) {
     yFinalSet = true;
   }
 
-  if (position[0] > TARGET_X - 0.3) {
+  if (position[0] > TARGET_X - 0.6) {
     hit = true;
   }
 }
@@ -130,7 +130,7 @@ void Predictor::reset() {
 
 bool Predictor::isDistanceIgnorable(const cv::Vec3d &a, const cv::Vec3d &b,
                                     const double unit) const {
-  return cv::norm(a - b) > unit * 2 * (missCount + 1);
+  return cv::norm(a - b) > unit * 8 * (missCount + 1);
 }
 
 bool Predictor::checkIsBounded(const cv::Vec3d &a, const cv::Vec3d &b,

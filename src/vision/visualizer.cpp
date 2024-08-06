@@ -52,7 +52,7 @@ void Visualizer::renderTopRight() {
     line(cv::Vec3d(X_TABLE_SIZE - 0.2, y, z), cv::Vec3d(X_TABLE_SIZE, y, z),
          GREEN, 2);
   }
-  if (!predictor.boundIndicies.empty()) {
+  if (predictor.history.size() > 2) {
     std::vector<cv::Point> points;
     double x = 0;
     while (x < X_TABLE_SIZE) {
