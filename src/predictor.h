@@ -24,6 +24,7 @@ class Predictor {
   static bool checkIsBounded(const cv::Vec3d &a, const cv::Vec3d &b,
                              const cv::Vec3d &c);
   [[nodiscard]] const cv::Vec3d &getNearestPositionWithX(double x) const;
+  void predict(const cv::Vec3d &position);
 
 public:
   void addBallPosition(const cv::Vec3d &position);

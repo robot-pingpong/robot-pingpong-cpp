@@ -29,6 +29,16 @@ void Predictor::addBallPosition(const cv::Vec3d &position) {
     boundIndicies.push_back(history.size() - 2);
   }
 
+  for (const auto &pos : history) {
+    // run predict if only the ball had been in the left side of the table
+    if (pos[0] < X_TABLE_SIZE / 2) {
+      predict(position);
+      break;
+    }
+  }
+}
+
+void Predictor::predict(const cv::Vec3d &position) {
   if (!boundIndicies.empty()) {
     // Quadratic interpolation
     std::vector<double> srcX;
