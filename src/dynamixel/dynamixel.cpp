@@ -48,7 +48,7 @@
   }
 
 dynamixel::PortHandler *getController(const std::string &portName) {
-  if (controllers.find(portName) != controllers.end()) {
+  if (controllers.contains(portName)) {
     return controllers[portName];
   }
   const auto controller =
