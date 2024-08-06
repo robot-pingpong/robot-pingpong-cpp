@@ -3,7 +3,7 @@
 #include "constants.h"
 #include "utils/regression.h"
 
-#define TARGET_X (X_TABLE_SIZE - 0.35)
+#define TARGET_X (X_TABLE_SIZE - 0.1)
 
 void Predictor::addBallPosition(const cv::Vec3d &position) {
   // if (history.size() > 1) {
@@ -51,13 +51,10 @@ void Predictor::predict(const cv::Vec3d &position) {
     }
     PolynomialRegression<double>::fitIt(srcX, srcY, 2, boundQuadratic);
 
-    std::cout << "Quadratic: " << boundQuadratic.at(0) << " "
-              << boundQuadratic.at(1) << " " << boundQuadratic.at(2)
-              << std::endl;
     if (const auto targetZ = boundQuadratic.at(0) +
                              boundQuadratic.at(1) * TARGET_X +
                              boundQuadratic.at(2) * TARGET_X * TARGET_X;
-        targetZ > 0) {
+        boundQuadratic.at(2) < 0 && targetZ > 0 && targetZ < 0.5) {
       std::cout << "Target Z: " << targetZ << std::endl;
       this->targetZ = targetZ;
       zSet = true;
