@@ -111,6 +111,16 @@ void Visualizer::render(const double fps) {
 
   cv::putText(screen, "FPS: " + std::to_string(fps), cv::Point(10, 30),
               cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 0, 255));
+
+  if (double y; predictor.predictY(y)) {
+    cv::putText(screen, "Y: " + std::to_string(y), cv::Point(10, 50),
+                cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255));
+  }
+  if (double z; predictor.predictZ(z)) {
+    cv::putText(screen, "Z: " + std::to_string(z), cv::Point(10, 60),
+                cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255));
+  }
+
   writer << screen;
   cv::resize(screen, windowScreen, windowScreen.size());
   cv::imshow(WINDOW_NAME, windowScreen);
