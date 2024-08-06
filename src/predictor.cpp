@@ -50,12 +50,13 @@ void Predictor::addBallPosition(const cv::Vec3d &position) {
                              std::get<1>(boundQuadratic) * TARGET_X +
                              std::get<2>(boundQuadratic) * TARGET_X * TARGET_X;
         targetZ > 0) {
+      std::cout << "Target Z: " << targetZ << std::endl;
       this->targetZ = targetZ;
       zSet = true;
     }
   }
 
-  if (!ySet && position[0] > X_TABLE_SIZE / 2) {
+  if (!ySet && position[0] > X_TABLE_SIZE / 3 * 2) {
     double sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
     for (const auto &pos : history) {
       sumX += pos[0];
