@@ -32,20 +32,19 @@ Arm::Arm() {
   wrist.setProfileVelocity(1800);
   wrist.setProfileAcceleration(450);
 
-  moveByZ(100);
+  move(Y_TABLE_SIZE / 2, 100);
 }
 
-void Arm::moveByZ(const double z) {
+void Arm::move(const double y, const double z) {
   if (z > 400 || z < 0)
     return;
   constexpr auto l1 = 198.251;
   constexpr auto l2 = 225;
   constexpr auto l3 = 30;
   constexpr auto pi = M_PI / 2;
-  const auto x = z;
-  constexpr auto y = 190;
-  const auto xn = x - l3 * std::cos(pi);
-  const auto yn = y - l3 * std::sin(pi);
+  constexpr auto x = 190;
+  const auto xn = z - l3 * std::cos(pi);
+  const auto yn = x - l3 * std::sin(pi);
   const auto cosTheta2 =
       (xn * xn + yn * yn - l1 * l1 - l2 * l2) / (2 * l1 * l2);
   const auto sinTheta2 = std::sqrt(1 - cosTheta2 * cosTheta2);
@@ -55,6 +54,7 @@ void Arm::moveByZ(const double z) {
   const auto theta1 = std::atan2(k2, k1) - std::atan2(yn, xn);
   const auto theta3 = pi + theta1 - theta2;
 
+  base.setAngle((y - (Y_TABLE_SIZE / 2)) * 10 + 180);
   shoulder.setAngle(theta1 / M_PI * 180 + 180 + 43.7);
   arm.setAngle(200);
   elbow.setAngle(theta2 / M_PI * 180 - 70 + 180);

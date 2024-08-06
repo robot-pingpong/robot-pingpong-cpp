@@ -35,7 +35,7 @@ int main() {
       }
 
       if (predictor.predictZ(z)) {
-        arm.moveByZ(z * 1000);
+        arm.move(y, z * 1000);
       }
 
       if (predictor.hitTarget()) {
