@@ -32,9 +32,9 @@ void LinearMotor::setPosition(const double position, const bool wait) {
   const auto clamped = getClampedPosition(position);
   targetPosition = position;
   if (wait) {
-    AxmMovePos(axisNo, clamped, 600, 800, 100);
+    AxmMovePos(axisNo, clamped, 2000, 1600, 100);
   } else {
-    AxmMoveStartPos(axisNo, clamped, 600, 800, 100);
+    AxmMoveStartPos(axisNo, clamped, 2000, 1600, 100);
   }
 }
 
@@ -75,7 +75,7 @@ void LinearMotor::guessLimits() {
                         1);
   max = highLimit - 1;
   min = 1;
-  setMaxVelocity(600);
+  setMaxVelocity(1300);
   AxmStatusSetCmdPos(axisNo, getPosition());
   std::this_thread::sleep_for(std::chrono::milliseconds(300));
   setPosition(highLimit / 2);
@@ -106,7 +106,7 @@ LinearMotor::LinearMotor(const int axisNo) : axisNo(axisNo), min(0), max(0) {
   AxmSignalSetServoAlarm(axisNo, LOW);                       // 4
   AxmSignalSetLimit(axisNo, EMERGENCY_STOP, UNUSED, UNUSED); // 5, 6, TODO
   AxmMotSetMinVel(axisNo, 1);                                // 7
-  AxmMotSetMaxVel(axisNo, 600);                              // 8, 700000
+  AxmMotSetMaxVel(axisNo, 100);                              // 8, 700000
   AxmHomeSetMethod(axisNo, DIR_CCW, HomeSensor, LOW, 1000,
                    0);                              // 11, 9, 13, 22, 23
   AxmHomeSetSignalLevel(axisNo, LOW);               // 10
