@@ -5,10 +5,13 @@
 #include "utils/timer.h"
 #include "vision/vision.h"
 
+#include <thread>
+
 int main() {
   Arm arm;
+  arm.init();
   auto lm = LinearMotor(0);
-  lm.guessLimits();
+  std::thread([&] { lm.guessLimits(); }).detach();
   Predictor predictor;
   Visualizer visualizer(predictor);
   Vision vision;
@@ -35,7 +38,7 @@ int main() {
       }
 
       if (predictor.predictZ(z)) {
-        arm.move(y, z * 1000, predictor.hitTarget());
+        arm.move(y, z * 1000 + 100, predictor.hitTarget());
       }
 
       visualizer.setMachinePosition(

@@ -13,7 +13,7 @@ const std::vector<ArmDictionary> angle_set = {
     {0.37, 190, 120, 189, 250, 110, 190},
     {0.48, 200, 140, 172, 240, 150, 220}};
 
-Arm::Arm() {
+void Arm::init() {
   for (const auto &motor : motors) {
     // motor->setGoalVelocity(400);
     // motor->setVelocityLimit(100);

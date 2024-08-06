@@ -32,7 +32,7 @@ class Arm {
                                 double &theta2, double &theta3);
 
 public:
-  Arm();
+  void init();
   void move(double y, double z, bool hitTarget);
   void resetByZ(double z);
 };
