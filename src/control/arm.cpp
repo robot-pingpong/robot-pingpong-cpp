@@ -18,18 +18,27 @@ Arm::Arm() {
     // motor->setGoalVelocity(400);
     // motor->setVelocityLimit(100);
     // motor->setAccelerationLimit(30);
-    // motor->setProfileVelocity(400);
-    // motor->setProfileAcceleration(120);
-    motor->setProfileVelocity(40);
-    motor->setProfileAcceleration(10);
+    if (motor->readHardwareErrorStatus() != 0) {
+      motor->reboot();
+    }
+
+    motor->setProfileVelocity(400);
+    motor->setProfileAcceleration(120);
     motor->setTorqueEnable(Torque::ENABLE);
+    motor->setAngle(180);
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
+  arm.setAngle(200);
 
   // wrist.setGoalVelocity(1000);
-  // wrist.setProfileVelocity(1800);
-  // wrist.setProfileAcceleration(450);
+  wrist.setProfileVelocity(1800);
+  wrist.setProfileAcceleration(450);
 
-  moveByZ(120);
+  for (int i = 80; i < 400; i += 10) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::cout << "i: " << i << std::endl;
+    moveByZ(i);
+  }
 }
 
 void Arm::moveByZ(const double z) {
@@ -39,28 +48,21 @@ void Arm::moveByZ(const double z) {
   constexpr auto pi = M_PI / 2;
   const auto x = z;
   constexpr auto y = 190;
-  const auto cosTheta2 = (x * x + y * y - l1 * l1 - l2 * l2) / (2 * l1 * l2);
+  const auto xn = x - l3 * std::cos(pi);
+  const auto yn = y - l3 * std::sin(pi);
+  const auto cosTheta2 =
+      (xn * xn + yn * yn - l1 * l1 - l2 * l2) / (2 * l1 * l2);
   const auto sinTheta2 = std::sqrt(1 - cosTheta2 * cosTheta2);
   const auto theta2 = std::atan2(sinTheta2, cosTheta2);
   const auto k1 = l1 + l2 * cosTheta2;
   const auto k2 = l2 * sinTheta2;
-  const auto xn = x - l3 * std::cos(pi);
-  const auto yn = y - l3 * std::sin(pi);
-  const auto theta1 = std::atan2(k1 * yn - k2 * xn, k1 * xn - k2 * yn);
-  const auto theta3 = pi - (theta1 + theta2);
+  const auto theta1 = std::atan2(k2, k1) - std::atan2(yn, xn);
+  const auto theta3 = pi + theta1 - theta2;
 
-  std::cout << "theta1: " << theta1 / M_PI * 180 << std::endl;
-  std::cout << "theta2: " << theta2 / M_PI * 180 << std::endl;
-  std::cout << "theta3: " << theta3 / M_PI * 180 << std::endl;
-
-  std::cout << "theta1: " << theta1 / M_PI * 180 + 180 + 43.7 << std::endl;
-  std::cout << "theta2: " << theta2 / M_PI * 180 - 70 + 180 << std::endl;
-  std::cout << "theta3: " << theta3 / M_PI * 180 + 180 << std::endl;
-
-  // shoulder.setAngle(theta1 / M_PI * 180 + 180 + 43.7);
-  // arm.setAngle(200);
-  // elbow.setAngle(theta2 / M_PI * 180 - 70 + 180);
-  // wrist.setAngle(theta3 / M_PI * 180 + 180);
+  shoulder.setAngle(theta1 / M_PI * 180 + 180 + 43.7);
+  arm.setAngle(200);
+  elbow.setAngle(theta2 / M_PI * 180 - 70 + 180);
+  wrist.setAngle(theta3 / M_PI * 180 + 180);
 }
 
 void Arm::hitByZ(const double z) {

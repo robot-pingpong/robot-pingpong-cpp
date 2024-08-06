@@ -22,9 +22,10 @@ public:
   typedef typename Servos::ControlTables<Model>::protocol_t protocol_t;
   typename protocol_t::id_t id;
   void ping();
-  bool reboot();
+  bool reboot() override;
   double getAngle();
-  void setAngle(double angle);
+  void setAngle(double angle) override;
+  const unsigned char readHardwareErrorStatus() override = 0;
 
 protected:
   Dynamixel(const std::string &portName,

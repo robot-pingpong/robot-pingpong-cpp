@@ -13,6 +13,14 @@ enum class Torque : unsigned char {
   DISABLE = 0x00,
 };
 
+enum class HardwareError : unsigned char {
+  INPUT_VOLTAGE = 1 << 0,
+  OVERHEATING = 1 << 2,
+  MOTOR_ENCODER = 1 << 3,
+  ELECTRONICAL_SHOCK = 1 << 4,
+  OVERLOAD = 1 << 5,
+};
+
 class BaseMotor {
 public:
   virtual ~BaseMotor() = default;
@@ -27,6 +35,10 @@ public:
   virtual void setGoalVelocity(unsigned int velocity) = 0;
   virtual void setProfileVelocity(unsigned int velocity) = 0;
   virtual void setProfileAcceleration(unsigned int acceleration) = 0;
+  virtual void setAngle(double angle) = 0;
+  virtual const unsigned char // NOLINT(*-const-return-type)
+  readHardwareErrorStatus() = 0;
+  virtual bool reboot() = 0;
 };
 
 #endif // MOTOR_H

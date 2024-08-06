@@ -3,6 +3,7 @@
 #include "mx28_p2.h"
 #include "mx64_p2.h"
 
+#include <iostream>
 #include <stdexcept>
 
 #define READ(N)                                                                \
@@ -69,7 +70,13 @@ Dynamixel<Motor>::Dynamixel(const std::string &portName,
     : portHandler(getController(portName)), id(id) {
   packetHandler = dynamixel::PacketHandler::getPacketHandler(
       ControlTables<Motor>::protocol_t::version);
-  ping();
+  try {
+    ping();
+  } catch (const std::runtime_error &e) {
+    std::cerr << e.what() << std::endl;
+    Dynamixel::reboot();
+    ping();
+  }
 }
 
 template <typename Model>
