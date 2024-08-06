@@ -18,7 +18,7 @@
 #define BLUE cv::Scalar(255, 0, 0)
 #define WHITE cv::Scalar(255, 255, 255)
 #define ORANGE_HSV cv::Scalar(20, 200, 200)
-#define ORANGE_HSV_LOWER cv::Scalar(12, 150, 160)
+#define ORANGE_HSV_LOWER cv::Scalar(12, 140, 160)
 #define ORANGE_HSV_UPPER cv::Scalar(20, 255, 255)
 
 #define X_TABLE_SIZE 2.74
