@@ -36,14 +36,13 @@ Arm::Arm() {
 }
 
 void Arm::move(const double y, const double z) {
-  if (z > 400 || z < 0)
-    return;
+  const auto clampedZ = std::clamp(z, 40.0, 400.0);
   constexpr auto l1 = 198.251;
   constexpr auto l2 = 225;
   constexpr auto l3 = 30;
   constexpr auto pi = M_PI / 2;
   constexpr auto x = 190;
-  const auto xn = z - l3 * std::cos(pi);
+  const auto xn = clampedZ - l3 * std::cos(pi);
   const auto yn = x - l3 * std::sin(pi);
   const auto cosTheta2 =
       (xn * xn + yn * yn - l1 * l1 - l2 * l2) / (2 * l1 * l2);
