@@ -5,6 +5,7 @@
 #include "../dynamixel/mx28_p2.h"
 #include "../dynamixel/mx64_p2.h"
 
+#include <cmath>
 #include <list>
 #include <mutex>
 
@@ -28,8 +29,9 @@ class Arm {
   std::list<BaseMotor *> motors = {&base, &shoulder, &arm, &elbow, &wrist};
   bool resetted = false;
   std::mutex mtx;
-  static bool inverseKinematics(double x, double y, double z, double &theta1,
-                                double &theta2, double &theta3);
+  static bool inverseKinematics(const double x, const double y, const double z,
+                                double &theta1, double &theta2, double &theta3,
+                                double pi = M_PI / 2);
 
 public:
   void init();

@@ -36,13 +36,12 @@ void Arm::init() {
 }
 
 bool Arm::inverseKinematics(const double x, const double y, const double z,
-                            double &theta1, double &theta2, double &theta3) {
+                            double &theta1, double &theta2, double &theta3,
+                            const double pi) {
   const auto clampedZ = std::clamp(z, 40.0, 200.0);
   constexpr auto l1 = 198.251;
   constexpr auto l2 = 225;
   constexpr auto l3 = 30;
-  // const auto pi = hitTarget ? M_PI / 3 : M_PI / 3 * 2;
-  constexpr auto pi = M_PI / 2;
   const auto xn = clampedZ - l3 * std::cos(pi);
   const auto yn = x - l3 * std::sin(pi);
   const auto cosTheta2 =
@@ -72,15 +71,16 @@ void Arm::move(const double y, const double z, const bool hitTarget) {
     try {
       for (;;) {
         double theta1, theta2, theta3;
-        if (!inverseKinematics(190, 0, z, theta1, theta2, theta3)) {
+        if (!inverseKinematics(hitTarget ? 210 : 190, 0, z, theta1, theta2,
+                               theta3, hitTarget ? M_PI / 3 : M_PI / 2)) {
           break;
         }
         base.setAngle(
-            std::clamp((y - (Y_TABLE_SIZE / 2)) * 10 + 180, 150.0, 210.0));
+            std::clamp((y - (Y_TABLE_SIZE / 2)) * 20 + 180, 150.0, 210.0));
         shoulder.setAngle(theta1);
         arm.setAngle(200);
         elbow.setAngle(theta2);
-        wrist.setAngle(theta3 - (hitTarget ? 45 : 0));
+        wrist.setAngle(theta3 - (hitTarget ? 60 : 0));
         break;
       }
     } catch (const std::exception &e) {
@@ -99,7 +99,7 @@ void Arm::resetByZ(const double z) {
     try {
       for (;;) {
         double theta1, theta2, theta3;
-        if (!inverseKinematics(190, 0, z, theta1, theta2, theta3)) {
+        if (!inverseKinematics(190, 0, z, theta1, theta2, theta3) {
           break;
         }
         base.setAngle(180);
