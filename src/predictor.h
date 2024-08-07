@@ -5,7 +5,9 @@
 
 class Predictor {
   friend class Visualizer;
-  std::vector<cv::Vec3d> history;
+  std::vector<
+      std::pair<std::chrono::time_point<std::chrono::system_clock>, cv::Vec3d>>
+      history;
   int missCount = 0;
   std::vector<size_t> boundIndicies;
   std::vector<std::vector<double>> boundQuadratic;
@@ -30,7 +32,7 @@ public:
   void addMissingBallPosition();
   bool predictY(double &y) const;
   bool predictZ(double &z) const;
-  bool hitTarget() const;
+  [[nodiscard]] bool hitTarget() const;
 };
 
 #endif // PREDICTOR_H

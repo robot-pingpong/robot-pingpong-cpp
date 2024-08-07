@@ -3,6 +3,8 @@
 #include "constants.h"
 #include "utils/regression.h"
 
+#include <ranges>
+
 #define TARGET_X (X_TABLE_SIZE - 0.1)
 
 void Predictor::addBallPosition(const cv::Vec3d &position) {
@@ -14,12 +16,13 @@ void Predictor::addBallPosition(const cv::Vec3d &position) {
   //     return;
   //   }
   // }
-  history.push_back(position);
+  missCount = 0;
+  history.emplace_back(std::chrono::system_clock::now(), position);
   if (history.size() < 3)
     return;
 
-  const auto first = history[history.size() - 3];
-  const auto mid = history[history.size() - 2];
+  const auto first = history[history.size() - 3].second;
+  const auto mid = history[history.size() - 2].second;
   if (first[0] > mid[0] && mid[0] > position[0]) {
     reset();
     return;
@@ -29,7 +32,7 @@ void Predictor::addBallPosition(const cv::Vec3d &position) {
     boundIndicies.push_back(history.size() - 2);
   }
 
-  for (const auto &pos : history) {
+  for (const auto &pos : history | std::ranges::views::values) {
     // run predict if only the ball had been in the left side of the table
     if (pos[0] < X_TABLE_SIZE / 2) {
       predict(position);
@@ -45,11 +48,12 @@ void Predictor::predict(const cv::Vec3d &position) {
     // Quadratic interpolation
     std::vector<double> srcX;
     std::vector<double> srcY;
-    const size_t startIndex = boundIndicies.empty() ? 0 : boundIndicies.back();
-    const size_t endIndex = history.size() - 1;
-    for (size_t i = startIndex; i <= endIndex; i++) {
-      srcX.push_back(history[i][0]);
-      srcY.push_back(history[i][2]);
+    for (const auto &pos :
+         std::vector(&history[boundIndicies.empty() ? 0 : boundIndicies.back()],
+                     &history.back()) |
+             std::ranges::views::values) {
+      srcX.push_back(pos[0]);
+      srcY.push_back(pos[2]);
     }
     PolynomialRegression<double>::fitIt(srcX, srcY, 2, boundQuadratic.back());
 
@@ -89,7 +93,7 @@ void Predictor::predict(const cv::Vec3d &position) {
 
   if (!ySet && position[0] > X_TABLE_SIZE / 2) {
     double sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
-    for (const auto &pos : history) {
+    for (const auto &pos : history | std::ranges::views::values) {
       sumX += pos[0];
       sumY += pos[1];
       sumXY += pos[0] * pos[1];
@@ -105,7 +109,7 @@ void Predictor::predict(const cv::Vec3d &position) {
     double sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
     const std::vector sublist(&history[history.size() / 2],
                               &history[history.size() - 1]);
-    for (const auto &pos : sublist) {
+    for (const auto &pos : sublist | std::ranges::views::values) {
       sumX += pos[0];
       sumY += pos[1];
       sumXY += pos[0] * pos[1];
@@ -168,11 +172,11 @@ const cv::Vec3d &Predictor::getNearestPositionWithX(const double x) const {
   double minDist = std::numeric_limits<double>::max();
   size_t minIndex = 0;
   for (size_t i = 0; i < history.size(); i++) {
-    const auto &pos = history[i];
+    const auto &[_, pos] = history[i];
     if (const auto dist = std::abs(pos[0] - x); dist < minDist) {
       minDist = dist;
       minIndex = i;
     }
   }
-  return history[minIndex];
+  return history[minIndex].second;
 }

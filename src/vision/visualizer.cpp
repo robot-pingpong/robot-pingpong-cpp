@@ -1,6 +1,8 @@
 #include "visualizer.h"
 #include "../constants.h"
 
+#include <ranges>
+
 #define WINDOW_NAME "screen"
 
 Visualizer::Visualizer(const Predictor &predictor)
@@ -35,8 +37,8 @@ void Visualizer::renderTopRight() {
   cv::circle(top, convertToTop(cv::Vec3d(X_TABLE_SIZE, machinePosition, 0)), 10,
              RED, -1);
 
-  for (const auto &history : predictor.history) {
-    circle(history, 5, GREEN, -1);
+  for (const auto &pos : predictor.history | std::ranges::views::values) {
+    circle(pos, 5, GREEN, -1);
   }
   double y = 0, z = 0;
   if (!predictor.predictY(y))
