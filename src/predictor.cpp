@@ -172,7 +172,7 @@ void Predictor::addMissingBallPosition() {
   if (history.empty())
     return;
   missCount += 1;
-  if (missCount > 10) {
+  if (missCount > 30) {
     reset();
   }
 }
