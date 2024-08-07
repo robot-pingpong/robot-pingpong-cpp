@@ -6,7 +6,8 @@
 #include <ranges>
 
 #define TARGET_X (X_TABLE_SIZE - 0.1)
-#define HIT_X (X_TABLE_SIZE - 0.6)
+#define FINAL_PREDICTION_X (X_TABLE_SIZE - 0.6)
+#define HIT_X (X_TABLE_SIZE - 0.8)
 
 Predictor::Predictor() { reset(); }
 
@@ -158,7 +159,7 @@ void Predictor::predict(const cv::Vec3d &position) {
     targetY = a * TARGET_X + b;
     ySet = true;
   }
-  if (!yFinalSet && position[0] > HIT_X) {
+  if (!yFinalSet && position[0] > FINAL_PREDICTION_X) {
     targetY = position[1];
     yFinalSet = true;
   }
