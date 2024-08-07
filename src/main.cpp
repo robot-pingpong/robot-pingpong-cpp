@@ -41,7 +41,7 @@ int main() {
       if (predictor.predictZ(z)) {
         arm.move(y, z * 1000 + 30, predictor.hitTarget());
       } else {
-        arm.resetByZ(300);
+         arm.resetByZ(250);
       }
 
       visualizer.setMachinePosition(
