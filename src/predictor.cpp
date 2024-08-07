@@ -98,9 +98,8 @@ void Predictor::predict(const cv::Vec3d &position) {
     std::vector<double> srcX;
     std::vector<double> srcY;
     for (const auto &pos :
-         std::vector(
-             &predicted[boundIndicies.empty() ? 0 : boundIndicies.back() + 1],
-             &predicted.back()) |
+         std::vector(&history[boundIndicies.empty() ? 0 : boundIndicies.back()],
+                     &history.back()) |
              std::ranges::views::values) {
       srcX.push_back(pos[0]);
       srcY.push_back(pos[2]);
