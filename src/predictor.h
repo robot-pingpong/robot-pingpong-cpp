@@ -33,6 +33,8 @@ public:
   bool predictY(double &y) const;
   bool predictZ(double &z) const;
   [[nodiscard]] bool hitTarget() const;
+  [[nodiscard]] cv::Vec3d getVelocity() const;
+  cv::Vec3d getAcceleration() const;
 };
 
 #endif // PREDICTOR_H

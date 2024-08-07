@@ -149,6 +149,40 @@ bool Predictor::predictZ(double &z) const {
 }
 bool Predictor::hitTarget() const { return hit; }
 
+cv::Vec3d Predictor::getVelocity() const {
+  if (history.size() < 2)
+    return {};
+  const auto &[t1, pos1] = history[history.size() - 2];
+  const auto &[t2, pos2] = history[history.size() - 1];
+  const auto dt =
+      static_cast<double>(
+          std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1)
+              .count()) /
+      1000.0;
+  return (pos2 - pos1) / dt;
+}
+
+cv::Vec3d Predictor::getAcceleration() const {
+  if (history.size() < 3)
+    return {};
+  const auto &[t1, pos1] = history[history.size() - 3];
+  const auto &[t2, pos2] = history[history.size() - 2];
+  const auto &[t3, pos3] = history[history.size() - 1];
+  const auto dt1 =
+      static_cast<double>(
+          std::chrono::duration_cast<std::chrono::milliseconds>(t2 - t1)
+              .count()) /
+      1000.0;
+  const auto dt2 =
+      static_cast<double>(
+          std::chrono::duration_cast<std::chrono::milliseconds>(t3 - t2)
+              .count()) /
+      1000.0;
+  const auto v1 = (pos2 - pos1) / dt1;
+  const auto v2 = (pos3 - pos2) / dt2;
+  return (v2 - v1) / dt2;
+}
+
 void Predictor::reset() {
   history.clear();
   boundIndicies.clear();

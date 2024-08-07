@@ -104,28 +104,46 @@ void Visualizer::render(const double fps) {
   top.copyTo(screen(cv::Rect(0, 720, 1280, 720)));
   right.copyTo(screen(cv::Rect(1280, 720, 1280, 720)));
 
+  cv::putText(screen, "FPS: " + std::to_string(fps), cv::Point(10, 30),
+              cv::FONT_HERSHEY_SIMPLEX, 1, RED);
+
   if (ballVisible) {
     std::stringstream ss;
     ss << "X: " << ballPosition[0] << ", Y: " << ballPosition[1]
        << ", Z: " << ballPosition[2];
     cv::putText(screen, ss.str(), cv::Point(10, 80), cv::FONT_HERSHEY_SIMPLEX,
-                1, cv::Scalar(255, 255, 255));
+                1, WHITE);
   }
-
-  cv::putText(screen, "FPS: " + std::to_string(fps), cv::Point(10, 30),
-              cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 0, 255));
 
   if (double y; predictor.predictY(y)) {
-    cv::putText(screen, "Y: " + std::to_string(y), cv::Point(10, 120),
-                cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255));
+    cv::putText(screen, "Y: " + std::to_string(y), cv::Point(10, 130),
+                cv::FONT_HERSHEY_SIMPLEX, 1, WHITE);
   }
   if (double z; predictor.predictZ(z)) {
-    cv::putText(screen, "Z: " + std::to_string(z), cv::Point(10, 140),
-                cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(255, 255, 255));
+    cv::putText(screen, "Z: " + std::to_string(z), cv::Point(10, 180),
+                cv::FONT_HERSHEY_SIMPLEX, 1, WHITE);
   }
   if (predictor.hitTarget()) {
-    cv::putText(screen, "Hit target", cv::Point(10, 160),
-                cv::FONT_HERSHEY_SIMPLEX, 1, cv::Scalar(0, 255, 0));
+    cv::putText(screen, "Hit target", cv::Point(10, 230),
+                cv::FONT_HERSHEY_SIMPLEX, 1, GREEN);
+  }
+
+  if (predictor.history.size() > 2) {
+    const auto velocity = predictor.getVelocity();
+    std::stringstream ss;
+    ss << "Velocity: " << velocity[0] << ", " << velocity[1] << ", "
+       << velocity[2];
+    cv::putText(screen, ss.str(), cv::Point(10, 280), cv::FONT_HERSHEY_SIMPLEX,
+                1, WHITE);
+  }
+
+  if (predictor.history.size() > 3) {
+    const auto acceleration = predictor.getAcceleration();
+    std::stringstream ss;
+    ss << "Acceleration: " << acceleration[0] << ", " << acceleration[1] << ", "
+       << acceleration[2];
+    cv::putText(screen, ss.str(), cv::Point(10, 330), cv::FONT_HERSHEY_SIMPLEX,
+                1, WHITE);
   }
 
   writer << screen;
