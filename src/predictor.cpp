@@ -78,7 +78,7 @@ void Predictor::addBallPosition(const cv::Vec3d &position) {
     boundIndicies.push_back(history.size() - 2);
   }
 
-  for (const auto &pos : history | std::ranges::views::values) {
+  for (const auto &pos : predicted | std::ranges::views::values) {
     // run predict if only the ball had been in the left side of the table
     if (pos[0] < X_TABLE_SIZE / 2) {
       predict(position);
@@ -88,19 +88,20 @@ void Predictor::addBallPosition(const cv::Vec3d &position) {
 }
 
 void Predictor::predict(const cv::Vec3d &position) {
-  if (history.size() > 2) {
-    boundQuadratic.clear();
+  boundQuadratic.clear();
+  // Quadratic interpolation
+  std::vector<double> srcX;
+  std::vector<double> srcY;
+  for (const auto &pos :
+       std::vector(
+           &predicted[boundIndicies.empty() ? 0 : boundIndicies.back() + 1],
+           &predicted.back()) |
+           std::ranges::views::values) {
+    srcX.push_back(pos[0]);
+    srcY.push_back(pos[2]);
+  }
+  if (srcX.size() > 2) {
     boundQuadratic.emplace_back();
-    // Quadratic interpolation
-    std::vector<double> srcX;
-    std::vector<double> srcY;
-    for (const auto &pos :
-         std::vector(&history[boundIndicies.empty() ? 0 : boundIndicies.back()],
-                     &history.back()) |
-             std::ranges::views::values) {
-      srcX.push_back(pos[0]);
-      srcY.push_back(pos[2]);
-    }
     PolynomialRegression<double>::fitIt(srcX, srcY, 2, boundQuadratic.back());
 
     if (boundQuadratic.back().at(2) < 0) {
@@ -121,14 +122,19 @@ void Predictor::predict(const cv::Vec3d &position) {
         const auto b = boundQuadratic.back().at(1);
         const auto c = boundQuadratic.back().at(0);
         const auto boundX = (-b - std::sqrt(b * b - 4 * a * c)) / (2 * a);
+        if (isnan(boundX)) {
+          break;
+        }
         const auto p = -b / (2 * a);
         const auto q = c - a * p * p;
+        const auto newA = a;
         const auto newP = p + (boundX - p) * 2;
+        const auto newQ = q * 0.9;
         if (0 < boundX && boundX < TARGET_X * 3) {
           boundQuadratic.emplace_back(std::vector{
-              a * newP * newP + q,
-              -2 * a * newP,
-              a,
+              newA * newP * newP + newQ,
+              -2 * newA * newP,
+              newA,
           });
         } else {
           break;
@@ -139,13 +145,13 @@ void Predictor::predict(const cv::Vec3d &position) {
 
   if (!ySet && position[0] > X_TABLE_SIZE / 2) {
     double sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
-    for (const auto &pos : history | std::ranges::views::values) {
+    for (const auto &pos : predicted | std::ranges::views::values) {
       sumX += pos[0];
       sumY += pos[1];
       sumXY += pos[0] * pos[1];
       sumX2 += pos[0] * pos[0];
     }
-    const auto n = static_cast<double>(history.size());
+    const auto n = static_cast<double>(predicted.size());
     const auto a = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
     const auto b = (sumY - a * sumX) / n;
     targetY = a * TARGET_X + b;
@@ -153,8 +159,8 @@ void Predictor::predict(const cv::Vec3d &position) {
   }
   if (!yFinalSet && position[0] > X_TABLE_SIZE / 3 * 2) {
     double sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
-    const std::vector sublist(&history[history.size() / 2],
-                              &history[history.size() - 1]);
+    const std::vector sublist(&predicted[predicted.size() / 2],
+                              &predicted[predicted.size() - 1]);
     for (const auto &pos : sublist | std::ranges::views::values) {
       sumX += pos[0];
       sumY += pos[1];
