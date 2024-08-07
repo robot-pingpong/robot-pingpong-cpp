@@ -99,7 +99,7 @@ void Arm::resetByZ(const double z) {
     try {
       for (;;) {
         double theta1, theta2, theta3;
-        if (!inverseKinematics(190, 0, z, theta1, theta2, theta3) {
+        if (!inverseKinematics(190, 0, z, theta1, theta2, theta3)) {
           break;
         }
         base.setAngle(180);
