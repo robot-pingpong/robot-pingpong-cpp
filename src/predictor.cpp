@@ -21,13 +21,15 @@ void Predictor::addBallPosition(const cv::Vec3d &position) {
   if (history.empty()) {
     constexpr auto drag = 0.8;
     // dynam: x, y, z, vx, vy, vz, az
-    kalmanFilter.init(7, 3, 0);
+    kalmanFilter.init(7, 3, 0, CV_64F);
     // clang-format off
-    kalmanFilter.statePre = kalmanFilter.statePost =
-        (cv::Mat_<float>(7, 1) << position[0], position[1], position[2], 0, 0,
-         0, 0);
+    kalmanFilter.statePre = kalmanFilter.statePost = (
+      cv::Mat_<double>(7, 1) <<
+      position[0], position[1], position[2],
+      0, 0, 0, 0
+    );
     kalmanFilter.transitionMatrix = (
-      cv::Mat_<float>(7, 7) <<
+      cv::Mat_<double>(7, 7) <<
       1, 0, 0, 1, 0, 0, 0,
       0, 1, 0, 0, 1, 0, 0,
       0, 0, 1, 0, 0, 1, 0,
@@ -39,7 +41,7 @@ void Predictor::addBallPosition(const cv::Vec3d &position) {
       0, 0, 0, 0, 0, 0, 1
     );
     kalmanFilter.processNoiseCov = (
-        cv::Mat_<float>(7, 7) <<
+        cv::Mat_<double>(7, 7) <<
         0.3, 0, 0, 0, 0, 0, 0,
         0, 0.3, 0, 0, 0, 0, 0,
         0, 0, 0.3, 0, 0, 0, 0,
@@ -49,18 +51,18 @@ void Predictor::addBallPosition(const cv::Vec3d &position) {
         0, 0, 0, 0, 0, 0, 0.3
     );
     kalmanFilter.measurementMatrix = (
-        cv::Mat_<float>(3, 7) <<
+        cv::Mat_<double>(3, 7) <<
         1, 0, 0, 0, 0, 0, 0,
         0, 1, 0, 0, 0, 0, 0,
         0, 0, 1, 0, 0, 0, 0
     );
-    kalmanFilter.measurementNoiseCov = cv::Mat::eye(3, 3, CV_32F);
+    kalmanFilter.measurementNoiseCov = cv::Mat::eye(3, 3, CV_64F) * 0.1;
     // clang-format on
   }
   missCount = 0;
   history.emplace_back(std::chrono::system_clock::now(), position);
   predicted.emplace_back(std::chrono::system_clock::now(),
-                         kalmanFilter.predict().colRange(0, 3));
+                         cv::Vec3d(kalmanFilter.predict().rowRange(0, 3)));
   kalmanFilter.correct(cv::Mat(position));
   if (history.size() < 3)
     return;
@@ -233,6 +235,7 @@ cv::Vec3d Predictor::getAcceleration() const {
 void Predictor::reset() {
   history.clear();
   boundIndicies.clear();
+  predicted.clear();
   missCount = 0;
   ySet = false;
   yFinalSet = false;

@@ -149,6 +149,14 @@ void Visualizer::render(const double fps) {
                 1, WHITE);
   }
 
+  if (!predictor.predicted.empty()) {
+    const auto pos = predictor.predicted.back().second;
+    std::stringstream ss;
+    ss << "Predicted: " << pos[0] << ", " << pos[1] << ", " << pos[2];
+    cv::putText(screen, ss.str(), cv::Point(10, 380), cv::FONT_HERSHEY_SIMPLEX,
+                1, WHITE);
+  }
+
   writer << screen;
   cv::resize(screen, windowScreen, windowScreen.size());
   cv::imshow(WINDOW_NAME, windowScreen);
