@@ -73,7 +73,8 @@ void Predictor::addBallPosition(const cv::Vec3d &position) {
   const auto first = history[history.size() - 3].second;
   const auto mid = history[history.size() - 2].second;
   if (first[0] > mid[0] && mid[0] > position[0]) {
-    reset();
+    if (position[0] < X_TABLE_SIZE / 2)
+      reset();
     return;
   }
 
