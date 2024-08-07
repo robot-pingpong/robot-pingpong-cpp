@@ -37,7 +37,7 @@ void Arm::init() {
 
 bool Arm::inverseKinematics(const double x, const double y, const double z,
                             double &theta1, double &theta2, double &theta3) {
-  const auto clampedZ = std::clamp(z, 40.0, 390.0);
+  const auto clampedZ = std::clamp(z, 40.0, 200.0);
   constexpr auto l1 = 198.251;
   constexpr auto l2 = 225;
   constexpr auto l3 = 30;
