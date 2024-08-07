@@ -8,7 +8,7 @@
 #define TARGET_X (X_TABLE_SIZE - 0.1)
 #define FINAL_PREDICTION_Y (X_TABLE_SIZE - 0.6)
 #define FINAL_PREDICTION_Z (X_TABLE_SIZE - 0.6)
-#define HIT_X (X_TABLE_SIZE / 2)
+#define HIT_X (TARGET_X - 0.4)
 
 Predictor::Predictor() { reset(); }
 
