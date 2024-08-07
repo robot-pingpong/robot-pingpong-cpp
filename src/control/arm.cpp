@@ -77,7 +77,7 @@ void Arm::move(const double y, const double z, const bool hitTarget) {
     try {
       for (;;) {
         double theta1, theta2, theta3;
-        if (!inverseKinematics(190, 0, z, theta1, theta2, theta3, M_PI / 2)) {
+        if (!inverseKinematics(190, 0, z, theta1, theta2, theta3, M_PI / 3)) {
           break;
         }
         base.setAngle(
