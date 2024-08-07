@@ -11,11 +11,15 @@ int main() {
   Arm arm;
   arm.init();
   auto lm = LinearMotor(0);
-  std::thread([&] { lm.guessLimits(); }).detach();
+  std::thread([&] {
+    lm.guessLimits();
+    lm.off();
+  }).detach();
   Predictor predictor;
   Visualizer visualizer(predictor);
   Vision vision;
   vision.init(visualizer, true);
+  lm.on();
 
   try {
     Timer timer;
