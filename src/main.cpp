@@ -42,7 +42,7 @@ int main() {
       }
 
       if (predictor.predictZ(z)) {
-        arm.move(y, z * 1000, predictor.hitTarget());
+        arm.move(y, z * 1000 + 100, predictor.hitTarget());
       }
 
       visualizer.setMachinePosition(
