@@ -77,8 +77,13 @@ Dynamixel<Motor>::Dynamixel(const std::string &portName,
     ping();
   } catch (const std::runtime_error &e) {
     std::cerr << e.what() << std::endl;
-    Dynamixel::reboot();
-    ping();
+    try {
+      Dynamixel::reboot();
+      ping();
+    } catch (const std::runtime_error &e1) {
+      std::cerr << e1.what() << std::endl;
+      ping();
+    }
   }
 }
 
