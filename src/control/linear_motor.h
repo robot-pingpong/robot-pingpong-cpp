@@ -23,6 +23,8 @@ public:
   void setMaxVelocity(double velocity) const;
   void update();
   [[nodiscard]] bool isMoving() const;
+  void off() const;
+  void on() const;
 
   ~LinearMotor();
 };

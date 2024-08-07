@@ -96,6 +96,11 @@ bool LinearMotor::isMoving() const {
   AxmStatusReadInMotion(axisNo, &value);
   return value != 0;
 }
+void LinearMotor::off() const {
+  AxmMoveStop(axisNo, 0);
+  AxmSignalServoOn(axisNo, FALSE);
+}
+void LinearMotor::on() const { AxmSignalServoOn(axisNo, TRUE); }
 
 LinearMotor::LinearMotor(const int axisNo) : axisNo(axisNo), min(0), max(0) {
   assert(AxlOpen(7) == 0);
