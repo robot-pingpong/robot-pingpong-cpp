@@ -100,7 +100,9 @@ void Arm::resetByZ(const double z) {
   if (resetted)
     return;
   std::thread([&, z] {
-    mtx.lock();
+    if (!mtx.try_lock()) {
+      return;
+    }
     try {
       for (;;) {
         double theta1, theta2, theta3;
