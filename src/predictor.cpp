@@ -158,20 +158,8 @@ void Predictor::predict(const cv::Vec3d &position) {
     targetY = a * TARGET_X + b;
     ySet = true;
   }
-  if (!yFinalSet && position[0] > X_TABLE_SIZE / 3 * 2) {
-    double sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
-    const std::vector sublist(&predicted[predicted.size() / 2],
-                              &predicted[predicted.size() - 1]);
-    for (const auto &pos : sublist | std::ranges::views::values) {
-      sumX += pos[0];
-      sumY += pos[1];
-      sumXY += pos[0] * pos[1];
-      sumX2 += pos[0] * pos[0];
-    }
-    const auto n = static_cast<double>(sublist.size());
-    const auto a = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-    const auto b = (sumY - a * sumX) / n;
-    targetY = a * TARGET_X + b;
+  if (!yFinalSet && position[0] > HIT_X) {
+    targetY = position[1];
     yFinalSet = true;
   }
 
