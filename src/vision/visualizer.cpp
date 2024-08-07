@@ -40,6 +40,9 @@ void Visualizer::renderTopRight() {
   for (const auto &pos : predictor.history | std::ranges::views::values) {
     circle(pos, 5, GREEN, -1);
   }
+  for (const auto &pos : predictor.predicted | std::ranges::views::values) {
+    circle(pos, 3, RED, -1);
+  }
   double y = 0, z = 0;
   if (!predictor.predictY(y))
     y = 0;

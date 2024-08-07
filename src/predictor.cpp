@@ -7,6 +7,8 @@
 
 #define TARGET_X (X_TABLE_SIZE - 0.1)
 
+Predictor::Predictor() { reset(); }
+
 void Predictor::addBallPosition(const cv::Vec3d &position) {
   // if (history.size() > 1) {
   //   if (const auto base =
@@ -16,8 +18,50 @@ void Predictor::addBallPosition(const cv::Vec3d &position) {
   //     return;
   //   }
   // }
+  if (history.empty()) {
+    constexpr auto drag = 0.8;
+    // dynam: x, y, z, vx, vy, vz, az
+    kalmanFilter.init(7, 3, 0);
+    // clang-format off
+    kalmanFilter.statePre = kalmanFilter.statePost =
+        (cv::Mat_<float>(7, 1) << position[0], position[1], position[2], 0, 0,
+         0, 0);
+    kalmanFilter.transitionMatrix = (
+      cv::Mat_<float>(7, 7) <<
+      1, 0, 0, 1, 0, 0, 0,
+      0, 1, 0, 0, 1, 0, 0,
+      0, 0, 1, 0, 0, 1, 0,
+
+      0, 0, 0, drag, 0, 0, 0,
+      0, 0, 0, 0, drag, 0, 0,
+      0, 0, 0, 0, 0, drag, 1,
+
+      0, 0, 0, 0, 0, 0, 1
+    );
+    kalmanFilter.processNoiseCov = (
+        cv::Mat_<float>(7, 7) <<
+        0.3, 0, 0, 0, 0, 0, 0,
+        0, 0.3, 0, 0, 0, 0, 0,
+        0, 0, 0.3, 0, 0, 0, 0,
+        0, 0, 0, 0.3, 0, 0, 0,
+        0, 0, 0, 0, 0.3, 0, 0,
+        0, 0, 0, 0, 0, 0.3, 0,
+        0, 0, 0, 0, 0, 0, 0.3
+    );
+    kalmanFilter.measurementMatrix = (
+        cv::Mat_<float>(3, 7) <<
+        1, 0, 0, 0, 0, 0, 0,
+        0, 1, 0, 0, 0, 0, 0,
+        0, 0, 1, 0, 0, 0, 0
+    );
+    kalmanFilter.measurementNoiseCov = cv::Mat::eye(3, 3, CV_32F);
+    // clang-format on
+  }
   missCount = 0;
   history.emplace_back(std::chrono::system_clock::now(), position);
+  predicted.emplace_back(std::chrono::system_clock::now(),
+                         kalmanFilter.predict().colRange(0, 3));
+  kalmanFilter.correct(cv::Mat(position));
   if (history.size() < 3)
     return;
 
@@ -135,18 +179,21 @@ void Predictor::addMissingBallPosition() {
     reset();
   }
 }
+
 bool Predictor::predictY(double &y) const {
   if (isnan(y))
     return false;
   y = targetY;
   return ySet;
 }
+
 bool Predictor::predictZ(double &z) const {
   if (isnan(z))
     return false;
   z = targetZ;
   return zSet;
 }
+
 bool Predictor::hitTarget() const { return hit; }
 
 cv::Vec3d Predictor::getVelocity() const {
@@ -202,6 +249,7 @@ bool Predictor::checkIsBounded(const cv::Vec3d &a, const cv::Vec3d &b,
                                const cv::Vec3d &c) {
   return (a[2] > b[2] && b[2] < c[2]);
 }
+
 const cv::Vec3d &Predictor::getNearestPositionWithX(const double x) const {
   double minDist = std::numeric_limits<double>::max();
   size_t minIndex = 0;

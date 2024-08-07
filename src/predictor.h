@@ -8,9 +8,13 @@ class Predictor {
   std::vector<
       std::pair<std::chrono::time_point<std::chrono::system_clock>, cv::Vec3d>>
       history;
+  std::vector<
+      std::pair<std::chrono::time_point<std::chrono::system_clock>, cv::Vec3d>>
+      predicted;
   int missCount = 0;
   std::vector<size_t> boundIndicies;
   std::vector<std::vector<double>> boundQuadratic;
+  cv::KalmanFilter kalmanFilter;
 
   bool ySet = false;
   bool yFinalSet = false;
@@ -28,6 +32,7 @@ class Predictor {
   void predict(const cv::Vec3d &position);
 
 public:
+  Predictor();
   void addBallPosition(const cv::Vec3d &position);
   void addMissingBallPosition();
   bool predictY(double &y) const;
