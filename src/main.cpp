@@ -36,12 +36,12 @@ int main() {
       }
       if (predictor.predictY(y)) {
         lm.setPosition(lm.map(y, Y_TABLE_SIZE - 0.18, 0.18), false);
-      } else {
-        arm.resetByZ(200);
       }
 
       if (predictor.predictZ(z)) {
-        arm.move(y, z * 1000 + 70, predictor.hitTarget());
+        arm.move(y, z * 1000 + 30, predictor.hitTarget());
+      } else {
+        arm.resetByZ(200);
       }
 
       visualizer.setMachinePosition(
