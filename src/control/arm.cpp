@@ -32,13 +32,13 @@ void Arm::init() {
   wrist.setProfileVelocity(1800);
   wrist.setProfileAcceleration(450);
 
-  resetByZ(100);
+  resetByZ(20);
 }
 
 bool Arm::inverseKinematics(const double x, const double y, const double z,
                             double &theta1, double &theta2, double &theta3,
                             const double pi) {
-  const auto clampedZ = std::clamp(z, 40.0, 200.0);
+  const auto clampedZ = std::clamp(z, 20.0, 200.0);
   constexpr auto l1 = 198.251;
   constexpr auto l2 = 225;
   constexpr auto l3 = 30;
