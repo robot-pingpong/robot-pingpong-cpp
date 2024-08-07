@@ -77,8 +77,7 @@ void Arm::move(const double y, const double z, const bool hitTarget) {
     try {
       for (;;) {
         double theta1, theta2, theta3;
-        if (!inverseKinematics(hitTarget ? 210 : 190, 0, z, theta1, theta2,
-                               theta3, hitTarget ? M_PI / 3 : M_PI / 2)) {
+        if (!inverseKinematics(190, 0, z, theta1, theta2, theta3, M_PI / 2)) {
           break;
         }
         base.setAngle(
@@ -86,7 +85,7 @@ void Arm::move(const double y, const double z, const bool hitTarget) {
         shoulder.setAngle(theta1);
         arm.setAngle(200);
         elbow.setAngle(theta2);
-        wrist.setAngle(theta3);
+        wrist.setAngle(theta3 - (hitTarget ? M_PI / 3 : 0));
         break;
       }
     } catch (const std::exception &e) {
@@ -113,6 +112,7 @@ void Arm::resetByZ(const double z) {
         arm.setAngle(200);
         elbow.setAngle(theta2);
         wrist.setAngle(theta3);
+        resetted = true;
         break;
       }
     } catch (const std::exception &e) {
@@ -120,5 +120,4 @@ void Arm::resetByZ(const double z) {
     }
     mtx.unlock();
   }).detach();
-  resetted = true;
 }
