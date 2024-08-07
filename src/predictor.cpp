@@ -6,8 +6,9 @@
 #include <ranges>
 
 #define TARGET_X (X_TABLE_SIZE - 0.1)
-#define FINAL_PREDICTION_X (X_TABLE_SIZE - 0.6)
-#define HIT_X (X_TABLE_SIZE - 0.8)
+#define FINAL_PREDICTION_Y (X_TABLE_SIZE - 0.6)
+#define FINAL_PREDICTION_Z (X_TABLE_SIZE - 0.6)
+#define HIT_X (X_TABLE_SIZE / 2)
 
 Predictor::Predictor() { reset(); }
 
@@ -90,56 +91,58 @@ void Predictor::addBallPosition(const cv::Vec3d &position) {
 }
 
 void Predictor::predict(const cv::Vec3d &position) {
-  boundQuadratic.clear();
-  // Quadratic interpolation
-  std::vector<double> srcX;
-  std::vector<double> srcY;
-  for (const auto &pos :
-       std::vector(
-           &predicted[boundIndicies.empty() ? 0 : boundIndicies.back() + 1],
-           &predicted.back()) |
-           std::ranges::views::values) {
-    srcX.push_back(pos[0]);
-    srcY.push_back(pos[2]);
-  }
-  if (srcX.size() > 2) {
-    boundQuadratic.emplace_back();
-    PolynomialRegression<double>::fitIt(srcX, srcY, 2, boundQuadratic.back());
+  if (!zSet || position[0] < FINAL_PREDICTION_Z) {
+    boundQuadratic.clear();
+    // Quadratic interpolation
+    std::vector<double> srcX;
+    std::vector<double> srcY;
+    for (const auto &pos :
+         std::vector(
+             &predicted[boundIndicies.empty() ? 0 : boundIndicies.back() + 1],
+             &predicted.back()) |
+             std::ranges::views::values) {
+      srcX.push_back(pos[0]);
+      srcY.push_back(pos[2]);
+    }
+    if (srcX.size() > 2) {
+      boundQuadratic.emplace_back();
+      PolynomialRegression<double>::fitIt(srcX, srcY, 2, boundQuadratic.back());
 
-    if (boundQuadratic.back().at(2) < 0) {
-      for (int count = 0; count < 10; ++count) {
-        if (const auto targetZ =
-                boundQuadratic.back().at(0) +
-                boundQuadratic.back().at(1) * TARGET_X +
-                boundQuadratic.back().at(2) * TARGET_X * TARGET_X;
-            targetZ > 0) {
-          if (targetZ < 0.5) {
-            this->targetZ = targetZ;
-            zSet = true;
+      if (boundQuadratic.back().at(2) < 0) {
+        for (int count = 0; count < 10; ++count) {
+          if (const auto targetZ =
+                  boundQuadratic.back().at(0) +
+                  boundQuadratic.back().at(1) * TARGET_X +
+                  boundQuadratic.back().at(2) * TARGET_X * TARGET_X;
+              targetZ > 0) {
+            if (targetZ < 0.5) {
+              this->targetZ = targetZ;
+              zSet = true;
+            }
+            break;
           }
-          break;
-        }
 
-        const auto a = boundQuadratic.back().at(2);
-        const auto b = boundQuadratic.back().at(1);
-        const auto c = boundQuadratic.back().at(0);
-        const auto boundX = (-b - std::sqrt(b * b - 4 * a * c)) / (2 * a);
-        if (isnan(boundX)) {
-          break;
-        }
-        const auto p = -b / (2 * a);
-        const auto q = c - a * p * p;
-        const auto newA = a;
-        const auto newP = p + (boundX - p) * 2;
-        const auto newQ = q * 0.9;
-        if (0 < boundX && boundX < TARGET_X * 3) {
-          boundQuadratic.emplace_back(std::vector{
-              newA * newP * newP + newQ,
-              -2 * newA * newP,
-              newA,
-          });
-        } else {
-          break;
+          const auto a = boundQuadratic.back().at(2);
+          const auto b = boundQuadratic.back().at(1);
+          const auto c = boundQuadratic.back().at(0);
+          const auto boundX = (-b - std::sqrt(b * b - 4 * a * c)) / (2 * a);
+          if (isnan(boundX)) {
+            break;
+          }
+          const auto p = -b / (2 * a);
+          const auto q = c - a * p * p;
+          const auto newA = a * 0.9;
+          const auto newP = p + (boundX - p) * 2;
+          const auto newQ = q * 0.9;
+          if (0 < boundX && boundX < TARGET_X * 3) {
+            boundQuadratic.emplace_back(std::vector{
+                newA * newP * newP + newQ,
+                -2 * newA * newP,
+                newA,
+            });
+          } else {
+            break;
+          }
         }
       }
     }
@@ -159,7 +162,7 @@ void Predictor::predict(const cv::Vec3d &position) {
     targetY = a * TARGET_X + b;
     ySet = true;
   }
-  if (!yFinalSet && position[0] > FINAL_PREDICTION_X) {
+  if (!yFinalSet && position[0] > FINAL_PREDICTION_Y) {
     targetY = position[1];
     yFinalSet = true;
   }
