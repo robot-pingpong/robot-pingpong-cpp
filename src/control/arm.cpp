@@ -85,7 +85,7 @@ void Arm::move(const double y, const double z, const bool hitTarget) {
         shoulder.setAngle(theta1);
         arm.setAngle(200);
         elbow.setAngle(theta2);
-        wrist.setAngle(theta3 - (hitTarget ? M_PI / 3 : 0));
+        wrist.setAngle(theta3 - (hitTarget ? 30 : 0));
         break;
       }
     } catch (const std::exception &e) {
