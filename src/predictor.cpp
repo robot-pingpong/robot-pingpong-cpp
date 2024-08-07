@@ -106,7 +106,7 @@ void Predictor::predict(const cv::Vec3d &position) {
     PolynomialRegression<double>::fitIt(srcX, srcY, 2, boundQuadratic.back());
 
     if (boundQuadratic.back().at(2) < 0) {
-      for (;;) {
+      for (int count = 0; count < 10; ++count) {
         if (const auto targetZ =
                 boundQuadratic.back().at(0) +
                 boundQuadratic.back().at(1) * TARGET_X +
