@@ -86,14 +86,11 @@ void Arm::move(const double y, const double z, const bool hitTarget) {
     } catch (const std::exception &e) {
       std::cerr << e.what() << std::endl;
     }
-    resetted = false;
     mtx.unlock();
   }).detach();
 }
 
 void Arm::resetByZ(const double z) {
-  if (resetted)
-    return;
   std::thread([&, z] {
     mtx.lock();
     try {
@@ -114,5 +111,4 @@ void Arm::resetByZ(const double z) {
     }
     mtx.unlock();
   }).detach();
-  resetted = true;
 }
