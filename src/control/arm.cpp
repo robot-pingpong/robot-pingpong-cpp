@@ -66,7 +66,9 @@ bool Arm::inverseKinematics(const double x, const double y, const double z,
 
 void Arm::move(const double y, const double z, const bool hitTarget) {
   std::thread([&, y, z, hitTarget] {
-    mtx.lock();
+    if (!mtx.try_lock()) {
+      return;
+    }
     try {
       for (;;) {
         double theta1, theta2, theta3;
