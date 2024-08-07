@@ -27,6 +27,7 @@ class Arm {
   Servos::Mx28P2 elbow = Servos::Mx28P2(PORT_NAME, ELBOW_ID);
   Servos::Mx28P2 wrist = Servos::Mx28P2(PORT_NAME, WRIST_ID);
   std::list<BaseMotor *> motors = {&base, &shoulder, &arm, &elbow, &wrist};
+  bool resetted = false;
   std::mutex mtx;
   static bool inverseKinematics(double x, double y, double z, double &theta1,
                                 double &theta2, double &theta3,

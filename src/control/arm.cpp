@@ -32,13 +32,19 @@ void Arm::init() {
   wrist.setProfileVelocity(1800);
   wrist.setProfileAcceleration(450);
 
-  resetByZ(20);
+  std::thread([&] {
+    resetByZ(20);
+    resetted = false;
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    resetByZ(400);
+    resetted = false;
+  }).detach();
 }
 
 bool Arm::inverseKinematics(const double x, const double y, const double z,
                             double &theta1, double &theta2, double &theta3,
                             const double pi) {
-  const auto clampedZ = std::clamp(z, 20.0, 200.0);
+  const auto clampedZ = std::clamp(z, 20.0, 390.0);
   constexpr auto l1 = 198.251;
   constexpr auto l2 = 225;
   constexpr auto l3 = 30;
@@ -80,17 +86,20 @@ void Arm::move(const double y, const double z, const bool hitTarget) {
         shoulder.setAngle(theta1);
         arm.setAngle(200);
         elbow.setAngle(theta2);
-        wrist.setAngle(theta3 - (hitTarget ? 60 : 0));
+        wrist.setAngle(theta3);
         break;
       }
     } catch (const std::exception &e) {
       std::cerr << e.what() << std::endl;
     }
+    resetted = false;
     mtx.unlock();
   }).detach();
 }
 
 void Arm::resetByZ(const double z) {
+  if (resetted)
+    return;
   std::thread([&, z] {
     mtx.lock();
     try {
@@ -111,4 +120,5 @@ void Arm::resetByZ(const double z) {
     }
     mtx.unlock();
   }).detach();
+  resetted = true;
 }
