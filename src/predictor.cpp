@@ -9,7 +9,7 @@
 #define FINAL_PREDICTION_Y (X_TABLE_SIZE - 0.6)
 #define FINAL_PREDICTION_Z (X_TABLE_SIZE - 0.3)
 #define HIT_X (X_TABLE_SIZE / 2)
-#define HIT_TIME_DELTA 0.25
+#define HIT_TIME_DELTA 0.10
 
 Predictor::Predictor() { reset(); }
 
