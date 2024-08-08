@@ -20,7 +20,7 @@ void Arm::init() {
     motor->setTorqueEnable(Torque::ENABLE);
   }
   base.setPositionPGain(400);
-  shoulder.setPositionDGain(400);
+  shoulder.setPositionPGain(400);
 
   // wrist.setGoalVelocity(1000);
   wrist.setProfileVelocity(1800);
