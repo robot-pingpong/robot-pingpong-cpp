@@ -6,13 +6,6 @@
 #include <thread>
 #include <valarray>
 
-const std::vector<ArmDictionary> angle_set = {
-    {0.20, 160, 100, 230, 240, 90, 160},
-    {0.25, 170, 100, 223, 250, 90, 160},
-    {0.32, 180, 110, 206, 260, 100, 170},
-    {0.37, 190, 120, 189, 250, 110, 190},
-    {0.48, 200, 140, 172, 240, 150, 220}};
-
 void Arm::init() {
   for (const auto &motor : motors) {
     // motor->setGoalVelocity(400);

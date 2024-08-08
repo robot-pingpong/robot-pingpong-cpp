@@ -9,17 +9,6 @@
 #include <list>
 #include <mutex>
 
-struct ArmDictionary {
-  double maxHeight;
-
-  double baseAngle;
-  double yawShoulderAngle;
-  double pitchShoulderAngle;
-  double elbowAngle;
-  double wristBeforeAngle;
-  double wristAfterAngle;
-};
-
 class Arm {
   Servos::Mx64P2 base = Servos::Mx64P2(PORT_NAME, BASE_ID);
   Servos::Mx64P2 shoulder = Servos::Mx64P2(PORT_NAME, SHOULDER_ID);
