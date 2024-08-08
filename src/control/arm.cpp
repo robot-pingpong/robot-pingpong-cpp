@@ -72,7 +72,7 @@ void Arm::move(const double y, const double z, const bool hitTarget) {
       for (;;) {
         double theta1, theta2, theta3;
         if (!inverseKinematics(120, 0, z, theta1, theta2, theta3,
-                               80 * M_PI / 180)) {
+                               120 * M_PI / 180)) {
           break;
         }
         auto writer = base.getBulkWriter();
@@ -81,7 +81,7 @@ void Arm::move(const double y, const double z, const bool hitTarget) {
             std::clamp((y - (Y_TABLE_SIZE / 2)) * 20 + 180, 150.0, 210.0));
         shoulder.setAngleBulk(writer, theta1);
         elbow.setAngleBulk(writer, theta2);
-        wrist.setAngleBulk(writer, theta3 - (hitTarget ? 30 : 0));
+        wrist.setAngleBulk(writer, theta3 - (hitTarget ? 60 : 0));
         if (const int result = writer.txPacket(); result != COMM_SUCCESS) {
           std::cerr << dynamixel::PacketHandler::getPacketHandler()
                            ->getTxRxResult(result)
