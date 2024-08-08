@@ -79,9 +79,9 @@ void Arm::move(const double y, const double z, const bool hitTarget) {
         base.setAngleBulk(
             writer,
             std::clamp((y - (Y_TABLE_SIZE / 2)) * 20 + 180, 150.0, 210.0));
-        shoulder.setAngleBulk(writer, theta1 - (hitTarget ? 15 : 0));
-        elbow.setAngleBulk(writer, theta2 - (hitTarget ? 25 : 0));
-        wrist.setAngleBulk(writer, theta3 - (hitTarget ? 40 : 0));
+        shoulder.setAngleBulk(writer, theta1 - (hitTarget ? 50 : 0));
+        elbow.setAngleBulk(writer, theta2 - (hitTarget ? 45 : 0));
+        wrist.setAngleBulk(writer, theta3 - (hitTarget ? 50 : 0));
         if (const int result = writer.txPacket(); result != COMM_SUCCESS) {
           std::cerr << dynamixel::PacketHandler::getPacketHandler()
                            ->getTxRxResult(result)
