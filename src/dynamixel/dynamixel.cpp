@@ -147,4 +147,18 @@ template <typename Model> void Dynamixel<Model>::setAngle(const double angle) {
   writeByte(ControlTables<Model>::GoalPosition,
             static_cast<uint32_t>(angle / UNIT_SCALE));
 }
+template <typename Model>
+void Dynamixel<Model>::setAngleBulk(dynamixel::GroupBulkWrite &writer,
+                                    const double angle) {
+  const auto value = static_cast<uint32_t>(angle / UNIT_SCALE);
+  uint8_t param_goal_position[4];
+  param_goal_position[0] = DXL_LOBYTE(DXL_LOWORD(value));
+  param_goal_position[1] = DXL_HIBYTE(DXL_LOWORD(value));
+  param_goal_position[2] = DXL_LOBYTE(DXL_HIWORD(value));
+  param_goal_position[3] = DXL_HIBYTE(DXL_HIWORD(value));
+  if (!writer.addParam(id, ControlTables<Model>::GoalPosition, 4,
+                       param_goal_position)) {
+    throw std::runtime_error("Failed to add param");
+  }
+}
 } // namespace Servos

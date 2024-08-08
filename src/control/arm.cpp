@@ -80,12 +80,20 @@ void Arm::move(const double y, const double z, const bool hitTarget) {
         if (!inverseKinematics(190, 0, z, theta1, theta2, theta3, M_PI / 3)) {
           break;
         }
-        base.setAngle(
+        auto writer = base.getBulkWriter();
+        base.setAngleBulk(
+            writer,
             std::clamp((y - (Y_TABLE_SIZE / 2)) * 20 + 180, 150.0, 210.0));
-        shoulder.setAngle(theta1);
-        arm.setAngle(200);
-        elbow.setAngle(theta2);
-        wrist.setAngle(theta3 - (hitTarget ? 30 : 0));
+        shoulder.setAngleBulk(writer, theta1);
+        arm.setAngleBulk(writer, 200);
+        elbow.setAngleBulk(writer, theta2);
+        wrist.setAngleBulk(writer, theta3 - (hitTarget ? 30 : 0));
+        if (const int result = writer.txPacket(); result != COMM_SUCCESS) {
+          std::cerr << dynamixel::PacketHandler::getPacketHandler()
+                           ->getTxRxResult(result)
+                    << std::endl;
+          throw std::runtime_error("Failed to send bulk write packet");
+        }
         break;
       }
     } catch (const std::exception &e) {

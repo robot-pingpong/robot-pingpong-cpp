@@ -25,7 +25,11 @@ public:
   bool reboot() override;
   double getAngle();
   void setAngle(double angle) override;
+  void setAngleBulk(dynamixel::GroupBulkWrite &writer, double angle);
   const unsigned char readHardwareErrorStatus() override = 0;
+  dynamixel::GroupBulkWrite getBulkWriter() {
+    return {portHandler, packetHandler};
+  }
 
 protected:
   Dynamixel(const std::string &portName,
