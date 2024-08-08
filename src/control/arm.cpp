@@ -15,12 +15,12 @@ void Arm::init() {
       motor->reboot();
     }
 
-    motor->setProfileVelocity(400);
-    motor->setProfileAcceleration(120);
+    motor->setProfileVelocity(0);
+    motor->setProfileAcceleration(0);
     motor->setTorqueEnable(Torque::ENABLE);
   }
   base.setPositionPGain(400);
-  shoulder.setPositionDGain(500);
+  shoulder.setPositionDGain(400);
 
   // wrist.setGoalVelocity(1000);
   wrist.setProfileVelocity(1800);
@@ -71,9 +71,14 @@ void Arm::move(const double y, const double z, const bool hitTarget) {
     try {
       for (;;) {
         double theta1, theta2, theta3;
-        if (!inverseKinematics(hitTarget ? 250 : 120, 0,
-                               z + (hitTarget ? 20 : 0), theta1, theta2, theta3,
-                               (hitTarget ? 40 : 120) * M_PI / 180)) {
+        int maxX = 320;
+        for (; maxX > 120 &&
+               !inverseKinematics(hitTarget ? maxX : 120, 0,
+                                  z + (hitTarget ? 40 : 0), theta1, theta2,
+                                  theta3, (hitTarget ? 60 : 100) * M_PI / 180);
+             --maxX)
+          ;
+        if (maxX <= 120) {
           break;
         }
         auto writer = base.getBulkWriter();
