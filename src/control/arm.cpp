@@ -26,7 +26,6 @@ void Arm::init() {
     motor->setProfileAcceleration(120);
     motor->setTorqueEnable(Torque::ENABLE);
   }
-  arm.setAngle(200);
 
   // wrist.setGoalVelocity(1000);
   wrist.setProfileVelocity(1800);
@@ -45,8 +44,8 @@ bool Arm::inverseKinematics(const double x, const double y, const double z,
                             double &theta1, double &theta2, double &theta3,
                             const double pi) {
   const auto clampedZ = std::clamp(z, 20.0, 390.0);
-  constexpr auto l1 = 198.251;
-  constexpr auto l2 = 225;
+  constexpr auto l1 = 187.375;
+  constexpr auto l2 = 209.90;
   constexpr auto l3 = 30;
   const auto xn = clampedZ - l3 * std::cos(pi);
   const auto yn = x - l3 * std::sin(pi);
@@ -59,8 +58,8 @@ bool Arm::inverseKinematics(const double x, const double y, const double z,
   theta1 = std::atan2(k2, k1) - std::atan2(yn, xn);
   theta3 = pi + theta1 - theta2;
 
-  theta1 = theta1 / M_PI * 180 + 180 + 43.7;
-  theta2 = theta2 / M_PI * 180 - 70 + 180;
+  theta1 = theta1 / M_PI * 180 + 180 + 24.9;
+  theta2 = theta2 / M_PI * 180 - (90 - 24.9) + 180;
   theta3 = theta3 / M_PI * 180 + 180;
 
   if (std::isnan(theta1) || std::isnan(theta2) || std::isnan(theta3)) {
@@ -77,7 +76,7 @@ void Arm::move(const double y, const double z, const bool hitTarget) {
     try {
       for (;;) {
         double theta1, theta2, theta3;
-        if (!inverseKinematics(190, 0, z, theta1, theta2, theta3, M_PI / 3)) {
+        if (!inverseKinematics(120, 0, z, theta1, theta2, theta3, M_PI / 3)) {
           break;
         }
         auto writer = base.getBulkWriter();
@@ -85,7 +84,6 @@ void Arm::move(const double y, const double z, const bool hitTarget) {
             writer,
             std::clamp((y - (Y_TABLE_SIZE / 2)) * 20 + 180, 150.0, 210.0));
         shoulder.setAngleBulk(writer, theta1);
-        arm.setAngleBulk(writer, 200);
         elbow.setAngleBulk(writer, theta2);
         wrist.setAngleBulk(writer, theta3 - (hitTarget ? 30 : 0));
         if (const int result = writer.txPacket(); result != COMM_SUCCESS) {
@@ -114,12 +112,11 @@ void Arm::resetByZ(const double z) {
     try {
       for (;;) {
         double theta1, theta2, theta3;
-        if (!inverseKinematics(190, 0, z, theta1, theta2, theta3)) {
+        if (!inverseKinematics(120, 0, z, theta1, theta2, theta3)) {
           break;
         }
         base.setAngle(180);
         shoulder.setAngle(theta1);
-        arm.setAngle(200);
         elbow.setAngle(theta2);
         wrist.setAngle(theta3);
         resetted = true;

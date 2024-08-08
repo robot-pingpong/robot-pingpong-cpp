@@ -42,8 +42,7 @@
 
 #define BASE_ID 1
 #define SHOULDER_ID 2
-#define ARM_ID 3
-#define ELBOW_ID 4
-#define WRIST_ID 5
+#define ELBOW_ID 3
+#define WRIST_ID 4
 
 #endif
