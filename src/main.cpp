@@ -11,14 +11,19 @@ int main() {
   Arm arm;
   arm.init();
   auto lm = LinearMotor(0);
+  std::mutex mtx;
   std::thread([&] {
+    mtx.lock();
     lm.guessLimits();
     lm.off();
+    mtx.unlock();
   }).detach();
   Predictor predictor;
   Visualizer visualizer(predictor);
   Vision vision;
   vision.init(visualizer, true);
+
+  mtx.lock();
   lm.on();
 
   try {
@@ -41,7 +46,7 @@ int main() {
       if (predictor.predictZ(z)) {
         arm.move(y, z * 1000 + 30, predictor.hitTarget());
       } else {
-         arm.resetByZ(250);
+        arm.resetByZ(250);
       }
 
       visualizer.setMachinePosition(
