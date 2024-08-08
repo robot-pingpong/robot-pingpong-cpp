@@ -139,7 +139,7 @@ void Predictor::predict(const cv::Vec3d &position) {
           const auto q = c - a * p * p;
           const auto newA = a * 0.9;
           const auto newP = p + (boundX - p) * 2;
-          const auto newQ = q * 0.9;
+          const auto newQ = q;
           if (0 < boundX && boundX < TARGET_X * 3) {
             boundQuadratic.emplace_back(std::vector{
                 newA * newP * newP + newQ,
