@@ -32,9 +32,9 @@ void LinearMotor::setPosition(const double position, const bool wait) {
   const auto clamped = getClampedPosition(position);
   targetPosition = position;
   if (wait) {
-    AxmMovePos(axisNo, clamped, 3000, 600, 400);
+    AxmMovePos(axisNo, clamped, 3000, 1000, 400);
   } else {
-    AxmMoveStartPos(axisNo, clamped, 3000, 600, 400);
+    AxmMoveStartPos(axisNo, clamped, 3000, 1000, 400);
   }
 }
 
