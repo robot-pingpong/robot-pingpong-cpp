@@ -16,6 +16,8 @@ class Capture {
   cv::Mat colorMask;
   const cv::Mat morphKernel =
       cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3, 3));
+  std::vector<cv::Point> maskPoints;
+  std::vector<cv::Point2f> tableArea;
 
 public:
   cv::Mat frame;

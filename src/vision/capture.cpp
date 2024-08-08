@@ -166,6 +166,13 @@ bool Capture::render(cv::Mat &out, cv::Point2f &point) {
   cv::bitwise_and(copy, copy, out, grayMask);
   out.copyTo(copy);
 
+  {
+    cv::polylines(copy, {maskPoints}, true, RED, 2);
+    for (const auto &tablePoint : tableArea) {
+      cv::circle(copy, tablePoint, 5, RED, -1);
+    }
+  }
+
   std::vector<std::vector<cv::Point>> contours;
   cv::findContours(grayMask, contours, cv::RETR_EXTERNAL,
                    cv::CHAIN_APPROX_SIMPLE);
