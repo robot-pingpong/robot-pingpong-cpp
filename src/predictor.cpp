@@ -80,6 +80,7 @@ void Predictor::addBallPosition(const cv::Vec3d &position) {
 
   if (checkIsBounded(first, mid, position)) {
     boundIndicies.push_back(history.size() - 2);
+    zSet = false;
   }
 
   for (const auto &pos : predicted | std::ranges::views::values) {
