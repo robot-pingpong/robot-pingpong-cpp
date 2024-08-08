@@ -167,9 +167,9 @@ bool Capture::render(cv::Mat &out, cv::Point2f &point) {
   out.copyTo(copy);
 
   {
-    cv::polylines(copy, {maskPoints}, true, RED, 2);
+    cv::polylines(frame, {maskPoints}, true, RED, 2);
     for (const auto &tablePoint : tableArea) {
-      cv::circle(copy, tablePoint, 5, RED, -1);
+      cv::circle(frame, tablePoint, 5, RED, -1);
     }
   }
 
