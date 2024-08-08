@@ -19,6 +19,8 @@ void Arm::init() {
     motor->setProfileAcceleration(120);
     motor->setTorqueEnable(Torque::ENABLE);
   }
+  base.setPositionPGain(400);
+  shoulder.setPositionDGain(500);
 
   // wrist.setGoalVelocity(1000);
   wrist.setProfileVelocity(1800);
@@ -69,7 +71,7 @@ void Arm::move(const double y, const double z, const bool hitTarget) {
     try {
       for (;;) {
         double theta1, theta2, theta3;
-        if (!inverseKinematics(120, 0, z, theta1, theta2, theta3, M_PI / 3)) {
+        if (!inverseKinematics(120, 0, z, theta1, theta2, theta3, 80 * M_PI / 180)) {
           break;
         }
         auto writer = base.getBulkWriter();
