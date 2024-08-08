@@ -46,7 +46,7 @@ int main() {
       }
 
       if (predictor.predictZ(z)) {
-        arm.move(y, z * 1000 - 140, predictor.hitTarget());
+        arm.move(y, z * 1000 - 80, predictor.hitTarget());
       } else {
         arm.resetByZ(250);
       }
