@@ -63,7 +63,7 @@ void LinearMotor::guessLimits() {
   AxmStatusSetActPos(axisNo, 0);
 
   setPosition(110);
-  AxmMoveVel(axisNo, 40, 100, 100);
+  AxmMoveVel(axisNo, 10, 100, 100);
   while (!hasAlarm())
     ;
   resetAlarm();
