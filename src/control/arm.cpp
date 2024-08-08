@@ -71,7 +71,8 @@ void Arm::move(const double y, const double z, const bool hitTarget) {
     try {
       for (;;) {
         double theta1, theta2, theta3;
-        if (!inverseKinematics(120, 0, z, theta1, theta2, theta3, 80 * M_PI / 180)) {
+        if (!inverseKinematics(120, 0, z, theta1, theta2, theta3,
+                               80 * M_PI / 180)) {
           break;
         }
         auto writer = base.getBulkWriter();
