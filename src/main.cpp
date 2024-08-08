@@ -41,12 +41,10 @@ int main() {
       }
       if (predictor.predictY(y)) {
         lm.setPosition(lm.map(y, Y_TABLE_SIZE - 0.18, 0.18), false);
-      } else {
-        lm.setPosition(lm.map(0.5, 0, 1));
       }
 
       if (predictor.predictZ(z)) {
-        arm.move(y, z * 1000 - 80, predictor.hitTarget());
+        arm.move(y, z * 1000 - 180, predictor.hitTarget());
       } else {
         arm.resetByZ(250);
       }
