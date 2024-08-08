@@ -8,7 +8,8 @@
 #define TARGET_X (X_TABLE_SIZE - 0.03)
 #define FINAL_PREDICTION_Y (X_TABLE_SIZE - 0.6)
 #define FINAL_PREDICTION_Z (X_TABLE_SIZE - 0.3)
-#define HIT_X (TARGET_X - 0.5)
+#define HIT_X (X_TABLE_SIZE / 2)
+#define HIT_TIME_DELTA 0.25
 
 Predictor::Predictor() { reset(); }
 
@@ -21,6 +22,11 @@ void Predictor::addBallPosition(const cv::Vec3d &position) {
   //     return;
   //   }
   // }
+  if (position[0] < 0 || position[0] > X_TABLE_SIZE || position[1] < 0 ||
+      position[1] > Y_TABLE_SIZE) {
+    addMissingBallPosition();
+    return;
+  }
   if (history.empty()) {
     constexpr auto drag = 0.8;
     // dynam: x, y, z, vx, vy, vz, az
@@ -168,7 +174,19 @@ void Predictor::predict(const cv::Vec3d &position) {
   }
 
   if (position[0] > HIT_X) {
-    hit = true;
+    const auto dt = static_cast<double>(
+                        std::chrono::duration_cast<std::chrono::milliseconds>(
+                            history.back().first - history.front().first)
+                            .count()) /
+                    1000.0;
+    const auto dx = position[0] - history.front().second[0];
+    const auto vx = dx / dt;
+
+    const auto leftX = TARGET_X - position[0];
+
+    if (const auto leftT = leftX / vx; leftT < HIT_TIME_DELTA) {
+      hit = true;
+    }
   }
 }
 
