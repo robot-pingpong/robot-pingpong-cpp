@@ -13,12 +13,14 @@ class Arm {
   Servos::Mx64P2 base = Servos::Mx64P2(PORT_NAME, BASE_ID);
   Servos::Mx64P2 shoulder = Servos::Mx64P2(PORT_NAME, SHOULDER_ID);
   Servos::Mx64P2 elbow = Servos::Mx64P2(PORT_NAME, ELBOW_ID);
-  Servos::Mx28P2 wrist = Servos::Mx28P2(PORT_NAME, WRIST_ID);
-  std::list<BaseMotor *> motors = {&base, &shoulder, &elbow, &wrist};
+  Servos::Mx28P2 yawWrist = Servos::Mx28P2(PORT_NAME, YAW_WRIST_ID);
+  Servos::Mx28P2 pitchWrist = Servos::Mx28P2(PORT_NAME, PITCH_WRIST_ID);
+  std::list<BaseMotor *> motors = {&base, &shoulder, &elbow, &yawWrist,
+                                   &pitchWrist};
   bool resetted = false;
   std::mutex mtx;
-  static bool inverseKinematics(double x, double y, double z, double &theta1,
-                                double &theta2, double &theta3,
+  static bool inverseKinematics(double x, double y, double z, double &yawTheta,
+                                double &theta1, double &theta2, double &theta3,
                                 double pi = M_PI / 2);
 
 public:
