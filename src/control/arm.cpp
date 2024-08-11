@@ -45,7 +45,7 @@ bool Arm::inverseKinematics(const double x, const double y, const double z,
   const auto xPrime = std::sqrt(x * x + y * y);
   const auto clampedZ = std::clamp(z, 20.0, 390.0);
   constexpr auto l1 = 188.172;
-  const auto l2 = std::sqrt(209.90 * 209.90 + 17 * 17 -
+  const auto l2 = std::sqrt(63.425 * 63.425 + 209.90 * 209.90 + 17 * 17 -
                             2 * 209.90 * 17 * std::cos(yawTheta2));
   constexpr auto l3 = 30;
   const auto xn = clampedZ - l3 * std::cos(pi);
