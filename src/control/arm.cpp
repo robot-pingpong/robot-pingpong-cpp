@@ -36,13 +36,17 @@ void Arm::init() {
 }
 
 bool Arm::inverseKinematics(const double x, const double y, const double z,
-                            double &yawTheta, double &theta1, double &theta2,
-                            double &theta3, const double pi) {
-  yawTheta = std::atan2(y, x);
+                            double &yawTheta1, double &yawTheta2,
+                            double &theta1, double &theta2, double &theta3,
+                            const double pi, const double yawPi) {
+  yawTheta1 = std::atan2(y, x);
+  yawTheta2 = yawPi - yawTheta1;
+
   const auto xPrime = std::sqrt(x * x + y * y);
   const auto clampedZ = std::clamp(z, 20.0, 390.0);
   constexpr auto l1 = 188.172;
-  constexpr auto l2 = 231.018;
+  const auto l2 = std::sqrt(209.90 * 209.90 + 17 * 17 -
+                            2 * 209.90 * 17 * std::cos(yawTheta2));
   constexpr auto l3 = 30;
   const auto xn = clampedZ - l3 * std::cos(pi);
   const auto yn = xPrime - l3 * std::sin(pi);
@@ -54,13 +58,15 @@ bool Arm::inverseKinematics(const double x, const double y, const double z,
   const auto k2 = l2 * sinTheta2;
   theta1 = std::atan2(k2, k1) - std::atan2(yn, xn);
   theta3 = pi + theta1 - theta2;
-  yawTheta = 180 + yawTheta / M_PI * 180;
+
+  yawTheta1 = 180 + yawTheta1 / M_PI * 180;
+  yawTheta2 = 180 + yawTheta2 / M_PI * 180;
   theta1 = 180 + theta1 / M_PI * 180 + 25.0;
   theta2 = theta2 / M_PI * 180 + 180 - (90 - 25.0) - 10.8;
   theta3 = 180 + 10.8 + theta3 / M_PI * 180;
 
-  if (std::isnan(yawTheta) || std::isnan(theta1) || std::isnan(theta2) ||
-      std::isnan(theta3)) {
+  if (std::isnan(yawTheta1) || std::isnan(yawTheta2) || std::isnan(theta1) ||
+      std::isnan(theta2) || std::isnan(theta3)) {
     return false;
   }
   return true;
@@ -73,12 +79,12 @@ void Arm::move(const double y, const double z, const bool hitTarget) {
     }
     try {
       for (;;) {
-        double yawTheta, theta1, theta2, theta3;
+        double yawTheta1, yawTheta2, theta1, theta2, theta3;
         int maxX = 320;
         for (; maxX > 120 &&
                !inverseKinematics(hitTarget ? maxX : 120, 0,
-                                  z + (hitTarget ? 40 : 0), yawTheta, theta1,
-                                  theta2, theta3,
+                                  z + (hitTarget ? 40 : 0), yawTheta1,
+                                  yawTheta2, theta1, theta2, theta3,
                                   (hitTarget ? 60 : 100) * M_PI / 180);
              --maxX)
           ;
@@ -86,10 +92,10 @@ void Arm::move(const double y, const double z, const bool hitTarget) {
           break;
         }
         auto writer = base.getBulkWriter();
-        base.setAngleBulk(writer, yawTheta);
+        base.setAngleBulk(writer, yawTheta1);
         shoulder.setAngleBulk(writer, theta1);
         elbow.setAngleBulk(writer, theta2);
-        yawWrist.setAngleBulk(writer, 360 - yawTheta);
+        yawWrist.setAngleBulk(writer, yawTheta2);
         pitchWrist.setAngleBulk(writer, std::clamp(theta3, 100.0, 230.0));
         if (const int result = writer.txPacket(); result != COMM_SUCCESS) {
           std::cerr << dynamixel::PacketHandler::getPacketHandler()
@@ -116,14 +122,15 @@ void Arm::resetByZ(const double z) {
     }
     try {
       for (;;) {
-        double yawTheta, theta1, theta2, theta3;
-        if (!inverseKinematics(120, 0, z, yawTheta, theta1, theta2, theta3)) {
+        double yawTheta1, yawTheta2, theta1, theta2, theta3;
+        if (!inverseKinematics(120, 0, z, yawTheta1, yawTheta2, theta1, theta2,
+                               theta3)) {
           break;
         }
-        base.setAngle(yawTheta);
+        base.setAngle(yawTheta1);
         shoulder.setAngle(theta1);
         elbow.setAngle(theta2);
-        yawWrist.setAngle(360 - yawTheta);
+        yawWrist.setAngle(yawTheta2);
         pitchWrist.setAngle(theta3);
         resetted = true;
         break;

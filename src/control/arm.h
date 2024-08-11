@@ -19,9 +19,10 @@ class Arm {
                                    &pitchWrist};
   bool resetted = false;
   std::mutex mtx;
-  static bool inverseKinematics(double x, double y, double z, double &yawTheta,
-                                double &theta1, double &theta2, double &theta3,
-                                double pi = M_PI / 2);
+  static bool inverseKinematics(double x, double y, double z, double &yawTheta1,
+                                double &yawTheta2, double &theta1,
+                                double &theta2, double &theta3,
+                                double pi = M_PI / 2, double yawPi = 0);
 
 public:
   void init();
